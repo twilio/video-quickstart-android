@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="permissions_needed">Camera permission needed</string>
+    <string name="tap_video_snapshot">Tap video for snapshot</string>
+</resources>
