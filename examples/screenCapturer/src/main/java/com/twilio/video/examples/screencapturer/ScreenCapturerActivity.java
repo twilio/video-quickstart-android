@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -24,7 +25,6 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     private static final String TAG = "ScreenCapturer";
     private static final int REQUEST_MEDIA_PROJECTION = 100;
 
-    private FrameLayout videoFrameLayout;
     private LocalMedia localMedia;
     private VideoView localVideoView;
     private LocalVideoTrack screenVideoTrack;
@@ -48,7 +48,7 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_capturer);
-        videoFrameLayout = (FrameLayout)findViewById(R.id.video_frame_layout);
+        localVideoView = (VideoView) findViewById(R.id.local_video);
 
         localMedia = LocalMedia.create(this);
     }
@@ -113,18 +113,18 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     }
 
     private void startScreenCapture() {
-        localVideoView = new VideoView(this);
-        videoFrameLayout.addView(localVideoView);
-
         screenVideoTrack = localMedia.addVideoTrack(true, screenCapturer);
         screenCaptureMenuItem.setIcon(R.drawable.ic_stop_screen_share_white_24dp);
         screenCaptureMenuItem.setTitle(R.string.stop_screen_share);
+
+        localVideoView.setVisibility(View.VISIBLE);
         screenVideoTrack.addRenderer(localVideoView);
     }
 
     private void stopScreenCapture() {
-        videoFrameLayout.removeAllViews();
+        localVideoView.setVisibility(View.INVISIBLE);
         localMedia.removeVideoTrack(screenVideoTrack);
+
         screenCaptureMenuItem.setIcon(R.drawable.ic_screen_share_white_24dp);
         screenCaptureMenuItem.setTitle(R.string.share_screen);
         screenVideoTrack.removeRenderer(localVideoView);
@@ -133,7 +133,9 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if (localMedia != null) {
-            localMedia.removeVideoTrack(screenVideoTrack);
+            if (screenVideoTrack != null) {
+                localMedia.removeVideoTrack(screenVideoTrack);
+            }
             localMedia.release();
             localMedia = null;
         }
