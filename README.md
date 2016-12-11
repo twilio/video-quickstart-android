@@ -1,65 +1,148 @@
+[ ![Download](https://api.bintray.com/packages/twilio/releases/video-android/images/download.svg) ](https://bintray.com/twilio/releases/video-android/_latestVersion)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://media.twiliocdn.com/sdk/android/video/latest/docs/)
+
 # Twilio Video Quickstart for Android
 
-Use this project to get started with Twilio Video's Android SDK currently in Preview. Here are the [docs](https://media.twiliocdn.com/sdk/android/video/latest/docs/).
+Get started with Video on Android:
 
+- [Quickstart](#quickstart) - Run the quickstart app
+- [Examples](#examples) - Customize your video experience with these examples
+- [Using an Emulator](#usinganemulator) - Setup an emulator in Android Studio
+- [Reducing APK Size](#reducingapksize) - Use ABI splits to reduce your APK size
+- [Access Token Server](#accesstokenserver) - Setup an access token server
+- [More Documentation](#documentation) - More documentation related to the Video Android SDK
+- [Issues & Support](#issuesandsupport) - Filing issues and general support
 
- [ ![Download](https://api.bintray.com/packages/twilio/releases/video-android/images/download.svg) ](https://bintray.com/twilio/releases/video-android/_latestVersion)
+## Quickstart
 
-## Up and Running
+To get started with the Quickstart application follow these steps:
 
-1) Create a Twilio Video [Configuration Profile](https://www.twilio.com/user/account/video/profiles). If you haven't used Twilio before, welcome! You'll need to [Sign up for a Twilio account](https://www.twilio.com/try-twilio).
+1. Open this project in Android Studio and select the quickstart app module.
 
-2) Download this project and open it in Android Studio.
+<div style="text-align:center"><img src ="images/android_studio_quickstart.png"/></div>
 
-3) Get an access token [Generate an Access Token](https://www.twilio.com/user/account/video/dev-tools/testing-tools). Pick your identity (such as Bob).
+2. Create a [Video Configuration Profile](https://www.twilio.com/user/account/video/profiles).
 
-4) Paste the access token into VideoActivity.java
+<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
 
-5) Run quickstart app on an Android device or the Android emulator
+3. [Generate an Access Token](https://www.twilio.com/user/account/video/dev-tools/testing-tools) from the testing tools page.
 
-6) Tap the button at the bottom right portion of the screen and enter the room you would like to connect to. When ready, click connect.
+<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
 
-7) On another device, use an additional access token with a different identity to connect to the same room. 
+4. Paste the Access Token into the VideoActivity.java
 
-## What is this project?
+<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
 
-This quick start will help you get video chat integrated directly into your Android applications using Twilio's Video SDK. 
+5. Run the quickstart app on an Android device or Android emulator
 
-Inside this quick start project, you will find an Activity that contains all of the functionality necessary to show two video streams on one screen - one video stream for your phone's video camera, and one for a remote video stream.
+<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
 
-You'll see how to set up key classes like VideoClient, LocalMedia, Room, and CameraCapturer. All of these Twilio classes have related listeners with implementations in VideoActivity.java.
+6. Press the button at the bottom right portion of the screen to connect a Room
 
-You can also see how Android's runtime permissions are implemented for access to the camera and the microphone on Android devices running version 6.0 (Marshmallow) or higher inside the onCreate() method in the VideoActivity class.
+<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
 
-### Additional Examples
-You will also find additional examples that provide more advanced use cases of the Video SDK. The currently included examples are as follows:
+7. On another device, use an additional access token with a different identity to connect to the same room. 
 
-- [Custom Video Capturer](exampleCustomVideoCapturer) - Shows how a custom `VideoCapturer` can be implemented to capture the contents of a `View`. 
-- [Custom Video Renderer](exampleCustomVideoRenderer) - Demonstrates how to implement a custom `VideoRenderer` that captures a `Bitmap` of the last renderered frame.
+<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
+
+## Examples
+In addition to the quickstart we've also added a few examples of use cases that show you how to create and customize your media as follows:
+
+- [Custom Video Capturer](exampleCustomVideoCapturer) - Demonstrates how a custom `VideoCapturer` can be implemented to capture the contents of a `View`. 
+- [Custom Video Renderer](exampleCustomVideoRenderer) - Demonstrates how to implement a custom `VideoRenderer` that captures a `Bitmap` of the last rendered frame.
 - [Screen Capturer](exampleScreenCapturer) - Demonstrates how to use the screen capturer.
-- [Advanced Camera Capturer](exampleAdvancedCameraCapturer) - Demonstrates advanced use cases of `CameraCapturer`.
+- [Advanced Camera Capturer](exampleAdvancedCameraCapturer) - Demonstrates advanced use cases of `CameraCapturer` like injecting custom camera paremeters.
 
-## Access Tokens and Servers
+## Using an Emulator
 
-Using Twilio's Video client within your applications requires an access token. These access tokens can come from one of two places:
+Using an Emulator
+This guide will walk you through setting up and emulator that is completely compatible with the Video SDK.
 
-1) You can create a one-time use access token for testing on Twilio.com. This access token can be hard-coded directly into your mobile app, and you won't need to run your own server.
+### Requirements
+1. Android Studio 2.0+
 
-2) You can run your own server that provides access tokens, based on your Twilio credentials. This server can either run locally on your development machine, or it can be installed on a server. If you run the server on your local machine, you should use the ngrok utility to give the server an externally accessible web address. That way, you can run the quick start app on an Android device.
+### Guide
+1. Open Android Studio and navigate to Tools → Android → AVD Manager.
 
-### Generating an Access Token
+<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636572471_Screen+Shot+2016-11-08+at+2.22.31+PM.png"/></div>
 
-The first step is to [Generate an Access Token](https://www.twilio.com/user/account/video/dev-tools/testing-tools) from the Twilio developer console. Use whatever clever username you would like for the identity. You will get an access token that you can copy and paste into VideoActivity.java
+2. Create a virtual device.
 
-Once you have that access token in place, scroll down to the bottom of the page and you will get a web-based video chat window in the Twilio developer console that you can use to communicate with your Android app! Just join the room specified above!
+<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636611692_Screen+Shot+2016-11-08+at+2.23.09+PM.png"/></div>
 
-### Setting up a Video Chat Web Server
+3. Select your desired device.
+
+<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636689696_Screen+Shot+2016-11-08+at+2.24.07+PM.png"/></div>
+
+4. Select a system image. We recommend either x86 or x86_64 images.
+
+<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636746747_Screen+Shot+2016-11-08+at+2.25.14+PM.png"/></div>
+
+5. Click “Show Advanced Settings” and we recommend setting both cameras as “Emulated”. Note that other camera configurations will work with the exception of setting both cameras as “webcam()”.
+
+<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636889430_Screen+Shot+2016-11-08+at+2.27.58+PM.png"/></div>
+
+6. Configure the rest of your device accordingly and click “Finish”.
+
+## Reducing APK Size
+
+Our library is built using native libriares. As a result, if you use the default gradle build you will generate an APK with all four architectures(armeabi-v7a, arm64-v8a, x86, x86_64 in your APK.
+
+[APK splits](https://developer.android.com/studio/build/configure-apk-splits.html) allow developers to build multiple APKs for different screen sizes and ABIs. Enabling APK splits ensures that the minimum amount of files required to support a particular device are packaged into an APK.
+
+The following snippet shows an example `build.gradle` with APK splits enabled.
+
+    apply plugin: 'com.android.application'
+    
+    android {
+        compileSdkVersion 24
+        buildToolsVersion "24.0.2"
+    
+        defaultConfig {
+            applicationId "com.twilio.video.quickstart"
+            minSdkVersion 16
+            targetSdkVersion 24
+            versionCode 1
+            versionName "1.0"
+        }
+    
+        // Specify that we want to split up the APK based on ABI
+        splits {
+            abi {
+                // Enable ABI split
+                enable true
+    
+                // Clear list of ABIs
+                reset()
+    
+                // Specify each architecture currently supported by the Video SDK
+                include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+    
+                // Specify that we do not want an additional universal SDK
+                universalApk false
+            }
+        }
+    }
+    
+    dependencies {
+        compile "com.twilio:video-android:1.0.0-beta4"
+    }
+
+The adoption of APK splits requires developers to submit multiple APKs to the Play Store. Refer to [Google’s documentation](https://developer.android.com/google/play/publishing/multiple-apks.html) for how to support this in your application.
+
+## Access Token Server
+
+Using Twilio's Video client within your applications requires an access token. 
+
+You can run your own server that provides access tokens, based on your Twilio credentials. This server can either run locally on your development machine, or it can be installed on a server. If you run the server on your local machine, you should use the ngrok utility to give the server an externally accessible web address. That way, you can run the quickstart app on an Android device.
+
+### Setting up a Video Access Token Server
 
 If you want to be a little closer to a real environment, you can download one of the video quickstart applications - for instance, [Video Quickstart: PHP](https://github.com/TwilioDevEd/video-quickstart-php) and either run it locally, or install it on a server.
 
- You'll need to gather a couple of configuration options from your Twilio developer console before running it, so read the directions on the quickstart. You'll copy the config.example.php file to a config.php file, and then add in these credentials:
+You'll need to gather a couple of configuration options from your Twilio developer console before running it, so read the directions on the quickstart. You'll copy the config.example.php file to a config.php file, and then add in these credentials:
  
- Credential | Description
+Credential | Description
 ---------- | -----------
 Twilio Account SID | Your main Twilio account identifier - [find it on your dashboard](https://www.twilio.com/user/account/video).
 Twilio Video Configuration SID | Adds video capability to the access token - [generate one here](https://www.twilio.com/user/account/video/profiles)
@@ -77,10 +160,15 @@ If you run your video chat application on an Android device, you'll need to prov
 
 When you get a URL from ngrok, go ahead and update VideoActivity.java with the new URL. At the very bottom is the retrieveAccessTokenfromServer() method.  If you go down this path, be sure to follow the directions in the comments in the initializeTwilioSdk() method at the top of the source file - you will need to comment out everything under "OPTION 1" and uncomment the one line under "OPTION 2". You will also need to update the code if your ngrok URL changes.
 
-## Have fun!
+## Documentation
 
-This is an introduction to Twilio's Video SDK on Android. From here, you can start building applications that use video chat across the web, iOS, and Android platforms.
+You can find more documentation on getting started as well as our latest Javadoc below:
 
-## License
+* [Getting Started](https://www.twilio.com/docs/api/video/getting-started)
+* [Javadoc](https://media.twiliocdn.com/sdk/android/video/latest/docs/)
 
-MIT
+## Issues and Support
+
+Please file any issues you find here on Github.
+
+For general inquiries related to the Video SDK you can file a [support ticket](https://support.twilio.com/hc/en-us/requests/new)
