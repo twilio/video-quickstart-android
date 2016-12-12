@@ -7,11 +7,11 @@ Get started with Video on Android:
 
 - [Quickstart](#quickstart) - Run the quickstart app
 - [Examples](#examples) - Customize your video experience with these examples
-- [Using an Emulator](#usinganemulator) - Setup an emulator in Android Studio
-- [Reducing APK Size](#reducingapksize) - Use ABI splits to reduce your APK size
-- [Setup an Access Token Server](#accesstokenserver) - Setup an access token server
+- [Using an Emulator](#using-an-emulator) - Setup an emulator in Android Studio
+- [Reducing APK Size](#reducing-apk-size) - Use ABI splits to reduce your APK size
+- [Setup an Access Token Server](#setup-an-access-token-server) - Setup an access token server
 - [More Documentation](#documentation) - More documentation related to the Video Android SDK
-- [Issues & Support](#issuesandsupport) - Filing issues and general support
+- [Issues & Support](#issues-and-support) - Filing issues and general support
 
 ## Quickstart
 
@@ -21,7 +21,7 @@ To get started with the Quickstart application follow these steps:
 
 <img width="700px" src="images/quickstart/android_studio_quickstart.png"/>
 
-2. [Generate an Access Token](https://www.twilio.com/user/account/video/dev-tools/testing-tools) from the testing tools page.
+2. Click on "Generate Access Token" from the [testing tools page](https://www.twilio.com/user/account/video/dev-tools/testing-tools).
 
 <img width="700px" src="images/quickstart/generate_access_token.png"/>
 
@@ -29,13 +29,13 @@ To get started with the Quickstart application follow these steps:
 
 <img width="700px" src="images/quickstart/activity_access_token.png"/>
 
-5. Run the quickstart app on an Android device or Android emulator
+4. Run the quickstart app on an Android device or Android emulator
 
-6. Press the call button at the bottom right portion of the screen to connect a Room
+5. Press the call button at the bottom right portion of the screen to connect a Room
 
 <img height="300px" src="images/quickstart/connect_dialog.png"/>
 
-7. On another device, use an additional access token with a different identity to connect to the same room. 
+6. On another device, use an additional access token with a different identity to connect to the same room. 
 
 ## Examples
 In addition to the quickstart we've also added a few examples of use cases that show you how to create and customize your media as follows:
