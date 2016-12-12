@@ -10,7 +10,7 @@ Get started with Video on Android:
 - [Using an Emulator](#using-an-emulator) - Setup an emulator in Android Studio
 - [Reducing APK Size](#reducing-apk-size) - Use ABI splits to reduce your APK size
 - [Setup an Access Token Server](#setup-an-access-token-server) - Setup an access token server
-- [More Documentation](#documentation) - More documentation related to the Video Android SDK
+- [More Documentation](#more-documentation) - More documentation related to the Video Android SDK
 - [Issues & Support](#issues-and-support) - Filing issues and general support
 
 ## Quickstart
@@ -133,7 +133,7 @@ If you run your video chat application on an Android device, you'll need to prov
 
 When you get a URL from ngrok, go ahead and update VideoActivity.java with the new URL. At the very bottom is the retrieveAccessTokenfromServer() method.  If you go down this path, be sure to follow the directions in the comments in the initializeTwilioSdk() method at the top of the source file - you will need to comment out everything under "OPTION 1" and uncomment the one line under "OPTION 2". You will also need to update the code if your ngrok URL changes.
 
-## Documentation
+## More Documentation
 
 You can find more documentation on getting started as well as our latest Javadoc below:
 
