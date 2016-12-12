@@ -19,7 +19,7 @@ To get started with the Quickstart application follow these steps:
 
 1. Open this project in Android Studio and select the quickstart app module.
   <img width="700px" src="images/quickstart/android_studio_quickstart.png"/>
-2. Click on "Generate Access Token" from the [testing tools page](https://www.twilio.com/user/account/video/dev-tools/testing-tools).
+2. Type in an identity and click on "Generate Access Token" from the [testing tools page](https://www.twilio.com/user/account/video/dev-tools/testing-tools).
   <img width="700px" src="images/quickstart/generate_access_token.png"/>
 3. Paste the Access Token into the VideoActivity.java.
   <img width="700px" src="images/quickstart/activity_access_token.png"/>
