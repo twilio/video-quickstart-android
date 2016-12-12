@@ -18,23 +18,14 @@ Get started with Video on Android:
 To get started with the Quickstart application follow these steps:
 
 1. Open this project in Android Studio and select the quickstart app module.
-
-<img width="700px" src="images/quickstart/android_studio_quickstart.png"/>
-
+...<img width="700px" src="images/quickstart/android_studio_quickstart.png"/>
 2. Click on "Generate Access Token" from the [testing tools page](https://www.twilio.com/user/account/video/dev-tools/testing-tools).
-
-<img width="700px" src="images/quickstart/generate_access_token.png"/>
-
+...<img width="700px" src="images/quickstart/generate_access_token.png"/>
 3. Paste the Access Token into the VideoActivity.java
-
-<img width="700px" src="images/quickstart/activity_access_token.png"/>
-
+...<img width="700px" src="images/quickstart/activity_access_token.png"/>
 4. Run the quickstart app on an Android device or Android emulator
-
 5. Press the call button at the bottom right portion of the screen to connect a Room
-
-<img height="300px" src="images/quickstart/connect_dialog.png"/>
-
+...<img height="300px" src="images/quickstart/connect_dialog.png"/>
 6. On another device, use an additional access token with a different identity to connect to the same room. 
 
 ## Examples
@@ -55,25 +46,15 @@ This guide will walk you through setting up and emulator that is compatible with
 
 ### Guide
 1. Open Android Studio and navigate to Tools → Android → AVD Manager.
-
-<img width="700px" src="images/emulator/emulator_navigate.png"/>
-
+...<img width="700px" src="images/emulator/emulator_navigate.png"/>
 2. Create a virtual device.
-
-<img width="700px" src="images/emulator/emulator_virtual_device.png"/>
-
+...<img width="700px" src="images/emulator/emulator_virtual_device.png"/>
 3. Select your desired device.
-
-<img width="700px" src="images/emulator/emulator_select_hardware.png"/>
-
+...<img width="700px" src="images/emulator/emulator_select_hardware.png"/>
 4. Select a system image. We recommend either x86 or x86_64 images.
-
-<img width="700px" src="images/emulator/emulator_select_image.png"/>
-
+...<img width="700px" src="images/emulator/emulator_select_image.png"/>
 5. Click “Show Advanced Settings” and we recommend setting both cameras as “Emulated”. Note that other camera configurations will work with the exception of setting both cameras as “webcam()”.
-
-<img width="700px" src="images/emulator/emulator_avd_settings.png"/>
-
+...<img width="700px" src="images/emulator/emulator_avd_settings.png"/>
 6. Configure the rest of your device accordingly and click “Finish”.
 
 ## Reducing APK Size
