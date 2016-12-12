@@ -107,7 +107,7 @@ The adoption of APK splits requires developers to submit multiple APKs to the Pl
 
 Using Twilio's Video client within your applications requires an access token. 
 
-You can run your own server that provides access tokens, based on your Twilio credentials. This server can either run locally on your development machine, or it can be installed on a server. If you run the server on your local machine, you should use the ngrok utility to give the server an externally accessible web address. That way, you can run the quickstart app on an Android device.
+You can run your own server that provides access tokens, based on your Twilio credentials. This server can either run locally on your development machine, or it can be installed on a server. If you run the server on your local machine, you should use the [ngrok](https://ngrok.com/download) utility to give the server an externally accessible web address. That way, you can run the quickstart app on an Android device.
 
 ### Configuring the Access Token Server
 
