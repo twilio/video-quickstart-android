@@ -9,7 +9,7 @@ Get started with Video on Android:
 - [Examples](#examples) - Customize your video experience with these examples
 - [Using an Emulator](#usinganemulator) - Setup an emulator in Android Studio
 - [Reducing APK Size](#reducingapksize) - Use ABI splits to reduce your APK size
-- [Access Token Server](#accesstokenserver) - Setup an access token server
+- [Setup an Access Token Server](#accesstokenserver) - Setup an access token server
 - [More Documentation](#documentation) - More documentation related to the Video Android SDK
 - [Issues & Support](#issuesandsupport) - Filing issues and general support
 
@@ -19,31 +19,23 @@ To get started with the Quickstart application follow these steps:
 
 1. Open this project in Android Studio and select the quickstart app module.
 
-<div style="text-align:center"><img src ="images/android_studio_quickstart.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/quickstart/android_studio_quickstart.png"/></div>
 
-2. Create a [Video Configuration Profile](https://www.twilio.com/user/account/video/profiles).
+2. [Generate an Access Token](https://www.twilio.com/user/account/video/dev-tools/testing-tools) from the testing tools page.
 
-<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/quickstart/generate_access_token.png"/></div>
 
-3. [Generate an Access Token](https://www.twilio.com/user/account/video/dev-tools/testing-tools) from the testing tools page.
+3. Paste the Access Token into the VideoActivity.java
 
-<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
-
-4. Paste the Access Token into the VideoActivity.java
-
-<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/quickstart/activty_access_token.png"/></div>
 
 5. Run the quickstart app on an Android device or Android emulator
 
-<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
+6. Press the call button at the bottom right portion of the screen to connect a Room
 
-6. Press the button at the bottom right portion of the screen to connect a Room
-
-<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/quickstart/connect_dialog.png"/></div>
 
 7. On another device, use an additional access token with a different identity to connect to the same room. 
-
-<div style="text-align:center"><img src ="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png"/></div>
 
 ## Examples
 In addition to the quickstart we've also added a few examples of use cases that show you how to create and customize your media as follows:
@@ -56,7 +48,7 @@ In addition to the quickstart we've also added a few examples of use cases that 
 ## Using an Emulator
 
 Using an Emulator
-This guide will walk you through setting up and emulator that is completely compatible with the Video SDK.
+This guide will walk you through setting up and emulator that is compatible with the Video SDK.
 
 ### Requirements
 1. Android Studio 2.0+
@@ -64,23 +56,23 @@ This guide will walk you through setting up and emulator that is completely comp
 ### Guide
 1. Open Android Studio and navigate to Tools → Android → AVD Manager.
 
-<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636572471_Screen+Shot+2016-11-08+at+2.22.31+PM.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/emulator/emulator_navigate.png"/></div>
 
 2. Create a virtual device.
 
-<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636611692_Screen+Shot+2016-11-08+at+2.23.09+PM.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/emulator/emulator_virtual_device.png"/></div>
 
 3. Select your desired device.
 
-<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636689696_Screen+Shot+2016-11-08+at+2.24.07+PM.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/emulator/emulator_select_hardware.png"/></div>
 
 4. Select a system image. We recommend either x86 or x86_64 images.
 
-<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636746747_Screen+Shot+2016-11-08+at+2.25.14+PM.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/emulator/emulator_select_image.png"/></div>
 
 5. Click “Show Advanced Settings” and we recommend setting both cameras as “Emulated”. Note that other camera configurations will work with the exception of setting both cameras as “webcam()”.
 
-<div style="text-align:center"><img src ="https://d2mxuefqeaa7sj.cloudfront.net/s_4D3B6F9FA00F9A6C9D2A72CAD4C78EE4A1CFC43CE5AA8780E130D947132A33D1_1478636889430_Screen+Shot+2016-11-08+at+2.27.58+PM.png"/></div>
+<div style="text-align:center"><img style="max-width: 80%" src="images/emulator/emulator_avd_settings.png"/></div>
 
 6. Configure the rest of your device accordingly and click “Finish”.
 
@@ -130,13 +122,13 @@ The following snippet shows an example `build.gradle` with APK splits enabled.
 
 The adoption of APK splits requires developers to submit multiple APKs to the Play Store. Refer to [Google’s documentation](https://developer.android.com/google/play/publishing/multiple-apks.html) for how to support this in your application.
 
-## Access Token Server
+## Setup an Access Token Server
 
 Using Twilio's Video client within your applications requires an access token. 
 
 You can run your own server that provides access tokens, based on your Twilio credentials. This server can either run locally on your development machine, or it can be installed on a server. If you run the server on your local machine, you should use the ngrok utility to give the server an externally accessible web address. That way, you can run the quickstart app on an Android device.
 
-### Setting up a Video Access Token Server
+### Configuring the Access Token Server
 
 If you want to be a little closer to a real environment, you can download one of the video quickstart applications - for instance, [Video Quickstart: PHP](https://github.com/TwilioDevEd/video-quickstart-php) and either run it locally, or install it on a server.
 
@@ -172,3 +164,4 @@ You can find more documentation on getting started as well as our latest Javadoc
 Please file any issues you find here on Github.
 
 For general inquiries related to the Video SDK you can file a [support ticket](https://support.twilio.com/hc/en-us/requests/new)
+
