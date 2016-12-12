@@ -21,11 +21,11 @@ To get started with the Quickstart application follow these steps:
   <img width="700px" src="images/quickstart/android_studio_quickstart.png"/>
 2. Click on "Generate Access Token" from the [testing tools page](https://www.twilio.com/user/account/video/dev-tools/testing-tools).
   <img width="700px" src="images/quickstart/generate_access_token.png"/>
-3. Paste the Access Token into the VideoActivity.java
+3. Paste the Access Token into the VideoActivity.java.
   <img width="700px" src="images/quickstart/activity_access_token.png"/>
-4. Run the quickstart app on an Android device or Android emulator
-5. Press the call button at the bottom right portion of the screen to connect a Room
-  <img height="300px" src="images/quickstart/connect_dialog.png"/>
+4. Run the quickstart app on an Android device or Android emulator.
+5. Press the call button at the bottom right portion of the screen and type a room name to connect to a Room.
+  <img height="500px" src="images/quickstart/connect_dialog.png"/>
 6. On another device, use an additional access token with a different identity to connect to the same room. 
 
 ## Examples
