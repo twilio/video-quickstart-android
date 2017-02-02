@@ -320,7 +320,6 @@ public class VideoActivity extends AppCompatActivity {
         moveLocalVideoToThumbnailView();
         primaryVideoView.setMirror(false);
         videoTrack.addRenderer(primaryVideoView);
-        localVideoView = primaryVideoView;
     }
 
     private void moveLocalVideoToThumbnailView() {
