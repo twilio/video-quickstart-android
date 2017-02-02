@@ -162,8 +162,7 @@ public class VideoActivity extends AppCompatActivity {
     protected void onPause() {
         /*
          * Remove the local video track before going in the background. This ensures that the
-         * camera can be used by other applications while this app is in the background. This
-         * is a desirable behavior in most cases.
+         * camera can be used by other applications while this app is in the background.
          *
          * If this local video track is being shared in a Room, participants will be notified
          * that the track has been removed.
