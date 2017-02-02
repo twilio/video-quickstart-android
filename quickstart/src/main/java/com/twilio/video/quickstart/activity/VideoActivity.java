@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.twilio.video.VideoRenderer;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
 import com.twilio.video.AudioTrack;
@@ -146,6 +147,35 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     @Override
+    protected  void onResume() {
+        super.onResume();
+        /*
+         * If the local video track was removed when the app was put in the background, add it back.
+         */
+        if (localMedia != null && localVideoTrack == null) {
+            localVideoTrack = localMedia.addVideoTrack(true, cameraCapturer);
+            localVideoTrack.addRenderer(localVideoView);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        /*
+         * Remove the local video track before going in the background. This ensures that the
+         * camera can be used by other applications while this app is in the background. This
+         * is a desirable behavior in most cases.
+         *
+         * If this local video track is being shared in a Room, participants will be notified
+         * that the track has been removed.
+         */
+        if (localMedia != null && localVideoTrack != null) {
+            localMedia.removeVideoTrack(localVideoTrack);
+            localVideoTrack = null;
+        }
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         /*
          * Release local media when no longer needed
@@ -200,7 +230,7 @@ public class VideoActivity extends AppCompatActivity {
          */
 
         // OPTION 1- Generate an access token from the getting started portal
-        // https://www.twilio.com/user/account/video/getting-started
+        // https://www.twilio.com/console/video/dev-tools/testing-tools
         videoClient = new VideoClient(VideoActivity.this, TWILIO_ACCESS_TOKEN);
 
         // OPTION 2- Retrieve an access token from your own web app
