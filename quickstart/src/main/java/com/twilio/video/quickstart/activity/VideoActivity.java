@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.twilio.video.RoomState;
 import com.twilio.video.VideoRenderer;
 import com.twilio.video.TwilioException;
 import com.twilio.video.quickstart.R;
@@ -83,6 +84,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private int previousAudioMode;
     private VideoRenderer localVideoView;
+    private boolean calledFromOnDestroy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,7 +179,16 @@ public class VideoActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         /*
-         * Release local media when no longer needed
+         * Always disconnect from the room before leaving the Activity to
+         * ensure any memory allocated to the Room resource is freed.
+         */
+        if (room != null && room.getState() != RoomState.DISCONNECTED) {
+            room.disconnect();
+            calledFromOnDestroy = true;
+        }
+
+        /*
+         * Release the local media ensuring any memory allocated to audio or video is freed.
          */
         if (localMedia != null) {
             localMedia.release();
@@ -391,9 +402,12 @@ public class VideoActivity extends AppCompatActivity {
             public void onDisconnected(Room room, TwilioException e) {
                 videoStatusTextView.setText("Disconnected from " + room.getName());
                 VideoActivity.this.room = null;
-                setAudioFocus(false);
-                intializeUI();
-                moveLocalVideoToPrimaryView();
+                // Only reinitialize the UI if disconnect was not called from onDestroy()
+                if (!calledFromOnDestroy) {
+                    setAudioFocus(false);
+                    intializeUI();
+                    moveLocalVideoToPrimaryView();
+                }
             }
 
             @Override
