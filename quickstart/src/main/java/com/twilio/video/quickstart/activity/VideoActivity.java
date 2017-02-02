@@ -84,7 +84,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private int previousAudioMode;
     private VideoRenderer localVideoView;
-    private boolean calledFromOnDestroy;
+    private boolean disconnectedFromOnDestroy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +184,7 @@ public class VideoActivity extends AppCompatActivity {
          */
         if (room != null && room.getState() != RoomState.DISCONNECTED) {
             room.disconnect();
-            calledFromOnDestroy = true;
+            disconnectedFromOnDestroy = true;
         }
 
         /*
@@ -403,7 +403,7 @@ public class VideoActivity extends AppCompatActivity {
                 videoStatusTextView.setText("Disconnected from " + room.getName());
                 VideoActivity.this.room = null;
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
-                if (!calledFromOnDestroy) {
+                if (!disconnectedFromOnDestroy) {
                     setAudioFocus(false);
                     intializeUI();
                     moveLocalVideoToPrimaryView();
