@@ -81,11 +81,13 @@ public class AdvancedCameraCapturerActivity extends Activity {
      */
     private final CameraCapturer.PictureListener photographer =
             new CameraCapturer.PictureListener() {
-                @Override public void onShutter() {
+                @Override
+                public void onShutter() {
 
                 }
 
-                @Override public void onPictureTaken(byte[] bytes) {
+                @Override
+                public void onPictureTaken(byte[] bytes) {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
                     if (bitmap != null) {
@@ -98,7 +100,8 @@ public class AdvancedCameraCapturerActivity extends Activity {
                 }
             };
 
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advanced_camera_capturer);
 
@@ -125,7 +128,8 @@ public class AdvancedCameraCapturerActivity extends Activity {
         }
     }
 
-    @Override public void onRequestPermissionsResult(int requestCode,
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
@@ -146,7 +150,8 @@ public class AdvancedCameraCapturerActivity extends Activity {
         }
     }
 
-    @Override protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
         localVideoTrack.removeRenderer(videoView);
         localMedia.removeVideoTrack(localVideoTrack);
         localMedia.release();
@@ -183,13 +188,7 @@ public class AdvancedCameraCapturerActivity extends Activity {
     }
 
     private void showPicture(final Bitmap bitmap) {
-        // TODO: Remove when SDK invokes callback on calling thread
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                pictureImageView.setImageBitmap(bitmap);
-                pictureDialog.show();
-            }
-        });
+        pictureImageView.setImageBitmap(bitmap);
+        pictureDialog.show();
     }
 }

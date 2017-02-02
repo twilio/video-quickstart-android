@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.twilio.video.VideoRenderer;
+import com.twilio.video.TwilioException;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
 import com.twilio.video.AudioTrack;
@@ -34,7 +35,6 @@ import com.twilio.video.Media;
 import com.twilio.video.Participant;
 import com.twilio.video.Room;
 import com.twilio.video.VideoClient;
-import com.twilio.video.VideoException;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 
@@ -73,7 +73,6 @@ public class VideoActivity extends AppCompatActivity {
     private LocalMedia localMedia;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
-    private VideoView localVideoView;
     private FloatingActionButton connectActionFab;
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
@@ -83,6 +82,7 @@ public class VideoActivity extends AppCompatActivity {
     private String participantIdentity;
 
     private int previousAudioMode;
+    private VideoRenderer localVideoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,7 +235,6 @@ public class VideoActivity extends AppCompatActivity {
 
         // OPTION 2- Retrieve an access token from your own web app
         // retrieveAccessTokenfromServer();
-
     }
 
     private void connectToRoom(String roomName) {
@@ -300,17 +299,39 @@ public class VideoActivity extends AppCompatActivity {
         }
         participantIdentity = participant.getIdentity();
         videoStatusTextView.setText("Participant "+ participantIdentity + " joined");
+
         /*
-         * Stop rendering local video track in primary view and move it to thumbnail view
+         * Add participant renderer
          */
-        localVideoTrack.removeRenderer(primaryVideoView);
-        thumbnailVideoView.setVisibility(View.VISIBLE);
-        localVideoTrack.addRenderer(thumbnailVideoView);
-        localVideoView = thumbnailVideoView;
+        if (participant.getMedia().getVideoTracks().size() > 0) {
+            addParticipantVideo(participant.getMedia().getVideoTracks().get(0));
+        }
+
         /*
          * Start listening for participant media events
          */
         participant.getMedia().setListener(mediaListener());
+    }
+
+    /*
+     * Set primary view as renderer for participant video track
+     */
+    private void addParticipantVideo(VideoTrack videoTrack) {
+        moveLocalVideoToThumbnailView();
+        primaryVideoView.setMirror(false);
+        videoTrack.addRenderer(primaryVideoView);
+        localVideoView = primaryVideoView;
+    }
+
+    private void moveLocalVideoToThumbnailView() {
+        if (thumbnailVideoView.getVisibility() == View.GONE) {
+            thumbnailVideoView.setVisibility(View.VISIBLE);
+            localVideoTrack.removeRenderer(primaryVideoView);
+            localVideoTrack.addRenderer(thumbnailVideoView);
+            localVideoView = thumbnailVideoView;
+            thumbnailVideoView.setMirror(cameraCapturer.getCameraSource() ==
+                    CameraSource.FRONT_CAMERA);
+        }
     }
 
     /*
@@ -321,14 +342,30 @@ public class VideoActivity extends AppCompatActivity {
         if (!participant.getIdentity().equals(participantIdentity)) {
             return;
         }
+
         /*
-         * Show local video in primary view
+         * Remove participant renderer
          */
-        thumbnailVideoView.setVisibility(View.GONE);
-        localVideoTrack.removeRenderer(thumbnailVideoView);
-        primaryVideoView.setMirror(true);
-        localVideoTrack.addRenderer(primaryVideoView);
-        localVideoView = primaryVideoView;
+        if (participant.getMedia().getVideoTracks().size() > 0) {
+            removeParticipantVideo(participant.getMedia().getVideoTracks().get(0));
+        }
+        participant.getMedia().setListener(null);
+        moveLocalVideoToPrimaryView();
+    }
+
+    private void removeParticipantVideo(VideoTrack videoTrack) {
+        videoTrack.removeRenderer(primaryVideoView);
+    }
+
+    private void moveLocalVideoToPrimaryView() {
+        if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
+            localVideoTrack.removeRenderer(thumbnailVideoView);
+            thumbnailVideoView.setVisibility(View.GONE);
+            localVideoTrack.addRenderer(primaryVideoView);
+            localVideoView = primaryVideoView;
+            primaryVideoView.setMirror(cameraCapturer.getCameraSource() ==
+                    CameraSource.FRONT_CAMERA);
+        }
     }
 
     /*
@@ -348,25 +385,17 @@ public class VideoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onConnectFailure(Room room, VideoException e) {
+            public void onConnectFailure(Room room, TwilioException e) {
                 videoStatusTextView.setText("Failed to connect");
             }
 
             @Override
-            public void onDisconnected(Room room, VideoException e) {
+            public void onDisconnected(Room room, TwilioException e) {
                 videoStatusTextView.setText("Disconnected from " + room.getName());
                 VideoActivity.this.room = null;
                 setAudioFocus(false);
                 intializeUI();
-
-                /*
-                 * Show local video in primary view
-                 */
-                thumbnailVideoView.setVisibility(View.GONE);
-                localVideoTrack.removeRenderer(thumbnailVideoView);
-                primaryVideoView.setMirror(true);
-                localVideoTrack.addRenderer(primaryVideoView);
-                localVideoView = primaryVideoView;
+                moveLocalVideoToPrimaryView();
             }
 
             @Override
@@ -398,17 +427,13 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onVideoTrackAdded(Media media, VideoTrack videoTrack) {
                 videoStatusTextView.setText("onVideoTrackAdded");
-                /*
-                 * Set primary view as renderer for participant video track
-                 */
-                primaryVideoView.setMirror(false);
-                videoTrack.addRenderer(primaryVideoView);
+                addParticipantVideo(videoTrack);
             }
 
             @Override
             public void onVideoTrackRemoved(Media media, VideoTrack videoTrack) {
                 videoStatusTextView.setText("onVideoTrackRemoved");
-                videoTrack.removeRenderer(primaryVideoView);
+                removeParticipantVideo(videoTrack);
             }
 
             @Override
@@ -485,10 +510,13 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (cameraCapturer != null) {
+                    CameraSource cameraSource = cameraCapturer.getCameraSource();
                     cameraCapturer.switchCamera();
-                    localVideoView.setMirror(
-                            cameraCapturer.getCameraSource() ==
-                                    CameraSource.FRONT_CAMERA);
+                    if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
+                        thumbnailVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    } else {
+                        primaryVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    }
                 }
             }
         };

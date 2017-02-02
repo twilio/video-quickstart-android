@@ -44,7 +44,8 @@ public class ScreenCapturerActivity extends AppCompatActivity {
         }
     };
 
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_capturer);
         localVideoView = (VideoView) findViewById(R.id.local_video);

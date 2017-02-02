@@ -32,7 +32,8 @@ public class CustomRendererVideoActivity extends Activity {
     private SnapshotVideoRenderer snapshotVideoRenderer;
     private LocalVideoTrack localVideoTrack;
 
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_renderer);
 
@@ -72,7 +73,8 @@ public class CustomRendererVideoActivity extends Activity {
         }
     }
 
-    @Override protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
         localVideoTrack.removeRenderer(localVideoView);
         localVideoTrack.removeRenderer(snapshotVideoRenderer);
         localMedia.removeVideoTrack(localVideoTrack);

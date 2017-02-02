@@ -21,7 +21,8 @@ public class CustomCapturerVideoActivity extends Activity {
     private Chronometer timerView;
     private LocalVideoTrack localVideoTrack;
 
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_capturer);
 
@@ -36,7 +37,8 @@ public class CustomCapturerVideoActivity extends Activity {
         localVideoTrack.addRenderer(videoView);
     }
 
-    @Override protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
         localVideoTrack.removeRenderer(videoView);
         localMedia.removeVideoTrack(localVideoTrack);
         timerView.stop();
