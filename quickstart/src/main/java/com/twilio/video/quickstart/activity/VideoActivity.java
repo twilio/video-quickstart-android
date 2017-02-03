@@ -517,7 +517,9 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /*
-                 * Enable/disable the local audio track
+                 * Enable/disable the local audio track. The results of this operation are
+                 * signaled to other Participants in the same Room. When an audio track is
+                 * disabled, the audio is muted.
                  */
                 if (localAudioTrack != null) {
                     boolean enable = !localAudioTrack.isEnabled();
