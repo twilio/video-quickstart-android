@@ -420,6 +420,16 @@ public class VideoActivity extends AppCompatActivity {
             public void onParticipantDisconnected(Room room, Participant participant) {
                 removeParticipant(participant);
             }
+
+            @Override
+            public void onRecordingStarted(Room room) {
+
+            }
+
+            @Override
+            public void onRecordingStopped(Room room) {
+
+            }
         };
     }
 
