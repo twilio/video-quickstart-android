@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -43,6 +44,7 @@ import java.util.Map;
 
 public class VideoActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
+    private static final String TAG = "VideoActivity";
 
     /*
      * You must provide a Twilio Access Token to connect to the Video service
@@ -423,12 +425,20 @@ public class VideoActivity extends AppCompatActivity {
 
             @Override
             public void onRecordingStarted(Room room) {
-
+                /*
+                 * Indicates when media shared to a Room is being recorded. Note that
+                 * recording is only available in our Group Rooms developer preview.
+                 */
+                Log.d(TAG, "onRecordingStarted");
             }
 
             @Override
             public void onRecordingStopped(Room room) {
-
+                /*
+                 * Indicates when media shared to a Room is no longer being recorded. Note that
+                 * recording is only available in our Group Rooms developer preview.
+                 */
+                Log.d(TAG, "onRecordingStopped");
             }
         };
     }
