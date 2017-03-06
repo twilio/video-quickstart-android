@@ -51,13 +51,15 @@ public class VideoActivity extends AppCompatActivity {
      */
     private static final String TWILIO_ACCESS_TOKEN = "TWILIO_ACCESS_TOKEN";
 
-    /*
-     * The Video Client allows a client to connect to a room
-     */
-    private VideoClient videoClient;
 
     /*
-     * A Room represents communication between the client and one or more participants.
+     * Access token used to connect. This field will be set either from the console generated token
+     * or the request to the token server.
+     */
+    private String accessToken;
+
+    /*
+     * A Room represents communication between a local participant and one or more participants.
      */
     private Room room;
 
@@ -119,7 +121,7 @@ public class VideoActivity extends AppCompatActivity {
             requestPermissionForCameraAndMicrophone();
         } else {
             createLocalMedia();
-            createVideoClient();
+            setAccessToken();
         }
 
         /*
@@ -141,7 +143,7 @@ public class VideoActivity extends AppCompatActivity {
 
             if (cameraAndMicPermissionGranted) {
                 createLocalMedia();
-                createVideoClient();
+                setAccessToken();
             } else {
                 Toast.makeText(this,
                         R.string.permissions_needed,
@@ -236,14 +238,10 @@ public class VideoActivity extends AppCompatActivity {
         localVideoView = primaryVideoView;
     }
 
-    private void createVideoClient() {
-        /*
-         * Create a VideoClient allowing you to connect to a Room
-         */
-
+    private void setAccessToken() {
         // OPTION 1- Generate an access token from the getting started portal
         // https://www.twilio.com/console/video/dev-tools/testing-tools
-        videoClient = new VideoClient(VideoActivity.this, TWILIO_ACCESS_TOKEN);
+        this.accessToken = TWILIO_ACCESS_TOKEN;
 
         // OPTION 2- Retrieve an access token from your own web app
         // retrieveAccessTokenfromServer();
@@ -251,11 +249,11 @@ public class VideoActivity extends AppCompatActivity {
 
     private void connectToRoom(String roomName) {
         setAudioFocus(true);
-        ConnectOptions connectOptions = new ConnectOptions.Builder()
+        ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
                 .roomName(roomName)
                 .localMedia(localMedia)
                 .build();
-        room = videoClient.connect(connectOptions, roomListener());
+        room = VideoClient.connect(this, connectOptions, roomListener());
         setDisconnectAction();
     }
 
@@ -608,9 +606,7 @@ public class VideoActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         if (e == null) {
-                            String accessToken = result.get("token").getAsString();
-
-                            videoClient = new VideoClient(VideoActivity.this, accessToken);
+                            VideoActivity.this.accessToken = result.get("token").getAsString();
                         } else {
                             Toast.makeText(VideoActivity.this,
                                     R.string.error_retrieving_access_token, Toast.LENGTH_LONG)

@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.twilio.video.quickstart"
@@ -42,7 +42,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'com.koushikdutta.ion:ion:2.1.7'
-    compile "com.twilio:video-android:1.0.0-beta10"
+    compile "com.twilio:video-android:1.0.0-beta11"
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
 }
