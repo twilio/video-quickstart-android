@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.twilio.video.RoomState;
+import com.twilio.video.Video;
 import com.twilio.video.VideoRenderer;
 import com.twilio.video.TwilioException;
 import com.twilio.video.quickstart.R;
@@ -36,7 +37,6 @@ import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.Media;
 import com.twilio.video.Participant;
 import com.twilio.video.Room;
-import com.twilio.video.VideoClient;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 
@@ -253,7 +253,7 @@ public class VideoActivity extends AppCompatActivity {
                 .roomName(roomName)
                 .localMedia(localMedia)
                 .build();
-        room = VideoClient.connect(this, connectOptions, roomListener());
+        room = Video.connect(this, connectOptions, roomListener());
         setDisconnectAction();
     }
 
