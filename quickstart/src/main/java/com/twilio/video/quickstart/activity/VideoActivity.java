@@ -12,9 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,7 +21,10 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.twilio.common.AccessManager;
+import com.twilio.video.RoomState;
+import com.twilio.video.Video;
+import com.twilio.video.VideoRenderer;
+import com.twilio.video.TwilioException;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
 import com.twilio.video.AudioTrack;
@@ -36,8 +37,6 @@ import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.Media;
 import com.twilio.video.Participant;
 import com.twilio.video.Room;
-import com.twilio.video.VideoClient;
-import com.twilio.video.VideoException;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 
@@ -45,19 +44,22 @@ import java.util.Map;
 
 public class VideoActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
+    private static final String TAG = "VideoActivity";
 
     /*
      * You must provide a Twilio Access Token to connect to the Video service
      */
     private static final String TWILIO_ACCESS_TOKEN = "TWILIO_ACCESS_TOKEN";
 
-    /*
-     * The Video Client allows a client to connect to a room
-     */
-    private VideoClient videoClient;
 
     /*
-     * A Room represents communication between the client and one or more participants.
+     * Access token used to connect. This field will be set either from the console generated token
+     * or the request to the token server.
+     */
+    private String accessToken;
+
+    /*
+     * A Room represents communication between a local participant and one or more participants.
      */
     private Room room;
 
@@ -72,20 +74,21 @@ public class VideoActivity extends AppCompatActivity {
      * Android application UI elements
      */
     private TextView videoStatusTextView;
-    private AccessManager accessManager;
     private CameraCapturer cameraCapturer;
     private LocalMedia localMedia;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
-    private VideoView localVideoView;
     private FloatingActionButton connectActionFab;
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
     private android.support.v7.app.AlertDialog alertDialog;
     private AudioManager audioManager;
+    private String participantIdentity;
 
     private int previousAudioMode;
+    private VideoRenderer localVideoView;
+    private boolean disconnectedFromOnDestroy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +121,7 @@ public class VideoActivity extends AppCompatActivity {
             requestPermissionForCameraAndMicrophone();
         } else {
             createLocalMedia();
-            createVideoClient();
+            setAccessToken();
         }
 
         /*
@@ -140,7 +143,7 @@ public class VideoActivity extends AppCompatActivity {
 
             if (cameraAndMicPermissionGranted) {
                 createLocalMedia();
-                createVideoClient();
+                setAccessToken();
             } else {
                 Toast.makeText(this,
                         R.string.permissions_needed,
@@ -150,26 +153,53 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
+    protected  void onResume() {
+        super.onResume();
         /*
-         * Release video renderers when no longer needed
+         * If the local video track was removed when the app was put in the background, add it back.
          */
-        primaryVideoView.release();
-        thumbnailVideoView.release();
+        if (localMedia != null && localVideoTrack == null) {
+            localVideoTrack = localMedia.addVideoTrack(true, cameraCapturer);
+            localVideoTrack.addRenderer(localVideoView);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        /*
+         * Remove the local video track before going in the background. This ensures that the
+         * camera can be used by other applications while this app is in the background.
+         *
+         * If this local video track is being shared in a Room, participants will be notified
+         * that the track has been removed.
+         */
+        if (localMedia != null && localVideoTrack != null) {
+            localMedia.removeVideoTrack(localVideoTrack);
+            localVideoTrack = null;
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        /*
+         * Always disconnect from the room before leaving the Activity to
+         * ensure any memory allocated to the Room resource is freed.
+         */
+        if (room != null && room.getState() != RoomState.DISCONNECTED) {
+            room.disconnect();
+            disconnectedFromOnDestroy = true;
+        }
 
         /*
-         * Release local media when no longer needed
+         * Release the local media ensuring any memory allocated to audio or video is freed.
          */
         if (localMedia != null) {
             localMedia.release();
             localMedia = null;
         }
-        if (accessManager != null) {
-            accessManager.dispose();
-            accessManager = null;
-        }
+
+        super.onDestroy();
     }
 
     private boolean checkPermissionForCameraAndMicrophone(){
@@ -201,39 +231,29 @@ public class VideoActivity extends AppCompatActivity {
         localAudioTrack = localMedia.addAudioTrack(true);
 
         // Share your camera
-        cameraCapturer = new CameraCapturer(this, CameraSource.CAMERA_SOURCE_FRONT_CAMERA, null);
+        cameraCapturer = new CameraCapturer(this, CameraSource.FRONT_CAMERA);
         localVideoTrack = localMedia.addVideoTrack(true, cameraCapturer);
         primaryVideoView.setMirror(true);
         localVideoTrack.addRenderer(primaryVideoView);
         localVideoView = primaryVideoView;
     }
 
-    private void createVideoClient() {
-        /*
-         * Create a VideoClient allowing you to connect to a Room
-         * The AccessManager manages the lifetime of the access token and
-         * notifies the client of token expiry.
-         */
-
+    private void setAccessToken() {
         // OPTION 1- Generate an access token from the getting started portal
-        // https://www.twilio.com/user/account/video/getting-started
-        accessManager = new AccessManager(VideoActivity.this,
-                TWILIO_ACCESS_TOKEN,
-                accessManagerListener());
-        videoClient = new VideoClient(VideoActivity.this, accessManager);
+        // https://www.twilio.com/console/video/dev-tools/testing-tools
+        this.accessToken = TWILIO_ACCESS_TOKEN;
 
         // OPTION 2- Retrieve an access token from your own web app
         // retrieveAccessTokenfromServer();
-
     }
 
     private void connectToRoom(String roomName) {
         setAudioFocus(true);
-        ConnectOptions connectOptions = new ConnectOptions.Builder()
+        ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
                 .roomName(roomName)
                 .localMedia(localMedia)
                 .build();
-        room = videoClient.connect(connectOptions, roomListener());
+        room = Video.connect(this, connectOptions, roomListener());
         setDisconnectAction();
     }
 
@@ -287,14 +307,16 @@ public class VideoActivity extends AppCompatActivity {
                     .setAction("Action", null).show();
             return;
         }
-        videoStatusTextView.setText("Participant "+ participant.getIdentity() + " joined");
+        participantIdentity = participant.getIdentity();
+        videoStatusTextView.setText("Participant "+ participantIdentity + " joined");
+
         /*
-         * Stop rendering local video track in primary view and move it to thumbnail view
+         * Add participant renderer
          */
-        localVideoTrack.removeRenderer(primaryVideoView);
-        thumbnailVideoView.setVisibility(View.VISIBLE);
-        localVideoTrack.addRenderer(thumbnailVideoView);
-        localVideoView = thumbnailVideoView;
+        if (participant.getMedia().getVideoTracks().size() > 0) {
+            addParticipantVideo(participant.getMedia().getVideoTracks().get(0));
+        }
+
         /*
          * Start listening for participant media events
          */
@@ -302,42 +324,57 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     /*
+     * Set primary view as renderer for participant video track
+     */
+    private void addParticipantVideo(VideoTrack videoTrack) {
+        moveLocalVideoToThumbnailView();
+        primaryVideoView.setMirror(false);
+        videoTrack.addRenderer(primaryVideoView);
+    }
+
+    private void moveLocalVideoToThumbnailView() {
+        if (thumbnailVideoView.getVisibility() == View.GONE) {
+            thumbnailVideoView.setVisibility(View.VISIBLE);
+            localVideoTrack.removeRenderer(primaryVideoView);
+            localVideoTrack.addRenderer(thumbnailVideoView);
+            localVideoView = thumbnailVideoView;
+            thumbnailVideoView.setMirror(cameraCapturer.getCameraSource() ==
+                    CameraSource.FRONT_CAMERA);
+        }
+    }
+
+    /*
      * Called when participant leaves the room
      */
     private void removeParticipant(Participant participant) {
         videoStatusTextView.setText("Participant "+participant.getIdentity()+ " left.");
+        if (!participant.getIdentity().equals(participantIdentity)) {
+            return;
+        }
+
         /*
-         * Show local video in primary view
+         * Remove participant renderer
          */
-        thumbnailVideoView.setVisibility(View.GONE);
-        localVideoTrack.removeRenderer(thumbnailVideoView);
-        primaryVideoView.setMirror(true);
-        localVideoTrack.addRenderer(primaryVideoView);
-        localVideoView = primaryVideoView;
+        if (participant.getMedia().getVideoTracks().size() > 0) {
+            removeParticipantVideo(participant.getMedia().getVideoTracks().get(0));
+        }
+        participant.getMedia().setListener(null);
+        moveLocalVideoToPrimaryView();
     }
 
-    /*
-     * AccessManager listener
-     */
-    private AccessManager.Listener accessManagerListener() {
-        return new AccessManager.Listener() {
-            @Override
-            public void onTokenExpired(AccessManager twilioAccessManager) {
-                videoStatusTextView.setText("Access Token Expired");
+    private void removeParticipantVideo(VideoTrack videoTrack) {
+        videoTrack.removeRenderer(primaryVideoView);
+    }
 
-            }
-
-            @Override
-            public void onTokenUpdated(AccessManager twilioAccessManager) {
-                videoStatusTextView.setText("Access Token Updated");
-
-            }
-
-            @Override
-            public void onError(AccessManager twilioAccessManager, String s) {
-                videoStatusTextView.setText("Access Token Error");
-            }
-        };
+    private void moveLocalVideoToPrimaryView() {
+        if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
+            localVideoTrack.removeRenderer(thumbnailVideoView);
+            thumbnailVideoView.setVisibility(View.GONE);
+            localVideoTrack.addRenderer(primaryVideoView);
+            localVideoView = primaryVideoView;
+            primaryVideoView.setMirror(cameraCapturer.getCameraSource() ==
+                    CameraSource.FRONT_CAMERA);
+        }
     }
 
     /*
@@ -357,25 +394,20 @@ public class VideoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onConnectFailure(Room room, VideoException e) {
+            public void onConnectFailure(Room room, TwilioException e) {
                 videoStatusTextView.setText("Failed to connect");
             }
 
             @Override
-            public void onDisconnected(Room room, VideoException e) {
+            public void onDisconnected(Room room, TwilioException e) {
                 videoStatusTextView.setText("Disconnected from " + room.getName());
                 VideoActivity.this.room = null;
-                setAudioFocus(false);
-                intializeUI();
-
-                /*
-                 * Show local video in primary view
-                 */
-                thumbnailVideoView.setVisibility(View.GONE);
-                localVideoTrack.removeRenderer(thumbnailVideoView);
-                primaryVideoView.setMirror(true);
-                localVideoTrack.addRenderer(primaryVideoView);
-                localVideoView = primaryVideoView;
+                // Only reinitialize the UI if disconnect was not called from onDestroy()
+                if (!disconnectedFromOnDestroy) {
+                    setAudioFocus(false);
+                    intializeUI();
+                    moveLocalVideoToPrimaryView();
+                }
             }
 
             @Override
@@ -387,6 +419,24 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onParticipantDisconnected(Room room, Participant participant) {
                 removeParticipant(participant);
+            }
+
+            @Override
+            public void onRecordingStarted(Room room) {
+                /*
+                 * Indicates when media shared to a Room is being recorded. Note that
+                 * recording is only available in our Group Rooms developer preview.
+                 */
+                Log.d(TAG, "onRecordingStarted");
+            }
+
+            @Override
+            public void onRecordingStopped(Room room) {
+                /*
+                 * Indicates when media shared to a Room is no longer being recorded. Note that
+                 * recording is only available in our Group Rooms developer preview.
+                 */
+                Log.d(TAG, "onRecordingStopped");
             }
         };
     }
@@ -407,17 +457,13 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onVideoTrackAdded(Media media, VideoTrack videoTrack) {
                 videoStatusTextView.setText("onVideoTrackAdded");
-                /*
-                 * Set primary view as renderer for participant video track
-                 */
-                primaryVideoView.setMirror(false);
-                videoTrack.addRenderer(primaryVideoView);
+                addParticipantVideo(videoTrack);
             }
 
             @Override
             public void onVideoTrackRemoved(Media media, VideoTrack videoTrack) {
                 videoStatusTextView.setText("onVideoTrackRemoved");
-                videoTrack.removeRenderer(primaryVideoView);
+                removeParticipantVideo(videoTrack);
             }
 
             @Override
@@ -494,10 +540,13 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (cameraCapturer != null) {
+                    CameraSource cameraSource = cameraCapturer.getCameraSource();
                     cameraCapturer.switchCamera();
-                    localVideoView.setMirror(
-                            cameraCapturer.getCameraSource() ==
-                                    CameraSource.CAMERA_SOURCE_FRONT_CAMERA);
+                    if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
+                        thumbnailVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    } else {
+                        primaryVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    }
                 }
             }
         };
@@ -533,7 +582,9 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /*
-                 * Enable/disable the local audio track
+                 * Enable/disable the local audio track. The results of this operation are
+                 * signaled to other Participants in the same Room. When an audio track is
+                 * disabled, the audio is muted.
                  */
                 if (localAudioTrack != null) {
                     boolean enable = !localAudioTrack.isEnabled();
@@ -555,13 +606,7 @@ public class VideoActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         if (e == null) {
-
-                            String accessToken = result.get("token").getAsString();
-
-                            accessManager = new AccessManager(VideoActivity.this,
-                                    accessToken,
-                                    accessManagerListener());
-                            videoClient = new VideoClient(VideoActivity.this, accessManager);
+                            VideoActivity.this.accessToken = result.get("token").getAsString();
                         } else {
                             Toast.makeText(VideoActivity.this,
                                     R.string.error_retrieving_access_token, Toast.LENGTH_LONG)

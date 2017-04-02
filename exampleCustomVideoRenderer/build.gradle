@@ -6,7 +6,7 @@ android {
     buildToolsVersion '25.0.0'
 
     defaultConfig {
-        applicationId "com.twilio.video.quickstart"
+        applicationId "com.twilio.video.examples.customrenderer"
         minSdkVersion 16
         targetSdkVersion 24
         versionCode 1
@@ -19,29 +19,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    // Specify that we want to split up the APK based on ABI
-    splits {
-        abi {
-            // Enable ABI split
-            enable true
-
-            // Clear list of ABIs
-            reset()
-
-            // Specify each architecture currently supported by the Video SDK
-            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-
-            // Specify that we do not want an additional universal SDK
-            universalApk false
-        }
-    }
 }
 
 dependencies {
     testCompile 'junit:junit:4.12'
 
-    compile 'com.koushikdutta.ion:ion:2.1.7'
     compile "com.twilio:video-android:1.0.0-beta15"
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
