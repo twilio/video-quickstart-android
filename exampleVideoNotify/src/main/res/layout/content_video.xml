@@ -31,7 +31,7 @@
         android:layout_gravity="top|center"
         android:orientation="vertical"
         android:textColor="@color/colorAccent"
-        android:textSize="18sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/status_textview"

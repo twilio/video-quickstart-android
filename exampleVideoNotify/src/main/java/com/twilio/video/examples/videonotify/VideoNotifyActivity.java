@@ -1,8 +1,12 @@
 package com.twilio.video.examples.videonotify;
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -11,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -42,6 +47,7 @@ import com.twilio.video.examples.videonotify.notify.api.model.Token;
 import com.twilio.video.examples.videonotify.notify.api.model.VideoRoomNotification;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,8 +79,14 @@ public class VideoNotifyActivity extends AppCompatActivity {
     }};
 
     /*
-     * Access token used to connect. This field will be set either from the console generated token
-     * or the request to the token server.
+     * Intent keys used to provide information about a video notification that has been received.
+     */
+    public static final String ACTION_VIDEO_NOTIFICATION = "VIDEO_NOTIFICATION";
+    public static final String VIDEO_NOTIFICATION_ROOM_NAME = "VIDEO_NOTIFICATION_ROOM_NAME";
+    public static final String VIDEO_NOTIFICATION_BODY = "VIDEO_NOTIFICATION_BODY";
+
+    /*
+     * Token obtained from the sdk-starter /token resource
      */
     private String token;
 
@@ -94,6 +106,10 @@ public class VideoNotifyActivity extends AppCompatActivity {
      */
     private VideoView primaryVideoView;
     private VideoView thumbnailVideoView;
+
+    private boolean isReceiverRegistered;
+    private VideoNotificationBroadcastReceiver videoNotificationBroadcastReceiver;
+    private NotificationManager notificationManager;
 
     /*
      * Android application UI elements
@@ -142,16 +158,27 @@ public class VideoNotifyActivity extends AppCompatActivity {
          */
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
+
+        /*
+         * Setup the broadcast receiver to be notified of video notification messages
+         */
+        videoNotificationBroadcastReceiver = new VideoNotificationBroadcastReceiver();
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent intent = getIntent();
+
         /*
          * Check camera and microphone permissions. Needed in Android M.
          */
         if (!checkPermissionForCameraAndMicrophone()) {
             requestPermissionForCameraAndMicrophone();
+        } else if(intent != null && intent.getAction() == ACTION_VIDEO_NOTIFICATION) {
+            createLocalMedia();
+            handleVideoNotificationIntent(intent);
         } else {
             createLocalMedia();
             register();
         }
-
     }
 
     @Override
@@ -176,9 +203,74 @@ public class VideoNotifyActivity extends AppCompatActivity {
         }
     }
 
+    /*
+     * Called when a notification is clicked and this activity is in the background
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleVideoNotificationIntent(intent);
+    }
+
+    private void handleVideoNotificationIntent(Intent intent) {
+        notificationManager.cancelAll();
+        /*
+         * For now we'll only handle notifications while not in a room
+         */
+        if (room == null) {
+            String dialogRoomName = intent.getStringExtra(VIDEO_NOTIFICATION_ROOM_NAME);
+            showVideoNotificationConnectDialog("Join this room", dialogRoomName);
+        }
+    }
+
+    private void registerReceiver() {
+        if (!isReceiverRegistered) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(ACTION_VIDEO_NOTIFICATION);
+            LocalBroadcastManager.getInstance(this).registerReceiver(
+                    videoNotificationBroadcastReceiver, intentFilter);
+            isReceiverRegistered = true;
+        }
+    }
+
+    private void unregisterReceiver() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(videoNotificationBroadcastReceiver);
+        isReceiverRegistered = false;
+    }
+
+    private class VideoNotificationBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ACTION_VIDEO_NOTIFICATION)) {
+                /*
+                 * Handle the video notification
+                 */
+                handleVideoNotificationIntent(intent);
+            }
+        }
+    }
+
+    /*
+     * Creates a connect UI dialog to handle notifications
+     */
+    private void showVideoNotificationConnectDialog(String title, String roomName) {
+        EditText roomEditText = new EditText(this);
+        roomEditText.setText(roomName);
+        roomEditText.setEnabled(false);
+        alertDialog = createConnectDialog(title,
+                roomEditText,
+                videoNotificationConnectClickListener(roomEditText),
+                cancelConnectDialogClickListener(),
+                this);
+        alertDialog.show();
+    }
+
     @Override
     protected  void onResume() {
         super.onResume();
+        registerReceiver();
         /*
          * If the local video track was removed when the app was put in the background, add it back.
          */
@@ -190,6 +282,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        unregisterReceiver();
         /*
          * Remove the local video track before going in the background. This ensures that the
          * camera can be used by other applications while this app is in the background.
@@ -344,10 +437,16 @@ public class VideoNotifyActivity extends AppCompatActivity {
                 .localMedia(localMedia)
                 .build();
         room = Video.connect(this, connectOptions, roomListener());
+        setDisconnectAction();
+    }
 
+    void notify(final String roomName) {
+        /*
+         * Use Twilio Notify to let others know you are connecting to a Room
+         */
         VideoRoomNotification videoRoomNotification = new VideoRoomNotification(
-                "Join Video Room",
-                identity + " joined room " + roomName,
+                "Join " + identity + " in room",
+                roomName,
                 roomName,
                 BINDING_TAGS);
         TwilioSDKStarterAPI.notify(videoRoomNotification).enqueue(new Callback<Void>() {
@@ -367,7 +466,6 @@ public class VideoNotifyActivity extends AppCompatActivity {
                 statusTextView.setText(message);
             }
         });
-        setDisconnectAction();
     }
 
     /*
@@ -397,12 +495,17 @@ public class VideoNotifyActivity extends AppCompatActivity {
     }
 
     /*
-     * Creates an connect UI dialog
+     * Creates a connect UI dialog
      */
     private void showConnectDialog() {
         EditText roomEditText = new EditText(this);
-        alertDialog = createConnectDialog(roomEditText,
-                connectClickListener(roomEditText), cancelConnectDialogClickListener(), this);
+        String title = "Connect to a video room";
+        roomEditText.setHint("room name");
+        alertDialog = createConnectDialog(title,
+                roomEditText,
+                connectClickListener(roomEditText),
+                cancelConnectDialogClickListener(),
+                this);
         alertDialog.show();
     }
 
@@ -604,6 +707,24 @@ public class VideoNotifyActivity extends AppCompatActivity {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                final String roomName = roomEditText.getText().toString();
+                /*
+                 * Connect to room
+                 */
+                connectToRoom(roomName);
+                /*
+                 * Notify other participants to join the room
+                 */
+                VideoNotifyActivity.this.notify(roomName);
+            }
+        };
+    }
+
+    private DialogInterface.OnClickListener videoNotificationConnectClickListener(final EditText roomEditText) {
+        return new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 /*
                  * Connect to room
                  */
@@ -728,14 +849,17 @@ public class VideoNotifyActivity extends AppCompatActivity {
         }
     }
 
-    public static AlertDialog createConnectDialog(EditText roomEditText, DialogInterface.OnClickListener callParticipantsClickListener, DialogInterface.OnClickListener cancelClickListener, Context context) {
+    public static AlertDialog createConnectDialog(String title,
+                                                  EditText roomEditText,
+                                                  DialogInterface.OnClickListener callParticipantsClickListener,
+                                                  DialogInterface.OnClickListener cancelClickListener,
+                                                  Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setIcon(R.drawable.ic_call_black_24dp);
-        alertDialogBuilder.setTitle("Connect to a video room");
+        alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setPositiveButton("Connect", callParticipantsClickListener);
         alertDialogBuilder.setNegativeButton("Cancel", cancelClickListener);
         alertDialogBuilder.setCancelable(false);
-        roomEditText.setHint("room name");
         alertDialogBuilder.setView(roomEditText);
         return alertDialogBuilder.create();
     }
