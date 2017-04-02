@@ -1,6 +1,7 @@
 package com.twilio.video.examples.videonotify.notify.api;
 
 import com.twilio.video.examples.videonotify.notify.api.model.Binding;
+import com.twilio.video.examples.videonotify.notify.api.model.VideoRoomNotification;
 import com.twilio.video.examples.videonotify.notify.api.model.Token;
 
 import okhttp3.OkHttpClient;
@@ -17,16 +18,20 @@ import static com.twilio.video.examples.videonotify.VideoNotifyActivity.TWILIO_S
 public class TwilioSDKStarterAPI {
 
     /**
-     * A resource defined to register Notify bindings using the sdk-starter projects available in
-     * C#, Java, Node, PHP, Python, or Ruby.
+     * Resources defined in the sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby.
      *
      * https://github.com/TwilioDevEd?q=sdk-starter
      */
     interface SDKStarterService {
-        @POST("/register")
-        Call<Void> register(@Body Binding binding);
+        // Fetch an access token
         @GET("/token")
         Call<Token> fetchToken();
+        // Register with Twilio Notify
+        @POST("/register")
+        Call<Void> register(@Body Binding binding);
+        // Send notifications to Twilio Notify registrants with this tag
+        @POST("/send-notification")
+        Call<Void> sendNotification(@Body VideoRoomNotification videoRoomNotification);
     }
 
     private static HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -40,11 +45,15 @@ public class TwilioSDKStarterAPI {
             .build()
             .create(SDKStarterService.class);
 
+    public static Call<Token> fetchToken() {
+        return sdkStarterService.fetchToken();
+    }
+
     public static Call<Void> registerBinding(final Binding binding) {
         return sdkStarterService.register(binding);
     }
 
-    public static Call<Token> fetchToken() {
-        return sdkStarterService.fetchToken();
+    public static Call<Void> notify(VideoRoomNotification videoRoomNotification) {
+        return sdkStarterService.sendNotification(videoRoomNotification);
     }
 }

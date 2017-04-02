@@ -39,7 +39,10 @@ import com.twilio.video.VideoView;
 import com.twilio.video.examples.videonotify.notify.api.TwilioSDKStarterAPI;
 import com.twilio.video.examples.videonotify.notify.api.model.Binding;
 import com.twilio.video.examples.videonotify.notify.api.model.Token;
+import com.twilio.video.examples.videonotify.notify.api.model.VideoRoomNotification;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -50,9 +53,10 @@ public class VideoNotifyActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
 
     /*
-     * Set your SDK Starter Server URL to register with Notify
+     * Set your SDK Starter Server URL to get an access token with Twilio Video and Twilio Notify
+     * grants and register this app instance with Twilio Notify
      */
-    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://3f855257.ngrok.io";
+    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://23e868a3.ngrok.io";
 
     /*
      * The notify binding type to use. FCM & GCM are supported by the Notify Service on Android
@@ -61,10 +65,23 @@ public class VideoNotifyActivity extends AppCompatActivity {
     private static final String BINDING_TYPE = "fcm";
 
     /*
+     * The notify tag used to notify others when connecting to a Video room.
+     */
+    private static final String BINDING_TAG = "video";
+    private static final List<String> BINDING_TAGS = new ArrayList<String>() {{
+        add(BINDING_TAG);
+    }};
+
+    /*
      * Access token used to connect. This field will be set either from the console generated token
      * or the request to the token server.
      */
-    private String accessToken;
+    private String token;
+
+    /*
+     * Identity obtained from the sdk-starter /token resource
+     */
+    private String identity;
 
     /*
      * A Room represents communication between a local participant and one or more participants.
@@ -81,7 +98,8 @@ public class VideoNotifyActivity extends AppCompatActivity {
     /*
      * Android application UI elements
      */
-    private TextView videoStatusTextView;
+    private TextView statusTextView;
+    private TextView identityTextView;
     private CameraCapturer cameraCapturer;
     private LocalMedia localMedia;
     private LocalAudioTrack localAudioTrack;
@@ -106,7 +124,8 @@ public class VideoNotifyActivity extends AppCompatActivity {
 
         primaryVideoView = (VideoView) findViewById(R.id.primary_video_view);
         thumbnailVideoView = (VideoView) findViewById(R.id.thumbnail_video_view);
-        videoStatusTextView = (TextView) findViewById(R.id.video_status_textview);
+        statusTextView = (TextView) findViewById(R.id.status_textview);
+        identityTextView = (TextView) findViewById(R.id.identity_textview);
 
         connectActionFab = (FloatingActionButton) findViewById(R.id.connect_action_fab);
         switchCameraActionFab = (FloatingActionButton) findViewById(R.id.switch_camera_action_fab);
@@ -247,32 +266,39 @@ public class VideoNotifyActivity extends AppCompatActivity {
         TwilioSDKStarterAPI.fetchToken().enqueue(new Callback<Token>() {
             @Override
             public void onResponse(Call<Token> call, Response<Token> response) {
-                String identity = response.body().identity;
-                String token = response.body().token;
+                if(response.isSuccess()) {
+                    /*
+                     * Save and display the identity
+                     */
+                    identity = response.body().identity;
+                    identityTextView.setText(identity);
 
-                /*
-                 * Set the access token. This will be used to connect to a Video room
-                 */
-                VideoNotifyActivity.this.accessToken = token;
+                    /*
+                     * Set the access token. This will later be used to connect to a Video room
+                     */
+                    VideoNotifyActivity.this.token = response.body().token;
 
-                /*
-                 * Register binding with Notify
-                 */
-                bind(identity);
+                    /*
+                     * Register binding with Notify
+                     */
+                    bind(identity);
+                } else {
+                    String message = "Fetching token failed: " + response.code() + " " + response.message();
+                    Log.e(TAG, message);
+                    statusTextView.setText(message);
+                }
             }
 
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
-                String message = "Unable to register. Retrieving access token failed: " + t.getMessage();
+                String message = "Fetching token failed: " + t.getMessage();
                 Log.e(TAG, message);
-                Snackbar.make(connectActionFab, message, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
+                statusTextView.setText(message);
             }
         });
     }
 
-    private void bind(String identity) {
+    private void bind(final String identity) {
         /*
          * Generate an endpoint based on the new identity and the instanceID. This ensures that we
          * maintain stability of the endpoint even if the instanceID changes without the identity
@@ -285,38 +311,62 @@ public class VideoNotifyActivity extends AppCompatActivity {
          */
         String address = FirebaseInstanceId.getInstance().getToken();
 
-        Binding binding = new Binding(identity, endpoint, address, BINDING_TYPE);
+        final Binding binding = new Binding(identity, endpoint, address, BINDING_TYPE, BINDING_TAGS);
         TwilioSDKStarterAPI.registerBinding(binding).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Snackbar.make(connectActionFab, "Successfully registered!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
-
-                /*
-                 * Set the initial state of the UI
-                 */
-                intializeUI();
+                if(response.isSuccess()) {
+                    statusTextView.setText("Registered with Twilio Notify");
+                    /*
+                     * Set the initial state of the UI
+                     */
+                    intializeUI();
+                } else {
+                    String message = "Binding registration failed: " + response.code() + " " + response.message();
+                    Log.e(TAG, message);
+                    statusTextView.setText(message);
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                String message = "Unable to register binding: " + t.getMessage();
+                String message = "Binding registration failed: " + t.getMessage();
                 Log.e(TAG, message);
-                Snackbar.make(connectActionFab, message, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
+                statusTextView.setText(message);
             }
         });
     }
 
     private void connectToRoom(String roomName) {
         setAudioFocus(true);
-        ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
+        ConnectOptions connectOptions = new ConnectOptions.Builder(token)
                 .roomName(roomName)
                 .localMedia(localMedia)
                 .build();
         room = Video.connect(this, connectOptions, roomListener());
+
+        VideoRoomNotification videoRoomNotification = new VideoRoomNotification(
+                "Join Video Room",
+                identity + " joined room " + roomName,
+                roomName,
+                BINDING_TAGS);
+        TwilioSDKStarterAPI.notify(videoRoomNotification).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (!response.isSuccess()) {
+                    String message = "Sending notification failed: " + response.code() + " " + response.message();
+                    Log.e(TAG, message);
+                    statusTextView.setText(message);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                String message = "Sending notification failed: " + t.getMessage();
+                Log.e(TAG, message);
+                statusTextView.setText(message);
+            }
+        });
         setDisconnectAction();
     }
 
@@ -325,7 +375,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
      */
     private void intializeUI() {
         connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_white_24px));
+                R.drawable.ic_call_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(connectActionClickListener());
         switchCameraActionFab.show();
@@ -341,7 +391,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
      */
     private void setDisconnectAction() {
         connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_end_white_24px));
+                R.drawable.ic_call_end_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(disconnectClickListener());
     }
@@ -365,13 +415,13 @@ public class VideoNotifyActivity extends AppCompatActivity {
          */
         if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
             Snackbar.make(connectActionFab,
-                    "Multiple participants are not currently support in this UI",
+                    "Rendering multiple participants not supported in this app",
                     Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+                    .setAction("Info", null).show();
             return;
         }
         participantIdentity = participant.getIdentity();
-        videoStatusTextView.setText("Participant "+ participantIdentity + " joined");
+        statusTextView.setText("Participant "+ participantIdentity + " joined");
 
         /*
          * Add participant renderer
@@ -410,7 +460,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
      * Called when participant leaves the room
      */
     private void removeParticipant(Participant participant) {
-        videoStatusTextView.setText("Participant "+participant.getIdentity()+ " left.");
+        statusTextView.setText("Participant "+participant.getIdentity()+ " left.");
         if (!participant.getIdentity().equals(participantIdentity)) {
             return;
         }
@@ -447,7 +497,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
         return new Room.Listener() {
             @Override
             public void onConnected(Room room) {
-                videoStatusTextView.setText("Connected to " + room.getName());
+                statusTextView.setText("Connected to " + room.getName());
                 setTitle(room.getName());
 
                 for (Map.Entry<String, Participant> entry : room.getParticipants().entrySet()) {
@@ -458,12 +508,12 @@ public class VideoNotifyActivity extends AppCompatActivity {
 
             @Override
             public void onConnectFailure(Room room, TwilioException e) {
-                videoStatusTextView.setText("Failed to connect");
+                statusTextView.setText("Failed to connect");
             }
 
             @Override
             public void onDisconnected(Room room, TwilioException e) {
-                videoStatusTextView.setText("Disconnected from " + room.getName());
+                statusTextView.setText("Disconnected from " + room.getName());
                 VideoNotifyActivity.this.room = null;
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
                 if (!disconnectedFromOnDestroy) {
@@ -507,23 +557,23 @@ public class VideoNotifyActivity extends AppCompatActivity {
 
             @Override
             public void onAudioTrackAdded(Media media, AudioTrack audioTrack) {
-                videoStatusTextView.setText("onAudioTrackAdded");
+                statusTextView.setText("onAudioTrackAdded");
             }
 
             @Override
             public void onAudioTrackRemoved(Media media, AudioTrack audioTrack) {
-                videoStatusTextView.setText("onAudioTrackRemoved");
+                statusTextView.setText("onAudioTrackRemoved");
             }
 
             @Override
             public void onVideoTrackAdded(Media media, VideoTrack videoTrack) {
-                videoStatusTextView.setText("onVideoTrackAdded");
+                statusTextView.setText("onVideoTrackAdded");
                 addParticipantVideo(videoTrack);
             }
 
             @Override
             public void onVideoTrackRemoved(Media media, VideoTrack videoTrack) {
-                videoStatusTextView.setText("onVideoTrackRemoved");
+                statusTextView.setText("onVideoTrackRemoved");
                 removeParticipantVideo(videoTrack);
             }
 
@@ -625,10 +675,10 @@ public class VideoNotifyActivity extends AppCompatActivity {
                     localVideoTrack.enable(enable);
                     int icon;
                     if (enable) {
-                        icon = R.drawable.ic_videocam_green_24px;
+                        icon = R.drawable.ic_videocam_white_24dp;
                         switchCameraActionFab.show();
                     } else {
-                        icon = R.drawable.ic_videocam_off_red_24px;
+                        icon = R.drawable.ic_videocam_off_black_24dp;
                         switchCameraActionFab.hide();
                     }
                     localVideoActionFab.setImageDrawable(
@@ -651,7 +701,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
                     boolean enable = !localAudioTrack.isEnabled();
                     localAudioTrack.enable(enable);
                     int icon = enable ?
-                            R.drawable.ic_mic_green_24px : R.drawable.ic_mic_off_red_24px;
+                            R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
                     muteActionFab.setImageDrawable(ContextCompat.getDrawable(
                             VideoNotifyActivity.this, icon));
                 }
@@ -680,18 +730,13 @@ public class VideoNotifyActivity extends AppCompatActivity {
 
     public static AlertDialog createConnectDialog(EditText roomEditText, DialogInterface.OnClickListener callParticipantsClickListener, DialogInterface.OnClickListener cancelClickListener, Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-
         alertDialogBuilder.setIcon(R.drawable.ic_call_black_24dp);
-        alertDialogBuilder.setTitle("Connect to a room");
+        alertDialogBuilder.setTitle("Connect to a video room");
         alertDialogBuilder.setPositiveButton("Connect", callParticipantsClickListener);
         alertDialogBuilder.setNegativeButton("Cancel", cancelClickListener);
         alertDialogBuilder.setCancelable(false);
-
         roomEditText.setHint("room name");
-        int horizontalPadding = context.getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin);
-        int verticalPadding = context.getResources().getDimensionPixelOffset(R.dimen.activity_vertical_margin);
-        alertDialogBuilder.setView(roomEditText, horizontalPadding, verticalPadding, horizontalPadding, 0);
-
+        alertDialogBuilder.setView(roomEditText);
         return alertDialogBuilder.create();
     }
 
