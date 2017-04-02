@@ -62,7 +62,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
      * Set your SDK Starter Server URL to get an access token with Twilio Video and Twilio Notify
      * grants and register this app instance with Twilio Notify
      */
-    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://23e868a3.ngrok.io";
+    public static final String TWILIO_SDK_STARTER_SERVER_URL = "YOUR_TWILIO_SDK_STARTER_SERVER_URL";
 
     /*
      * The notify binding type to use. FCM & GCM are supported by the Notify Service on Android
