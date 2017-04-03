@@ -23,7 +23,7 @@
             android:layout_gravity="center"
             app:fabSize="mini"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:src="@drawable/ic_switch_camera_512dp" />
+            android:src="@drawable/ic_switch_camera_white_24dp" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/local_video_action_fab"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             app:fabSize="normal"
-            android:src="@drawable/ic_call_white_24dp" />
+            android:src="@drawable/ic_video_call_white_24dp" />
 
     </LinearLayout>
 

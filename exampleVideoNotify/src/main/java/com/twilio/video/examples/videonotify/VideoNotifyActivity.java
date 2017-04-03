@@ -19,6 +19,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -47,7 +50,6 @@ import com.twilio.video.examples.videonotify.notify.api.model.Token;
 import com.twilio.video.examples.videonotify.notify.api.model.VideoRoomNotification;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,12 +57,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.twilio.video.examples.videonotify.R.drawable.ic_phonelink_ring_white_24dp;
+import static com.twilio.video.examples.videonotify.R.drawable.ic_volume_up_white_24dp;
+
 public class VideoNotifyActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
 
     /*
      * Set your SDK Starter Server URL to get an access token with Twilio Video and Twilio Notify
-     * grants and register this app instance with Twilio Notify
+     * grants and register this app instance with Twilio Notify.
+     *
+     * The sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby here:
+     * https://github.com/TwilioDevEd?q=sdk-starter
      */
     public static final String TWILIO_SDK_STARTER_SERVER_URL = "YOUR_TWILIO_SDK_STARTER_SERVER_URL";
 
@@ -149,6 +157,11 @@ public class VideoNotifyActivity extends AppCompatActivity {
         muteActionFab = (FloatingActionButton) findViewById(R.id.mute_action_fab);
 
         /*
+         * Hide the connect button until we successfully register with Twilio Notify
+         */
+        // connectActionFab.hide();
+
+        /*
          * Enable changing the volume using the up/down keys during a conversation
          */
         setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
@@ -157,7 +170,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
          * Needed for setting/abandoning audio focus during call
          */
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-
+        audioManager.setSpeakerphoneOn(true);
 
         /*
          * Setup the broadcast receiver to be notified of video notification messages
@@ -172,7 +185,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
          */
         if (!checkPermissionForCameraAndMicrophone()) {
             requestPermissionForCameraAndMicrophone();
-        } else if(intent != null && intent.getAction() == ACTION_VIDEO_NOTIFICATION) {
+        } else if (intent != null && intent.getAction() == ACTION_VIDEO_NOTIFICATION) {
             createLocalMedia();
             handleVideoNotificationIntent(intent);
         } else {
@@ -319,6 +332,29 @@ public class VideoNotifyActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.speaker_menu_item:
+                if (audioManager.isSpeakerphoneOn()) {
+                    audioManager.setSpeakerphoneOn(false);
+                    item.setIcon(ic_phonelink_ring_white_24dp);
+                } else {
+                    audioManager.setSpeakerphoneOn(true);
+                    item.setIcon(ic_volume_up_white_24dp);
+                }
+                break;
+        }
+        return true;
+    }
+
     private boolean checkPermissionForCameraAndMicrophone(){
         int resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         int resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
@@ -356,39 +392,45 @@ public class VideoNotifyActivity extends AppCompatActivity {
     }
 
     private void register() {
-        TwilioSDKStarterAPI.fetchToken().enqueue(new Callback<Token>() {
-            @Override
-            public void onResponse(Call<Token> call, Response<Token> response) {
-                if(response.isSuccess()) {
+        if (TWILIO_SDK_STARTER_SERVER_URL.equals(getString(R.string.twilio_sdk_starter_server_url))) {
+            String message = "Error: Set a valid sdk starter server url";
+            Log.e(TAG, message);
+            statusTextView.setText(message);
+        } else {
+            TwilioSDKStarterAPI.fetchToken().enqueue(new Callback<Token>() {
+                @Override
+                public void onResponse(Call<Token> call, Response<Token> response) {
+                    if (response.isSuccess()) {
                     /*
                      * Save and display the identity
                      */
-                    identity = response.body().identity;
-                    identityTextView.setText(identity);
+                        identity = response.body().identity;
+                        identityTextView.setText(identity);
 
                     /*
                      * Set the access token. This will later be used to connect to a Video room
                      */
-                    VideoNotifyActivity.this.token = response.body().token;
+                        VideoNotifyActivity.this.token = response.body().token;
 
                     /*
                      * Register binding with Notify
                      */
-                    bind(identity);
-                } else {
-                    String message = "Fetching token failed: " + response.code() + " " + response.message();
+                        bind(identity);
+                    } else {
+                        String message = "Fetching token failed: " + response.code() + " " + response.message();
+                        Log.e(TAG, message);
+                        statusTextView.setText(message);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Token> call, Throwable t) {
+                    String message = "Fetching token failed: " + t.getMessage();
                     Log.e(TAG, message);
                     statusTextView.setText(message);
                 }
-            }
-
-            @Override
-            public void onFailure(Call<Token> call, Throwable t) {
-                String message = "Fetching token failed: " + t.getMessage();
-                Log.e(TAG, message);
-                statusTextView.setText(message);
-            }
-        });
+            });
+        }
     }
 
     private void bind(final String identity) {
@@ -408,7 +450,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
         TwilioSDKStarterAPI.registerBinding(binding).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.isSuccess()) {
+                if (response.isSuccess()) {
                     statusTextView.setText("Registered with Twilio Notify");
                     /*
                      * Set the initial state of the UI
@@ -431,7 +473,8 @@ public class VideoNotifyActivity extends AppCompatActivity {
     }
 
     private void connectToRoom(String roomName) {
-        setAudioFocus(true);
+        enableAudioFocus(true);
+        enableVolumeControl(true);
         ConnectOptions connectOptions = new ConnectOptions.Builder(token)
                 .roomName(roomName)
                 .localMedia(localMedia)
@@ -473,7 +516,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
      */
     private void intializeUI() {
         connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_white_24dp));
+                R.drawable.ic_video_call_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(connectActionClickListener());
         switchCameraActionFab.show();
@@ -489,7 +532,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
      */
     private void setDisconnectAction() {
         connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_end_white_24dp));
+                R.drawable.ic_video_call_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(disconnectClickListener());
     }
@@ -618,9 +661,10 @@ public class VideoNotifyActivity extends AppCompatActivity {
             public void onDisconnected(Room room, TwilioException e) {
                 statusTextView.setText("Disconnected from " + room.getName());
                 VideoNotifyActivity.this.room = null;
+                enableAudioFocus(false);
+                enableVolumeControl(false);
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
                 if (!disconnectedFromOnDestroy) {
-                    setAudioFocus(false);
                     intializeUI();
                     moveLocalVideoToPrimaryView();
                 }
@@ -830,7 +874,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
         };
     }
 
-    private void setAudioFocus(boolean focus) {
+    private void enableAudioFocus(boolean focus) {
         if (focus) {
             previousAudioMode = audioManager.getMode();
             // Request audio focus before making any device switch.
@@ -849,13 +893,24 @@ public class VideoNotifyActivity extends AppCompatActivity {
         }
     }
 
+    private void enableVolumeControl(boolean volumeControl) {
+        if (volumeControl) {
+            /*
+             * Enable changing the volume using the up/down keys during a conversation
+             */
+            setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+        } else {
+            setVolumeControlStream(getVolumeControlStream());
+        }
+    }
+
     public static AlertDialog createConnectDialog(String title,
                                                   EditText roomEditText,
                                                   DialogInterface.OnClickListener callParticipantsClickListener,
                                                   DialogInterface.OnClickListener cancelClickListener,
                                                   Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setIcon(R.drawable.ic_call_black_24dp);
+        alertDialogBuilder.setIcon(R.drawable.ic_video_call_black_24dp);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setPositiveButton("Connect", callParticipantsClickListener);
         alertDialogBuilder.setNegativeButton("Cancel", cancelClickListener);

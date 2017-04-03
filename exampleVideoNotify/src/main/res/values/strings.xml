@@ -8,5 +8,6 @@
     <string name="progress_dialog_message">Registering Binding...</string>
     <string name="register_binding">Register Binding</string>
     <string name="identity">Identity</string>
-    <string name="twilio_sdk_starter_server_url">YOUR_SDK_STARTER_SERVER_URL</string>
+    <string name="turn_speaker_on">Speaker ON</string>
+    <string name="twilio_sdk_starter_server_url">YOUR_TWILIO_SDK_STARTER_SERVER_URL</string>
 </resources>
