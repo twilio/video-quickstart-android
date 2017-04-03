@@ -70,7 +70,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
      * The sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby here:
      * https://github.com/TwilioDevEd?q=sdk-starter
      */
-    public static final String TWILIO_SDK_STARTER_SERVER_URL = "YOUR_TWILIO_SDK_STARTER_SERVER_URL";
+    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://23e868a3.ngrok.io";
 
     /*
      * The notify binding type to use. FCM & GCM are supported by the Notify Service on Android
@@ -480,7 +480,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
                 .localMedia(localMedia)
                 .build();
         room = Video.connect(this, connectOptions, roomListener());
-        setDisconnectAction();
+        setDisconnectBehavior();
     }
 
     void notify(final String roomName) {
@@ -528,11 +528,11 @@ public class VideoNotifyActivity extends AppCompatActivity {
     }
 
     /*
-     * The actions performed during disconnect.
+     * The behavior applied to disconnect
      */
-    private void setDisconnectAction() {
+    private void setDisconnectBehavior() {
         connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_video_call_white_24dp));
+                R.drawable.ic_call_end_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(disconnectClickListener());
     }
