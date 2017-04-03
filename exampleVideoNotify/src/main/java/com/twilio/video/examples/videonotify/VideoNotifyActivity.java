@@ -159,7 +159,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
         /*
          * Hide the connect button until we successfully register with Twilio Notify
          */
-        // connectActionFab.hide();
+        connectActionFab.hide();
 
         /*
          * Enable changing the volume using the up/down keys during a conversation
