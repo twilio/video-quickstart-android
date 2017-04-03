@@ -271,7 +271,10 @@ public class VideoNotifyActivity extends AppCompatActivity {
     private void showVideoNotificationConnectDialog(String title, String roomName) {
         EditText roomEditText = new EditText(this);
         roomEditText.setText(roomName);
+        // Use the default color instead of the disabled color
+        int currentColor = roomEditText.getCurrentTextColor();
         roomEditText.setEnabled(false);
+        roomEditText.setTextColor(currentColor);
         alertDialog = createConnectDialog(title,
                 roomEditText,
                 videoNotificationConnectClickListener(roomEditText),
