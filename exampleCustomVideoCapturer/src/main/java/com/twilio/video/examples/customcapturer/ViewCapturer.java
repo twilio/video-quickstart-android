@@ -61,7 +61,8 @@ public class ViewCapturer implements VideoCapturer {
 
                 // Create video frame
                 VideoDimensions dimensions = new VideoDimensions(view.getWidth(), view.getHeight());
-                VideoFrame videoFrame = new VideoFrame(array, dimensions, 0, captureTimeNs);
+                VideoFrame videoFrame = new VideoFrame(array,
+                        dimensions, VideoFrame.RotationAngle.ROTATION_0, captureTimeNs);
 
                 // Notify the listener
                 if (started.get()) {
