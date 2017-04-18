@@ -111,9 +111,9 @@ You can run your own server that provides access tokens, based on your Twilio cr
 
 ### Configuring the Access Token Server
 
-If you want to be a little closer to a real environment, you can download one of the video quickstart applications - for instance, [Video Quickstart: PHP](https://github.com/TwilioDevEd/video-quickstart-php) and either run it locally, or install it on a server.
+If you want to be a little closer to a real environment, you can download one of the video quickstart applications - for instance, [Video Quickstart: Node](https://github.com/TwilioDevEd/video-quickstart-node) and either run it locally, or install it on a server.
 
-You'll need to gather a couple of configuration options from your Twilio developer console before running it, so read the directions on the quickstart. You'll copy the config.example.php file to a config.php file, and then add in these credentials:
+You'll need to gather a couple of configuration options from your Twilio developer console before running it, so read the directions on the quickstart. You'll copy the .env.example file to a .env file, and then add in these credentials:
  
 Credential | Description
 ---------- | -----------
