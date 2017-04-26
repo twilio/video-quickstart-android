@@ -417,8 +417,8 @@ public class VideoActivity extends AppCompatActivity {
                 videoStatusTextView.setText("Connected to " + room.getName());
                 setTitle(room.getName());
 
-                for (Map.Entry<String, Participant> entry : room.getParticipants().entrySet()) {
-                    addParticipant(entry.getValue());
+                for (Participant participant : room.getParticipants()) {
+                    addParticipant(participant);
                     break;
                 }
             }
