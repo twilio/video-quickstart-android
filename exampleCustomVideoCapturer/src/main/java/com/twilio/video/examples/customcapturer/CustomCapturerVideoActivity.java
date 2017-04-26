@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.widget.Chronometer;
 import android.widget.LinearLayout;
 
-import com.twilio.video.LocalMedia;
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.VideoView;
 
@@ -15,7 +14,6 @@ import com.twilio.video.VideoView;
  * {@link VideoView} below.
  */
 public class CustomCapturerVideoActivity extends Activity {
-    private LocalMedia localMedia;
     private LinearLayout capturedView;
     private VideoView videoView;
     private Chronometer timerView;
@@ -26,23 +24,22 @@ public class CustomCapturerVideoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_capturer);
 
-        localMedia = LocalMedia.create(this);
         capturedView = (LinearLayout) findViewById(R.id.captured_view);
         videoView = (VideoView) findViewById(R.id.video_view);
         timerView = (Chronometer) findViewById(R.id.timer_view);
         timerView.start();
 
         // Once added we should see our linear layout rendered live below
-        localVideoTrack = localMedia.addVideoTrack(true, new ViewCapturer(capturedView));
+        localVideoTrack = LocalVideoTrack.create(this, true, new ViewCapturer(capturedView));
         localVideoTrack.addRenderer(videoView);
     }
 
     @Override
     protected void onDestroy() {
         localVideoTrack.removeRenderer(videoView);
-        localMedia.removeVideoTrack(localVideoTrack);
+        localVideoTrack.release();
+        localVideoTrack = null;
         timerView.stop();
-        localMedia.release();
         super.onDestroy();
     }
 }
