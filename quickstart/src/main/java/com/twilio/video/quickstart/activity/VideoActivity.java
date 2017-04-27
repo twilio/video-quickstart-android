@@ -40,7 +40,6 @@ import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 
 import java.util.Collections;
-import java.util.Map;
 
 public class VideoActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
