@@ -157,7 +157,7 @@ public class VideoActivity extends AppCompatActivity {
         /*
          * If the local video track was released when the app was put in the background, recreate.
          */
-        if (localVideoTrack == null) {
+        if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
             localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
             localVideoTrack.addRenderer(localVideoView);
 
