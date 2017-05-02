@@ -1,9 +1,11 @@
 package com.twilio.video.examples.videonotify.notify.fcm;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.twilio.video.examples.videonotify.notify.service.RegistrationIntentService;
 
 public class NotifyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
@@ -38,9 +40,11 @@ public class NotifyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         /*
-         * NOTE: Intentionally omitting this step in this example. For a more thorough implementation
-         * of Notify visit: https://github.com/TwilioDevEd/notifications-quickstart-android
+         * Use the service to refresh the registration binding. The token is not passed
+         * because the token is requested by the Service.
          */
+        Intent intent = new Intent(this, RegistrationIntentService.class);
+        startService(intent);
     }
 
 }

@@ -27,7 +27,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.twilio.video.AudioTrack;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.CameraCapturer.CameraSource;
@@ -45,9 +44,8 @@ import com.twilio.video.VideoRenderer;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 import com.twilio.video.examples.videonotify.notify.api.TwilioSDKStarterAPI;
-import com.twilio.video.examples.videonotify.notify.api.model.Binding;
-import com.twilio.video.examples.videonotify.notify.api.model.Token;
-import com.twilio.video.examples.videonotify.notify.api.model.VideoRoomNotification;
+import com.twilio.video.examples.videonotify.notify.api.model.Notification;
+import com.twilio.video.examples.videonotify.notify.service.RegistrationIntentService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,28 +68,29 @@ public class VideoNotifyActivity extends AppCompatActivity {
      * The sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby here:
      * https://github.com/TwilioDevEd?q=sdk-starter
      */
-    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://23e868a3.ngrok.io";
+    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://01efc840.ngrok.io";
 
     /*
-     * The notify binding type to use. FCM & GCM are supported by the Notify Service on Android
-     * You can specify either by providing the String "fcm" or "gcm" respectively.
+     * The tag used to notify others when this identity is connecting to a Video room.
      */
-    private static final String BINDING_TYPE = "fcm";
-
-    /*
-     * The notify tag used to notify others when connecting to a Video room.
-     */
-    private static final String BINDING_TAG = "video";
-    private static final List<String> BINDING_TAGS = new ArrayList<String>() {{
-        add(BINDING_TAG);
+    public static final List<String> NOTIFY_TAGS = new ArrayList<String>() {{
+        add("video");
     }};
 
     /*
-     * Intent keys used to provide information about a video notification that has been received.
+     * Intent keys used to provide information about a video notification
      */
     public static final String ACTION_VIDEO_NOTIFICATION = "VIDEO_NOTIFICATION";
     public static final String VIDEO_NOTIFICATION_ROOM_NAME = "VIDEO_NOTIFICATION_ROOM_NAME";
     public static final String VIDEO_NOTIFICATION_BODY = "VIDEO_NOTIFICATION_BODY";
+
+    /*
+     * Intent keys used to obtain a token and register with Twilio Notify
+     */
+    public static final String ACTION_REGISTRATION = "ACTION_REGISTRATION";
+    public static final String REGISTRATION_ERROR = "REGISTRATION_ERROR";
+    public static final String REGISTRATION_IDENTITY = "REGISTRATION_IDENTITY";
+    public static final String REGISTRATION_TOKEN = "REGISTRATION_TOKEN";
 
     /*
      * Token obtained from the sdk-starter /token resource
@@ -116,7 +115,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
     private VideoView thumbnailVideoView;
 
     private boolean isReceiverRegistered;
-    private VideoNotificationBroadcastReceiver videoNotificationBroadcastReceiver;
+    private LocalBroadcastReceiver localBroadcastReceiver;
     private NotificationManager notificationManager;
 
     /*
@@ -175,7 +174,9 @@ public class VideoNotifyActivity extends AppCompatActivity {
         /*
          * Setup the broadcast receiver to be notified of video notification messages
          */
-        videoNotificationBroadcastReceiver = new VideoNotificationBroadcastReceiver();
+        localBroadcastReceiver = new LocalBroadcastReceiver();
+        registerReceiver();
+
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = getIntent();
@@ -185,11 +186,11 @@ public class VideoNotifyActivity extends AppCompatActivity {
          */
         if (!checkPermissionForCameraAndMicrophone()) {
             requestPermissionForCameraAndMicrophone();
+        } else if (intent != null && intent.getAction() == ACTION_REGISTRATION) {
+            handleRegistration(intent);
         } else if (intent != null && intent.getAction() == ACTION_VIDEO_NOTIFICATION) {
-            createLocalMedia();
             handleVideoNotificationIntent(intent);
         } else {
-            createLocalMedia();
             register();
         }
     }
@@ -206,9 +207,9 @@ public class VideoNotifyActivity extends AppCompatActivity {
             }
 
             if (cameraAndMicPermissionGranted) {
-                createLocalMedia();
                 register();
             } else {
+                Log.e(TAG, getString(R.string.permissions_needed));
                 Toast.makeText(this,
                         R.string.permissions_needed,
                         Toast.LENGTH_LONG).show();
@@ -217,18 +218,42 @@ public class VideoNotifyActivity extends AppCompatActivity {
     }
 
     /*
+     * Register to obtain a token and register a binding with Twilio Notify
+     */
+    private void register() {
+        Intent intent = new Intent(this, RegistrationIntentService.class);
+        startService(intent);
+    }
+
+    /*
      * Called when a notification is clicked and this activity is in the background
      */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        handleVideoNotificationIntent(intent);
+        if (intent.getAction() == ACTION_VIDEO_NOTIFICATION) {
+            handleVideoNotificationIntent(intent);
+        }
+    }
+
+    private void handleRegistration(Intent intent) {
+        String registrationError = intent.getStringExtra(REGISTRATION_ERROR);
+        if (registrationError != null) {
+            statusTextView.setText(registrationError);
+        } else {
+            setupLocalMedia();
+            identity = intent.getStringExtra(REGISTRATION_IDENTITY);
+            token = intent.getStringExtra(REGISTRATION_TOKEN);
+            identityTextView.setText(identity);
+            statusTextView.setText("Registration successful");
+            intializeUI();
+        }
     }
 
     private void handleVideoNotificationIntent(Intent intent) {
         notificationManager.cancelAll();
         /*
-         * For now we'll only handle notifications while not in a room
+         * Only handle the notification if not already connected to a Video Room
          */
         if (room == null) {
             String dialogRoomName = intent.getStringExtra(VIDEO_NOTIFICATION_ROOM_NAME);
@@ -240,26 +265,26 @@ public class VideoNotifyActivity extends AppCompatActivity {
         if (!isReceiverRegistered) {
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(ACTION_VIDEO_NOTIFICATION);
+            intentFilter.addAction(ACTION_REGISTRATION);
             LocalBroadcastManager.getInstance(this).registerReceiver(
-                    videoNotificationBroadcastReceiver, intentFilter);
+                    localBroadcastReceiver, intentFilter);
             isReceiverRegistered = true;
         }
     }
 
     private void unregisterReceiver() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(videoNotificationBroadcastReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(localBroadcastReceiver);
         isReceiverRegistered = false;
     }
 
-    private class VideoNotificationBroadcastReceiver extends BroadcastReceiver {
+    private class LocalBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(ACTION_VIDEO_NOTIFICATION)) {
-                /*
-                 * Handle the video notification
-                 */
+            if (action.equals(ACTION_REGISTRATION)) {
+                handleRegistration(intent);
+            } else if (action.equals(ACTION_VIDEO_NOTIFICATION)) {
                 handleVideoNotificationIntent(intent);
             }
         }
@@ -380,7 +405,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
         }
     }
 
-    private void createLocalMedia() {
+    private void setupLocalMedia() {
         localMedia = LocalMedia.create(this);
 
         // Share your microphone
@@ -392,87 +417,6 @@ public class VideoNotifyActivity extends AppCompatActivity {
         primaryVideoView.setMirror(true);
         localVideoTrack.addRenderer(primaryVideoView);
         localVideoView = primaryVideoView;
-    }
-
-    private void register() {
-        if (TWILIO_SDK_STARTER_SERVER_URL.equals(getString(R.string.twilio_sdk_starter_server_url))) {
-            String message = "Error: Set a valid sdk starter server url";
-            Log.e(TAG, message);
-            statusTextView.setText(message);
-        } else {
-            TwilioSDKStarterAPI.fetchToken().enqueue(new Callback<Token>() {
-                @Override
-                public void onResponse(Call<Token> call, Response<Token> response) {
-                    if (response.isSuccess()) {
-                    /*
-                     * Save and display the identity
-                     */
-                        identity = response.body().identity;
-                        identityTextView.setText(identity);
-
-                    /*
-                     * Set the access token. This will later be used to connect to a Video room
-                     */
-                        VideoNotifyActivity.this.token = response.body().token;
-
-                    /*
-                     * Register binding with Notify
-                     */
-                        bind(identity);
-                    } else {
-                        String message = "Fetching token failed: " + response.code() + " " + response.message();
-                        Log.e(TAG, message);
-                        statusTextView.setText(message);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Token> call, Throwable t) {
-                    String message = "Fetching token failed: " + t.getMessage();
-                    Log.e(TAG, message);
-                    statusTextView.setText(message);
-                }
-            });
-        }
-    }
-
-    private void bind(final String identity) {
-        /*
-         * Generate an endpoint based on the new identity and the instanceID. This ensures that we
-         * maintain stability of the endpoint even if the instanceID changes without the identity
-         * changing.
-         */
-        String endpoint = identity + "@" + FirebaseInstanceId.getInstance().getId();
-
-        /*
-         * Obtain the new address based off the Firebase instance token
-         */
-        String address = FirebaseInstanceId.getInstance().getToken();
-
-        final Binding binding = new Binding(identity, endpoint, address, BINDING_TYPE, BINDING_TAGS);
-        TwilioSDKStarterAPI.registerBinding(binding).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccess()) {
-                    statusTextView.setText("Registered with Twilio Notify");
-                    /*
-                     * Set the initial state of the UI
-                     */
-                    intializeUI();
-                } else {
-                    String message = "Binding registration failed: " + response.code() + " " + response.message();
-                    Log.e(TAG, message);
-                    statusTextView.setText(message);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                String message = "Binding registration failed: " + t.getMessage();
-                Log.e(TAG, message);
-                statusTextView.setText(message);
-            }
-        });
     }
 
     private void connectToRoom(String roomName) {
@@ -490,12 +434,12 @@ public class VideoNotifyActivity extends AppCompatActivity {
         /*
          * Use Twilio Notify to let others know you are connecting to a Room
          */
-        VideoRoomNotification videoRoomNotification = new VideoRoomNotification(
+        Notification notification = new Notification(
                 "Join " + identity + " in room",
                 roomName,
                 roomName,
-                BINDING_TAGS);
-        TwilioSDKStarterAPI.notify(videoRoomNotification).enqueue(new Callback<Void>() {
+                NOTIFY_TAGS);
+        TwilioSDKStarterAPI.notify(notification).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (!response.isSuccess()) {
@@ -566,7 +510,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
             Snackbar.make(connectActionFab,
                     "Rendering multiple participants not supported in this app",
                     Snackbar.LENGTH_LONG)
-                    .setAction("Info", null).show();
+                    .show();
             return;
         }
         participantIdentity = participant.getIdentity();

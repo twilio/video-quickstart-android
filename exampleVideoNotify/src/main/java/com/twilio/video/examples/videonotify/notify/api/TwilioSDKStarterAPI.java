@@ -1,7 +1,8 @@
 package com.twilio.video.examples.videonotify.notify.api;
 
 import com.twilio.video.examples.videonotify.notify.api.model.Binding;
-import com.twilio.video.examples.videonotify.notify.api.model.VideoRoomNotification;
+import com.twilio.video.examples.videonotify.notify.api.model.Identity;
+import com.twilio.video.examples.videonotify.notify.api.model.Notification;
 import com.twilio.video.examples.videonotify.notify.api.model.Token;
 
 import okhttp3.OkHttpClient;
@@ -16,7 +17,6 @@ import retrofit2.http.POST;
 import static com.twilio.video.examples.videonotify.VideoNotifyActivity.TWILIO_SDK_STARTER_SERVER_URL;
 
 public class TwilioSDKStarterAPI {
-
     /**
      * Resources defined in the sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby.
      *
@@ -26,12 +26,15 @@ public class TwilioSDKStarterAPI {
         // Fetch an access token
         @GET("/token")
         Call<Token> fetchToken();
-        // Register with Twilio Notify
+        // Fetch an access token with a specific identity
+        @POST("/token")
+        Call<Token> fetchToken(@Body Identity identity);
+        // Register this binding with Twilio Notify
         @POST("/register")
         Call<Void> register(@Body Binding binding);
-        // Send notifications to Twilio Notify registrants with this tag
+        // Send notifications to Twilio Notify registrants
         @POST("/send-notification")
-        Call<Void> sendNotification(@Body VideoRoomNotification videoRoomNotification);
+        Call<Void> sendNotification(@Body Notification notification);
     }
 
     private static HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -45,15 +48,20 @@ public class TwilioSDKStarterAPI {
             .build()
             .create(SDKStarterService.class);
 
-    public static Call<Token> fetchToken() {
-        return sdkStarterService.fetchToken();
+    // Fetch a token with a specific identity
+    public static Call<Token> fetchToken(final String identity) {
+        if(identity == null) {
+            return sdkStarterService.fetchToken();
+        } else {
+            return sdkStarterService.fetchToken(new Identity(identity));
+        }
     }
 
     public static Call<Void> registerBinding(final Binding binding) {
         return sdkStarterService.register(binding);
     }
 
-    public static Call<Void> notify(VideoRoomNotification videoRoomNotification) {
-        return sdkStarterService.sendNotification(videoRoomNotification);
+    public static Call<Void> notify(Notification notification) {
+        return sdkStarterService.sendNotification(notification);
     }
 }

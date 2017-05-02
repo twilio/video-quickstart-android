@@ -23,7 +23,7 @@
 
         <!-- [START fcm_listener] -->
         <service
-            android:name="com.twilio.video.examples.videonotify.notify.fcm.NotifyFirebaseMessagingService">
+            android:name=".notify.fcm.NotifyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -31,7 +31,7 @@
         <!-- [END fcm_listener] -->
         <!-- [START instanceId_listener] -->
         <service
-            android:name="com.twilio.video.examples.videonotify.notify.fcm.NotifyFirebaseInstanceIDService"
+            android:name=".notify.fcm.NotifyFirebaseInstanceIDService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
@@ -39,8 +39,12 @@
         </service>
         <!-- [END instanceId_listener] -->
 
+        <service
+            android:name=".notify.service.RegistrationIntentService"
+            android:exported="false" />
+
         <activity
-            android:name="com.twilio.video.examples.videonotify.VideoNotifyActivity"
+            android:name=".VideoNotifyActivity"
             android:configChanges="orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
