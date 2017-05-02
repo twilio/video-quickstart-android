@@ -10,11 +10,14 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.twilio.video.examples.videonotify.VideoInviteActivity;
 import com.twilio.video.examples.videonotify.R;
+import com.twilio.video.examples.videonotify.notify.api.model.Invite;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
@@ -45,20 +48,26 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
          * The Notify service adds the message body to the remote message data so that we can
          * show a simple notification.
          */
-        String from = message.getFrom();
         Map<String,String> messageData = message.getData();
         String title = messageData.get(NOTIFY_TITLE_KEY);
         String body = messageData.get(NOTIFY_BODY_KEY);
-        // TODO: Fix this once data is working in the sdk-starter app
-        String roomName = body;
+        String data = messageData.get(NOTIFY_DATA_KEY);
+        Invite invite;
 
-        Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Title: " + body);
+        try {
+            invite = new ObjectMapper().readValue(data, Invite.class);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+            return;
+        }
+
+        Log.d(TAG, "From: " + invite.from);
+        Log.d(TAG, "Room Name: " + invite.roomName);
+        Log.d(TAG, "Title: " + title);
         Log.d(TAG, "Body: " + body);
-        Log.d(TAG, "Room Name: " + roomName);
 
-        showNotification(title, body, roomName);
-        broadcastVideoNotification(body, roomName);
+        showNotification(title, body, invite.roomName);
+        broadcastVideoNotification(body, invite.roomName);
     }
 
     /**

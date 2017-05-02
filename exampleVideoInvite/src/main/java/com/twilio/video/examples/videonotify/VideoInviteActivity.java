@@ -27,6 +27,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.video.AudioTrack;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.CameraCapturer.CameraSource;
@@ -43,13 +45,13 @@ import com.twilio.video.VideoRenderer;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 import com.twilio.video.examples.videonotify.notify.api.TwilioSDKStarterAPI;
+import com.twilio.video.examples.videonotify.notify.api.model.Invite;
 import com.twilio.video.examples.videonotify.notify.api.model.Notification;
 import com.twilio.video.examples.videonotify.notify.service.RegistrationIntentService;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -465,13 +467,24 @@ public class VideoInviteActivity extends AppCompatActivity {
     }
 
     void notify(final String roomName) {
+        String inviteJsonString;
+        try {
+            Invite invite = new Invite(identity, roomName);
+            inviteJsonString = new ObjectMapper().writeValueAsString(invite);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+            statusTextView.setText(e.getMessage());
+            return;
+        }
+
         /*
          * Use Twilio Notify to let others know you are connecting to a Room
          */
         Notification notification = new Notification(
-                "Join " + identity + " in room",
-                roomName,
-                roomName,
+                "Join " + identity + " in room " + roomName,
+                identity + " has invited you to join Video room " + roomName,
+                inviteJsonString,
                 NOTIFY_TAGS);
         TwilioSDKStarterAPI.notify(notification).enqueue(new Callback<Void>() {
             @Override
