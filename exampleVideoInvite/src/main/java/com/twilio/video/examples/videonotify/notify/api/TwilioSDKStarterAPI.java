@@ -14,7 +14,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
-import static com.twilio.video.examples.videonotify.VideoNotifyActivity.TWILIO_SDK_STARTER_SERVER_URL;
+import static com.twilio.video.examples.videonotify.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
 
 public class TwilioSDKStarterAPI {
     /**

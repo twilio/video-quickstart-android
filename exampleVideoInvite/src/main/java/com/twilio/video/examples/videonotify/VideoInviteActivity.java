@@ -58,7 +58,11 @@ import retrofit2.Response;
 import static com.twilio.video.examples.videonotify.R.drawable.ic_phonelink_ring_white_24dp;
 import static com.twilio.video.examples.videonotify.R.drawable.ic_volume_up_white_24dp;
 
-public class VideoNotifyActivity extends AppCompatActivity {
+/*
+ * This Activity shows how to use Twilio Video with Twilio Notify to invite other participants
+ * that have registered with Twilio Notify via push notifications.
+ */
+public class VideoInviteActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
 
     /*
@@ -607,7 +611,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
             @Override
             public void onDisconnected(Room room, TwilioException e) {
                 statusTextView.setText("Disconnected from " + room.getName());
-                VideoNotifyActivity.this.room = null;
+                VideoInviteActivity.this.room = null;
                 enableAudioFocus(false);
                 enableVolumeControl(false);
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
@@ -706,7 +710,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
                 /*
                  * Notify other participants to join the room
                  */
-                VideoNotifyActivity.this.notify(roomName);
+                VideoInviteActivity.this.notify(roomName);
             }
         };
     }
@@ -794,7 +798,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
                         switchCameraActionFab.hide();
                     }
                     localVideoActionFab.setImageDrawable(
-                            ContextCompat.getDrawable(VideoNotifyActivity.this, icon));
+                            ContextCompat.getDrawable(VideoInviteActivity.this, icon));
                 }
             }
         };
@@ -815,7 +819,7 @@ public class VideoNotifyActivity extends AppCompatActivity {
                     int icon = enable ?
                             R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
                     muteActionFab.setImageDrawable(ContextCompat.getDrawable(
-                            VideoNotifyActivity.this, icon));
+                            VideoInviteActivity.this, icon));
                 }
             }
         };

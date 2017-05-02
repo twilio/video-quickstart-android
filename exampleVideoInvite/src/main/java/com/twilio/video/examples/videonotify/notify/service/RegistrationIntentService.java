@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.twilio.video.examples.videonotify.R;
-import com.twilio.video.examples.videonotify.VideoNotifyActivity;
+import com.twilio.video.examples.videonotify.VideoInviteActivity;
 import com.twilio.video.examples.videonotify.notify.api.TwilioSDKStarterAPI;
 import com.twilio.video.examples.videonotify.notify.api.model.Binding;
 import com.twilio.video.examples.videonotify.notify.api.model.Token;
@@ -19,7 +19,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.twilio.video.examples.videonotify.VideoNotifyActivity.TWILIO_SDK_STARTER_SERVER_URL;
+import static com.twilio.video.examples.videonotify.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
 import static com.twilio.video.examples.videonotify.notify.service.BindingSharedPreferences.ADDRESS;
 import static com.twilio.video.examples.videonotify.notify.service.BindingSharedPreferences.ENDPOINT;
 import static com.twilio.video.examples.videonotify.notify.service.BindingSharedPreferences.IDENTITY;
@@ -120,7 +120,7 @@ public class RegistrationIntentService extends IntentService {
                     newEndpoint,
                     newAddress,
                     BINDING_TYPE,
-                    VideoNotifyActivity.NOTIFY_TAGS);
+                    VideoInviteActivity.NOTIFY_TAGS);
 
             TwilioSDKStarterAPI.registerBinding(binding).enqueue(new Callback<Void>() {
                 @Override
@@ -150,15 +150,15 @@ public class RegistrationIntentService extends IntentService {
     }
 
     private void sendRegistrationSuccess(String identity, String token) {
-        Intent intent = new Intent(VideoNotifyActivity.ACTION_REGISTRATION);
-        intent.putExtra(VideoNotifyActivity.REGISTRATION_IDENTITY, identity);
-        intent.putExtra(VideoNotifyActivity.REGISTRATION_TOKEN, token);
+        Intent intent = new Intent(VideoInviteActivity.ACTION_REGISTRATION);
+        intent.putExtra(VideoInviteActivity.REGISTRATION_IDENTITY, identity);
+        intent.putExtra(VideoInviteActivity.REGISTRATION_TOKEN, token);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private void sendRegistrationFailure(String message) {
-        Intent intent = new Intent(VideoNotifyActivity.ACTION_REGISTRATION);
-        intent.putExtra(VideoNotifyActivity.REGISTRATION_ERROR, message);
+        Intent intent = new Intent(VideoInviteActivity.ACTION_REGISTRATION);
+        intent.putExtra(VideoInviteActivity.REGISTRATION_ERROR, message);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

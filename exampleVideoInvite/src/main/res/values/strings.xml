@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Video Notify</string>
+    <string name="app_name">Video Invite</string>
     <string name="action_settings">Settings</string>
     <string name="status">status</string>
     <string name="error_retrieving_access_token">Error retrieving token</string>

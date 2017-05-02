@@ -44,7 +44,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".VideoNotifyActivity"
+            android:name=".VideoInviteActivity"
             android:configChanges="orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
