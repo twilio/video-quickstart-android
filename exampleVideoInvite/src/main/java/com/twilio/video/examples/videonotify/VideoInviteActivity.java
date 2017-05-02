@@ -32,9 +32,8 @@ import com.twilio.video.CameraCapturer;
 import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
-import com.twilio.video.LocalMedia;
+import com.twilio.video.LocalParticipant;
 import com.twilio.video.LocalVideoTrack;
-import com.twilio.video.Media;
 import com.twilio.video.Participant;
 import com.twilio.video.Room;
 import com.twilio.video.RoomState;
@@ -48,6 +47,7 @@ import com.twilio.video.examples.videonotify.notify.api.model.Notification;
 import com.twilio.video.examples.videonotify.notify.service.RegistrationIntentService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +72,7 @@ public class VideoInviteActivity extends AppCompatActivity {
      * The sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby here:
      * https://github.com/TwilioDevEd?q=sdk-starter
      */
-    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://01efc840.ngrok.io";
+    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://aac22b11.ngrok.io";
 
     /*
      * The tag used to notify others when this identity is connecting to a Video room.
@@ -112,6 +112,11 @@ public class VideoInviteActivity extends AppCompatActivity {
     private Room room;
 
     /*
+     * A LocalParticipant represents the identity and tracks provided by this instance
+     */
+    private LocalParticipant localParticipant;
+
+    /*
      * A VideoView receives frames from a local or remote video track and renders them
      * to an associated view.
      */
@@ -128,7 +133,6 @@ public class VideoInviteActivity extends AppCompatActivity {
     private TextView statusTextView;
     private TextView identityTextView;
     private CameraCapturer cameraCapturer;
-    private LocalMedia localMedia;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
     private FloatingActionButton connectActionFab;
@@ -245,7 +249,7 @@ public class VideoInviteActivity extends AppCompatActivity {
         if (registrationError != null) {
             statusTextView.setText(registrationError);
         } else {
-            setupLocalMedia();
+            createLocalTracks();
             identity = intent.getStringExtra(REGISTRATION_IDENTITY);
             token = intent.getStringExtra(REGISTRATION_TOKEN);
             identityTextView.setText(identity);
@@ -319,8 +323,8 @@ public class VideoInviteActivity extends AppCompatActivity {
         /*
          * If the local video track was removed when the app was put in the background, add it back.
          */
-        if (localMedia != null && localVideoTrack == null) {
-            localVideoTrack = localMedia.addVideoTrack(true, cameraCapturer);
+        if (checkPermissionForCameraAndMicrophone() && localVideoTrack == null && cameraCapturer != null) {
+            localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
             localVideoTrack.addRenderer(localVideoView);
         }
     }
@@ -335,8 +339,16 @@ public class VideoInviteActivity extends AppCompatActivity {
          * If this local video track is being shared in a Room, participants will be notified
          * that the track has been removed.
          */
-        if (localMedia != null && localVideoTrack != null) {
-            localMedia.removeVideoTrack(localVideoTrack);
+        if (localVideoTrack != null) {
+            /*
+             * If this local video track is being shared in a Room, remove from local
+             * participant before releasing the video track. Participants will be notified that
+             * the track has been removed.
+             */
+            if (localParticipant != null) {
+                localParticipant.removeVideoTrack(localVideoTrack);
+            }
+            localVideoTrack.release();
             localVideoTrack = null;
         }
         super.onPause();
@@ -354,11 +366,16 @@ public class VideoInviteActivity extends AppCompatActivity {
         }
 
         /*
-         * Release the local media ensuring any memory allocated to audio or video is freed.
+         * Release the local audio and video tracks ensuring any memory allocated to audio
+         * or video is freed.
          */
-        if (localMedia != null) {
-            localMedia.release();
-            localMedia = null;
+        if (localAudioTrack != null) {
+            localAudioTrack.release();
+            localAudioTrack = null;
+        }
+        if (localVideoTrack != null) {
+            localVideoTrack.release();
+            localVideoTrack = null;
         }
 
         super.onDestroy();
@@ -409,15 +426,13 @@ public class VideoInviteActivity extends AppCompatActivity {
         }
     }
 
-    private void setupLocalMedia() {
-        localMedia = LocalMedia.create(this);
-
+    private void createLocalTracks() {
         // Share your microphone
-        localAudioTrack = localMedia.addAudioTrack(true);
+        localAudioTrack = LocalAudioTrack.create(this, true);
 
         // Share your camera
         cameraCapturer = new CameraCapturer(this, CameraSource.FRONT_CAMERA);
-        localVideoTrack = localMedia.addVideoTrack(true, cameraCapturer);
+        localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
         primaryVideoView.setMirror(true);
         localVideoTrack.addRenderer(primaryVideoView);
         localVideoView = primaryVideoView;
@@ -426,11 +441,26 @@ public class VideoInviteActivity extends AppCompatActivity {
     private void connectToRoom(String roomName) {
         enableAudioFocus(true);
         enableVolumeControl(true);
-        ConnectOptions connectOptions = new ConnectOptions.Builder(token)
-                .roomName(roomName)
-                .localMedia(localMedia)
-                .build();
-        room = Video.connect(this, connectOptions, roomListener());
+
+        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(token)
+                .roomName(roomName);
+
+        /*
+         * Add local audio track to connect options to share with participants.
+         */
+        if (localAudioTrack != null) {
+            connectOptionsBuilder
+                    .audioTracks(Collections.singletonList(localAudioTrack));
+        }
+
+        /*
+         * Add local video track to connect options to share with participants.
+         */
+        if (localVideoTrack != null) {
+            connectOptionsBuilder.videoTracks(Collections.singletonList(localVideoTrack));
+        }
+
+        room = Video.connect(this, connectOptionsBuilder.build(), roomListener());
         setDisconnectBehavior();
     }
 
@@ -523,14 +553,14 @@ public class VideoInviteActivity extends AppCompatActivity {
         /*
          * Add participant renderer
          */
-        if (participant.getMedia().getVideoTracks().size() > 0) {
-            addParticipantVideo(participant.getMedia().getVideoTracks().get(0));
+        if (participant.getVideoTracks().size() > 0) {
+            addParticipantVideo(participant.getVideoTracks().get(0));
         }
 
         /*
          * Start listening for participant media events
          */
-        participant.getMedia().setListener(mediaListener());
+        participant.setListener(mediaListener());
     }
 
     /*
@@ -565,10 +595,10 @@ public class VideoInviteActivity extends AppCompatActivity {
         /*
          * Remove participant renderer
          */
-        if (participant.getMedia().getVideoTracks().size() > 0) {
-            removeParticipantVideo(participant.getMedia().getVideoTracks().get(0));
+        if (participant.getVideoTracks().size() > 0) {
+            removeParticipantVideo(participant.getVideoTracks().get(0));
         }
-        participant.getMedia().setListener(null);
+        participant.setListener(null);
         moveLocalVideoToPrimaryView();
     }
 
@@ -594,11 +624,12 @@ public class VideoInviteActivity extends AppCompatActivity {
         return new Room.Listener() {
             @Override
             public void onConnected(Room room) {
+                localParticipant = room.getLocalParticipant();
                 statusTextView.setText("Connected to " + room.getName());
                 setTitle(room.getName());
 
-                for (Map.Entry<String, Participant> entry : room.getParticipants().entrySet()) {
-                    addParticipant(entry.getValue());
+                for (Participant participant :  room.getParticipants()) {
+                    addParticipant(participant);
                     break;
                 }
             }
@@ -610,6 +641,7 @@ public class VideoInviteActivity extends AppCompatActivity {
 
             @Override
             public void onDisconnected(Room room, TwilioException e) {
+                localParticipant = null;
                 statusTextView.setText("Disconnected from " + room.getName());
                 VideoInviteActivity.this.room = null;
                 enableAudioFocus(false);
@@ -650,48 +682,48 @@ public class VideoInviteActivity extends AppCompatActivity {
         };
     }
 
-    private Media.Listener mediaListener() {
-        return new Media.Listener() {
+    private Participant.Listener mediaListener() {
+        return new Participant.Listener() {
 
             @Override
-            public void onAudioTrackAdded(Media media, AudioTrack audioTrack) {
+            public void onAudioTrackAdded(Participant participant, AudioTrack audioTrack) {
                 statusTextView.setText("onAudioTrackAdded");
             }
 
             @Override
-            public void onAudioTrackRemoved(Media media, AudioTrack audioTrack) {
+            public void onAudioTrackRemoved(Participant participant, AudioTrack audioTrack) {
                 statusTextView.setText("onAudioTrackRemoved");
             }
 
             @Override
-            public void onVideoTrackAdded(Media media, VideoTrack videoTrack) {
+            public void onVideoTrackAdded(Participant participant, VideoTrack videoTrack) {
                 statusTextView.setText("onVideoTrackAdded");
                 addParticipantVideo(videoTrack);
             }
 
             @Override
-            public void onVideoTrackRemoved(Media media, VideoTrack videoTrack) {
+            public void onVideoTrackRemoved(Participant participant, VideoTrack videoTrack) {
                 statusTextView.setText("onVideoTrackRemoved");
                 removeParticipantVideo(videoTrack);
             }
 
             @Override
-            public void onAudioTrackEnabled(Media media, AudioTrack audioTrack) {
+            public void onAudioTrackEnabled(Participant participant, AudioTrack audioTrack) {
 
             }
 
             @Override
-            public void onAudioTrackDisabled(Media media, AudioTrack audioTrack) {
+            public void onAudioTrackDisabled(Participant participant, AudioTrack audioTrack) {
 
             }
 
             @Override
-            public void onVideoTrackEnabled(Media media, VideoTrack videoTrack) {
+            public void onVideoTrackEnabled(Participant participant, VideoTrack videoTrack) {
 
             }
 
             @Override
-            public void onVideoTrackDisabled(Media media, VideoTrack videoTrack) {
+            public void onVideoTrackDisabled(Participant participant, VideoTrack videoTrack) {
 
             }
         };
