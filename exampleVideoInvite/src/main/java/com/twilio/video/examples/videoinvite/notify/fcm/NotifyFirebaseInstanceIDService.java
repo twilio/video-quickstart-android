@@ -1,11 +1,11 @@
-package com.twilio.video.examples.videonotify.notify.fcm;
+package com.twilio.video.examples.videoinvite.notify.fcm;
 
 import android.content.Intent;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.twilio.video.examples.videonotify.notify.service.RegistrationIntentService;
+import com.twilio.video.examples.videoinvite.notify.service.RegistrationIntentService;
 
 public class NotifyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 

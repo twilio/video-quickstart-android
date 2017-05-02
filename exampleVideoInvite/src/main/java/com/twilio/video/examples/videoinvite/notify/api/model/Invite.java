@@ -1,4 +1,4 @@
-package com.twilio.video.examples.videonotify.notify.api.model;
+package com.twilio.video.examples.videoinvite.notify.api.model;
 
 public class Invite {
     public final String roomName;

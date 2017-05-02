@@ -1,4 +1,4 @@
-package com.twilio.video.examples.videonotify;
+package com.twilio.video.examples.videoinvite;
 
 import org.junit.Test;
 

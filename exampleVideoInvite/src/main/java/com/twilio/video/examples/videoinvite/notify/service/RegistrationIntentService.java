@@ -1,4 +1,4 @@
-package com.twilio.video.examples.videonotify.notify.service;
+package com.twilio.video.examples.videoinvite.notify.service;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -9,20 +9,20 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.twilio.video.examples.videonotify.R;
-import com.twilio.video.examples.videonotify.VideoInviteActivity;
-import com.twilio.video.examples.videonotify.notify.api.TwilioSDKStarterAPI;
-import com.twilio.video.examples.videonotify.notify.api.model.Binding;
-import com.twilio.video.examples.videonotify.notify.api.model.Token;
+import com.twilio.video.examples.videoinvite.R;
+import com.twilio.video.examples.videoinvite.VideoInviteActivity;
+import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
+import com.twilio.video.examples.videoinvite.notify.api.model.Binding;
+import com.twilio.video.examples.videoinvite.notify.api.model.Token;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.twilio.video.examples.videonotify.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
-import static com.twilio.video.examples.videonotify.notify.service.BindingSharedPreferences.ADDRESS;
-import static com.twilio.video.examples.videonotify.notify.service.BindingSharedPreferences.ENDPOINT;
-import static com.twilio.video.examples.videonotify.notify.service.BindingSharedPreferences.IDENTITY;
+import static com.twilio.video.examples.videoinvite.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
+import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.ADDRESS;
+import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.ENDPOINT;
+import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.IDENTITY;
 
 public class RegistrationIntentService extends IntentService {
 

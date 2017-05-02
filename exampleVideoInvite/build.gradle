@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "com.twilio.video.examples.videonotify"
+        applicationId "com.twilio.video.examples.videoinvite"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1

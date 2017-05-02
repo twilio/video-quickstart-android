@@ -1,4 +1,4 @@
-package com.twilio.video.examples.videonotify;
+package com.twilio.video.examples.videoinvite;
 
 import android.Manifest;
 import android.app.NotificationManager;
@@ -44,10 +44,10 @@ import com.twilio.video.Video;
 import com.twilio.video.VideoRenderer;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
-import com.twilio.video.examples.videonotify.notify.api.TwilioSDKStarterAPI;
-import com.twilio.video.examples.videonotify.notify.api.model.Invite;
-import com.twilio.video.examples.videonotify.notify.api.model.Notification;
-import com.twilio.video.examples.videonotify.notify.service.RegistrationIntentService;
+import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
+import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
+import com.twilio.video.examples.videoinvite.notify.api.model.Notification;
+import com.twilio.video.examples.videoinvite.notify.service.RegistrationIntentService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,8 +57,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.twilio.video.examples.videonotify.R.drawable.ic_phonelink_ring_white_24dp;
-import static com.twilio.video.examples.videonotify.R.drawable.ic_volume_up_white_24dp;
+import static com.twilio.video.examples.videoinvite.R.drawable.ic_phonelink_ring_white_24dp;
+import static com.twilio.video.examples.videoinvite.R.drawable.ic_volume_up_white_24dp;
 
 /*
  * This Activity shows how to use Twilio Video with Twilio Notify to invite other participants
@@ -148,7 +148,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private int previousAudioMode;
     private VideoRenderer localVideoView;
     private boolean disconnectedFromOnDestroy;
-    private final static String TAG = "VideoNotifyActivity";
+    private final static String TAG = "VideoInviteActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

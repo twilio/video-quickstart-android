@@ -1,4 +1,4 @@
-package com.twilio.video.examples.videonotify.notify.fcm;
+package com.twilio.video.examples.videoinvite.notify.fcm;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,9 +13,9 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.twilio.video.examples.videonotify.VideoInviteActivity;
-import com.twilio.video.examples.videonotify.R;
-import com.twilio.video.examples.videonotify.notify.api.model.Invite;
+import com.twilio.video.examples.videoinvite.VideoInviteActivity;
+import com.twilio.video.examples.videoinvite.R;
+import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
 
 import java.io.IOException;
 import java.util.Map;
@@ -100,7 +100,7 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     /*
-     * Broadcast the Video Notification to the VideoNotifyActivity
+     * Broadcast the Video Notification to the Activity
      */
     private void broadcastVideoNotification(String body, String roomName) {
         Intent intent = new Intent(VideoInviteActivity.ACTION_VIDEO_NOTIFICATION);

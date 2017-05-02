@@ -1,4 +1,4 @@
-package com.twilio.video.examples.videonotify.notify.service;
+package com.twilio.video.examples.videoinvite.notify.service;
 
 public class BindingSharedPreferences {
     public static final String IDENTITY = "IDENTITY";

@@ -1,9 +1,9 @@
-package com.twilio.video.examples.videonotify.notify.api;
+package com.twilio.video.examples.videoinvite.notify.api;
 
-import com.twilio.video.examples.videonotify.notify.api.model.Binding;
-import com.twilio.video.examples.videonotify.notify.api.model.Identity;
-import com.twilio.video.examples.videonotify.notify.api.model.Notification;
-import com.twilio.video.examples.videonotify.notify.api.model.Token;
+import com.twilio.video.examples.videoinvite.notify.api.model.Binding;
+import com.twilio.video.examples.videoinvite.notify.api.model.Identity;
+import com.twilio.video.examples.videoinvite.notify.api.model.Notification;
+import com.twilio.video.examples.videoinvite.notify.api.model.Token;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -14,7 +14,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
-import static com.twilio.video.examples.videonotify.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
+import static com.twilio.video.examples.videoinvite.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
 
 public class TwilioSDKStarterAPI {
     /**

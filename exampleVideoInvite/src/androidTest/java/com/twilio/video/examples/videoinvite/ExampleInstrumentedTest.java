@@ -1,4 +1,4 @@
-package com.twilio.video.examples.videonotify;
+package com.twilio.video.examples.videoinvite;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
