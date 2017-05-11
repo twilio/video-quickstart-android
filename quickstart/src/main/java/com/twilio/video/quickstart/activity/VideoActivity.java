@@ -86,6 +86,7 @@ public class VideoActivity extends AppCompatActivity {
     private String participantIdentity;
 
     private int previousAudioMode;
+    private boolean previousMicrophoneMute;
     private VideoRenderer localVideoView;
     private boolean disconnectedFromOnDestroy;
 
@@ -263,7 +264,7 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     private void connectToRoom(String roomName) {
-        setAudioFocus(true);
+        configureAudio(true);
         ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(accessToken)
                 .roomName(roomName);
 
@@ -425,6 +426,7 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onConnectFailure(Room room, TwilioException e) {
                 videoStatusTextView.setText("Failed to connect");
+                configureAudio(false);
             }
 
             @Override
@@ -434,7 +436,7 @@ public class VideoActivity extends AppCompatActivity {
                 VideoActivity.this.room = null;
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
                 if (!disconnectedFromOnDestroy) {
-                    setAudioFocus(false);
+                    configureAudio(false);
                     intializeUI();
                     moveLocalVideoToPrimaryView();
                 }
@@ -645,8 +647,8 @@ public class VideoActivity extends AppCompatActivity {
                 });
     }
 
-    private void setAudioFocus(boolean focus) {
-        if (focus) {
+    private void configureAudio(boolean enable) {
+        if (enable) {
             previousAudioMode = audioManager.getMode();
             // Request audio focus before making any device switch.
             audioManager.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
@@ -658,9 +660,15 @@ public class VideoActivity extends AppCompatActivity {
              * speaker mode if this is not set.
              */
             audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+            /*
+             * Always disable microphone mute during a WebRTC call.
+             */
+            previousMicrophoneMute = audioManager.isMicrophoneMute();
+            audioManager.setMicrophoneMute(false);
         } else {
             audioManager.setMode(previousAudioMode);
             audioManager.abandonAudioFocus(null);
+            audioManager.setMicrophoneMute(previousMicrophoneMute);
         }
     }
 }
