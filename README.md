@@ -107,9 +107,10 @@ The adoption of APK splits requires developers to submit multiple APKs to the Pl
 ## Troubleshooting Audio
 The following sections provide guidance on how to ensure optimal audio quality in your applications.
 
-### Configuring [AudioManager](https://developer.android.com/reference/android/media/AudioManager.html)
-The following snippet shows how to configure `AudioManager` for optimal experience when sharing
-audio to a `Room`.
+### Configuring AudioManager
+The following snippet shows how to configure 
+[AudioManager](https://developer.android.com/reference/android/media/AudioManager.html) for optimal 
+experience when sharing audio to a `Room`.
 
     private void configureAudio(boolean enable) {
         if (enable) {
