@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.CameraParameterUpdater;
-import com.twilio.video.LocalMedia;
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.VideoView;
 
@@ -35,7 +34,6 @@ import com.twilio.video.VideoView;
 public class AdvancedCameraCapturerActivity extends Activity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
 
-    private LocalMedia localMedia;
     private VideoView videoView;
     private Button toggleFlashButton;
     private Button takePictureButton;
@@ -105,7 +103,6 @@ public class AdvancedCameraCapturerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advanced_camera_capturer);
 
-        localMedia = LocalMedia.create(this);
         videoView = (VideoView) findViewById(R.id.video_view);
         toggleFlashButton = (Button) findViewById(R.id.toggle_flash_button);
         takePictureButton = (Button) findViewById(R.id.take_picture_button);
@@ -153,8 +150,10 @@ public class AdvancedCameraCapturerActivity extends Activity {
     @Override
     protected void onDestroy() {
         localVideoTrack.removeRenderer(videoView);
-        localMedia.removeVideoTrack(localVideoTrack);
-        localMedia.release();
+        if (localVideoTrack != null) {
+            localVideoTrack.release();
+            localVideoTrack = null;
+        }
         super.onDestroy();
     }
 
@@ -172,7 +171,7 @@ public class AdvancedCameraCapturerActivity extends Activity {
 
     private void addCameraVideo() {
         cameraCapturer = new CameraCapturer(this, CameraCapturer.CameraSource.BACK_CAMERA);
-        localVideoTrack = localMedia.addVideoTrack(true, cameraCapturer);
+        localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
         localVideoTrack.addRenderer(videoView);
         toggleFlashButton.setOnClickListener(toggleFlashButtonClickListener);
         takePictureButton.setOnClickListener(takePictureButtonClickListener);
