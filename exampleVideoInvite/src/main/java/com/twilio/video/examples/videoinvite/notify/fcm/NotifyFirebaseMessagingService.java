@@ -28,14 +28,18 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
      * The Twilio Notify message data keys are as follows:
      *  "twi_title"  // The title of the message
      *  "twi_body"   // The body of the message
-     *  "twi_data"   // The data associated with the message
      *
      * You can find a more detailed description of all supported fields here:
      * https://www.twilio.com/docs/api/notifications/rest/notifications#generic-payload-parameters
      */
     private static final String NOTIFY_TITLE_KEY = "twi_title";
     private static final String NOTIFY_BODY_KEY = "twi_body";
-    private static final String NOTIFY_DATA_KEY = "twi_data";
+
+    /*
+     * The keys sent by the notify.api.model.Invite model class
+     */
+    private static final String NOTIFY_INVITE_FROM_IDENTITY_KEY = "fromIdentity";
+    private static final String NOTIFY_INVITE_ROOM_NAME_KEY = "roomName";
 
     /**
      * Called when a message is received.
@@ -51,17 +55,11 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String,String> messageData = message.getData();
         String title = messageData.get(NOTIFY_TITLE_KEY);
         String body = messageData.get(NOTIFY_BODY_KEY);
-        String data = messageData.get(NOTIFY_DATA_KEY);
-        Invite invite;
+        Invite invite =
+                new Invite(messageData.get(NOTIFY_INVITE_FROM_IDENTITY_KEY),
+                        messageData.get(NOTIFY_INVITE_ROOM_NAME_KEY));
 
-        try {
-            invite = new ObjectMapper().readValue(data, Invite.class);
-        } catch (Exception e) {
-            Log.e(TAG, "Invalid FCM message data format");
-            return;
-        }
-
-        Log.d(TAG, "From: " + invite.from);
+        Log.d(TAG, "From: " + invite.fromIdentity);
         Log.d(TAG, "Room Name: " + invite.roomName);
         Log.d(TAG, "Title: " + title);
         Log.d(TAG, "Body: " + body);
