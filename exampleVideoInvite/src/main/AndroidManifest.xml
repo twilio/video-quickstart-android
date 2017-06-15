@@ -31,10 +31,9 @@
         <!-- [END fcm_listener] -->
         <!-- [START instanceId_listener] -->
         <service
-            android:name=".notify.fcm.NotifyFirebaseInstanceIDService"
-            android:exported="false">
+            android:name=".notify.fcm.NotifyFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <!-- [END instanceId_listener] -->
