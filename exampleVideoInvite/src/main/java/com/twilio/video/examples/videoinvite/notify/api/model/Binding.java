@@ -11,15 +11,15 @@ import java.util.List;
 public class Binding {
     public final String identity;
     public final String endpoint;
-    public final String Address;
-    public final String BindingType;
-    public final List<String> Tag;
+    public final String address;
+    public final String bindingType;
+    public final List<String> tag;
 
     public Binding(String identity, String endpoint, String address, String bindingType, List<String> tag) {
         this.identity = identity;
         this.endpoint = endpoint;
-        this.Address = address;
-        this.BindingType = bindingType;
-        this.Tag = tag;
+        this.address = address;
+        this.bindingType = bindingType;
+        this.tag = tag;
     }
 }

@@ -102,7 +102,7 @@ public class RegistrationIntentService extends IntentService {
          * were stored in shared preferences after the last successful binding registration.
          */
         if (newEndpoint.equals(endpoint) && newAddress.equals(address)) {
-            Log.i(TAG, "A new binding registration was not performed because" +
+            Log.i(TAG, "A new binding registration was not performed because " +
                     "the binding values are the same as the last registered binding.");
             sendRegistrationSuccess(identity, token);
         } else {

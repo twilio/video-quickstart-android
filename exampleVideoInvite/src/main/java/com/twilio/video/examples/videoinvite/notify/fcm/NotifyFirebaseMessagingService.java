@@ -56,8 +56,8 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
 
         try {
             invite = new ObjectMapper().readValue(data, Invite.class);
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Invalid FCM message data format");
             return;
         }
 
