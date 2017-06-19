@@ -3,23 +3,22 @@ package com.twilio.video.examples.videoinvite.notify.api.model;
 import java.util.List;
 
 /**
- * This is the Binding model defined to register with Twilio Notify in the sdk-starter projects
- * available in C#, Java, Node, PHP, Python, or Ruby.
+ * The Binding model defined to register a binding with Twilio Notify
  *
- * https://github.com/TwilioDevEd?q=sdk-starter
+ * https://www.twilio.com/docs/api/notify/rest/bindings
  */
 public class Binding {
-    public final String identity;
-    public final String endpoint;
-    public final String address;
-    public final String bindingType;
-    public final List<String> tag;
+    public final String Identity;
+    public final String Endpoint;
+    public final String Address;
+    public final String BindingType;
+    public final List<String> Tag;
 
     public Binding(String identity, String endpoint, String address, String bindingType, List<String> tag) {
-        this.identity = identity;
-        this.endpoint = endpoint;
-        this.address = address;
-        this.bindingType = bindingType;
-        this.tag = tag;
+        this.Identity = identity;
+        this.Endpoint = endpoint;
+        this.Address = address;
+        this.BindingType = bindingType;
+        this.Tag = tag;
     }
 }

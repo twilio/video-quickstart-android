@@ -74,7 +74,7 @@ public class VideoInviteActivity extends AppCompatActivity {
      * The sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby here:
      * https://github.com/TwilioDevEd?q=sdk-starter
      */
-    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://0c7c88f3.ngrok.io";
+    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://71653b87.ngrok.io";
 
     /*
      * The tag used to notify others when this identity is connecting to a Video room.
@@ -267,7 +267,7 @@ public class VideoInviteActivity extends AppCompatActivity {
          */
         if (room == null) {
             String dialogRoomName = intent.getStringExtra(VIDEO_NOTIFICATION_ROOM_NAME);
-            showVideoNotificationConnectDialog("Join this room", dialogRoomName);
+            showVideoNotificationConnectDialog("You're invited to join room:", dialogRoomName);
         }
     }
 
