@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.twilio.video.CameraCapturer;
-import com.twilio.video.LocalMedia;
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.VideoView;
 
@@ -25,7 +24,6 @@ import com.twilio.video.VideoView;
 public class CustomRendererVideoActivity extends Activity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
 
-    private LocalMedia localMedia;
     private VideoView localVideoView;
     private ImageView snapshotImageView;
     private TextView tapForSnapshotTextView;
@@ -37,7 +35,6 @@ public class CustomRendererVideoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_renderer);
 
-        localMedia = LocalMedia.create(this);
         localVideoView = (VideoView) findViewById(R.id.local_video);
         snapshotImageView = (ImageView) findViewById(R.id.image_view);
         tapForSnapshotTextView = (TextView) findViewById(R.id.tap_video_snapshot);
@@ -77,13 +74,13 @@ public class CustomRendererVideoActivity extends Activity {
     protected void onDestroy() {
         localVideoTrack.removeRenderer(localVideoView);
         localVideoTrack.removeRenderer(snapshotVideoRenderer);
-        localMedia.removeVideoTrack(localVideoTrack);
-        localMedia.release();
+        localVideoTrack.release();
+        localVideoTrack = null;
         super.onDestroy();
     }
 
     private void addVideo() {
-        localVideoTrack = localMedia.addVideoTrack(true, new CameraCapturer(this,
+        localVideoTrack = LocalVideoTrack.create(this, true, new CameraCapturer(this,
                 CameraCapturer.CameraSource.FRONT_CAMERA, null));
         snapshotVideoRenderer = new SnapshotVideoRenderer(snapshotImageView);
         localVideoTrack.addRenderer(localVideoView);

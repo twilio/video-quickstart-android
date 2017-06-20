@@ -9,6 +9,7 @@ Get started with Video on Android:
 - [Examples](#examples) - Customize your video experience with these examples
 - [Using an Emulator](#using-an-emulator) - Setup an emulator in Android Studio
 - [Reducing APK Size](#reducing-apk-size) - Use ABI splits to reduce your APK size
+- [Troubleshooting Audio](#troubleshooting-audio) - Mitigate audio issues in your application
 - [Setup an Access Token Server](#setup-an-access-token-server) - Setup an access token server
 - [More Documentation](#more-documentation) - More documentation related to the Video Android SDK
 - [Issues & Support](#issues-and-support) - Filing issues and general support
@@ -103,6 +104,61 @@ The following snippet shows an example `build.gradle` with APK splits enabled.
 
 The adoption of APK splits requires developers to submit multiple APKs to the Play Store. Refer to [Google’s documentation](https://developer.android.com/google/play/publishing/multiple-apks.html) for how to support this in your application.
 
+## Troubleshooting Audio
+The following sections provide guidance on how to ensure optimal audio quality in your applications.
+
+### Configuring AudioManager
+The following snippet shows how to configure 
+[AudioManager](https://developer.android.com/reference/android/media/AudioManager.html) for optimal 
+experience when sharing audio to a `Room`.
+
+    private void configureAudio(boolean enable) {
+        if (enable) {
+            previousAudioMode = audioManager.getMode();
+            // Request audio focus before making any device switch.
+            audioManager.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
+                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+            /*
+             * Use MODE_IN_COMMUNICATION as the default audio mode. It is required
+             * to be in this mode when playout and/or recording starts for the best
+             * possible VoIP performance. Some devices have difficulties with
+             * speaker mode if this is not set.
+             */
+            audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+            /*
+             * Always disable microphone mute during a WebRTC call.
+             */
+            previousMicrophoneMute = audioManager.isMicrophoneMute();
+            audioManager.setMicrophoneMute(false);
+        } else {
+            audioManager.setMode(previousAudioMode);
+            audioManager.abandonAudioFocus(null);
+            audioManager.setMicrophoneMute(previousMicrophoneMute);
+        }
+    }
+
+### Configuring Hardware Audio Effects
+Our library performs acoustic echo cancellation (AEC), noise suppression (NS), and auto gain 
+control (AGC) using device hardware by default. Using device hardware is more efficient, but some 
+devices do not implement these audio effects well. If you are experiencing echo, background noise, 
+or unexpected volume levels on certain devices reference the following snippet for enabling 
+software implementations of AEC, NS, and AGC.
+
+    /*
+     * Execute any time before creating a LocalAudioTrack and connecting 
+     * to a Room.
+     */
+    
+    // Use software AEC
+    WebRtcAudioUtils.setWebRtcBasedAcousticEchoCanceler(true);
+    
+    // Use sofware NS
+    WebRtcAudioUtils.setWebRtcBasedNoiseSuppressor(true);
+    
+    // Use software AGC
+    WebRtcAudioUtils.setWebRtcBasedAutomaticGainControl(true);
+
+
 ## Setup an Access Token Server
 
 Using Twilio's Video client within your applications requires an access token. 
@@ -111,14 +167,13 @@ You can run your own server that provides access tokens, based on your Twilio cr
 
 ### Configuring the Access Token Server
 
-If you want to be a little closer to a real environment, you can download one of the video quickstart applications - for instance, [Video Quickstart: PHP](https://github.com/TwilioDevEd/video-quickstart-php) and either run it locally, or install it on a server.
+If you want to be a little closer to a real environment, you can download one of the video quickstart applications - for instance, [Video Quickstart: Node](https://github.com/TwilioDevEd/video-quickstart-node) and either run it locally, or install it on a server.
 
-You'll need to gather a couple of configuration options from your Twilio developer console before running it, so read the directions on the quickstart. You'll copy the config.example.php file to a config.php file, and then add in these credentials:
+You'll need to gather a couple of configuration options from your Twilio developer console before running it, so read the directions on the quickstart. You'll copy the .env.example file to a .env file, and then add in these credentials:
  
 Credential | Description
 ---------- | -----------
 Twilio Account SID | Your main Twilio account identifier - [find it on your dashboard](https://www.twilio.com/user/account/video).
-Twilio Video Configuration SID | Adds video capability to the access token - [generate one here](https://www.twilio.com/user/account/video/profiles)
 API Key | Used to authenticate - [generate one here](https://www.twilio.com/user/account/messaging/dev-tools/api-keys).
 API Secret | Used to authenticate - [just like the above, you'll get one here](https://www.twilio.com/user/account/messaging/dev-tools/api-keys).
 
