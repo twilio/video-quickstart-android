@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.twilio.video.LocalMedia;
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.ScreenCapturer;
 import com.twilio.video.VideoView;
@@ -24,7 +23,6 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     private static final String TAG = "ScreenCapturer";
     private static final int REQUEST_MEDIA_PROJECTION = 100;
 
-    private LocalMedia localMedia;
     private VideoView localVideoView;
     private LocalVideoTrack screenVideoTrack;
     private ScreenCapturer screenCapturer;
@@ -49,8 +47,6 @@ public class ScreenCapturerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_capturer);
         localVideoView = (VideoView) findViewById(R.id.local_video);
-
-        localMedia = LocalMedia.create(this);
     }
 
     @Override
@@ -113,7 +109,7 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     }
 
     private void startScreenCapture() {
-        screenVideoTrack = localMedia.addVideoTrack(true, screenCapturer);
+        screenVideoTrack = LocalVideoTrack.create(this, true, screenCapturer);
         screenCaptureMenuItem.setIcon(R.drawable.ic_stop_screen_share_white_24dp);
         screenCaptureMenuItem.setTitle(R.string.stop_screen_share);
 
@@ -122,22 +118,21 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     }
 
     private void stopScreenCapture() {
-        localVideoView.setVisibility(View.INVISIBLE);
-        localMedia.removeVideoTrack(screenVideoTrack);
-
-        screenCaptureMenuItem.setIcon(R.drawable.ic_screen_share_white_24dp);
-        screenCaptureMenuItem.setTitle(R.string.share_screen);
-        screenVideoTrack.removeRenderer(localVideoView);
+        if (screenVideoTrack != null) {
+            screenVideoTrack.removeRenderer(localVideoView);
+            screenVideoTrack.release();
+            screenVideoTrack = null;
+            localVideoView.setVisibility(View.INVISIBLE);
+            screenCaptureMenuItem.setIcon(R.drawable.ic_screen_share_white_24dp);
+            screenCaptureMenuItem.setTitle(R.string.share_screen);
+        }
     }
 
     @Override
     protected void onDestroy() {
-        if (localMedia != null) {
-            if (screenVideoTrack != null) {
-                localMedia.removeVideoTrack(screenVideoTrack);
-            }
-            localMedia.release();
-            localMedia = null;
+        if (screenVideoTrack != null) {
+            screenVideoTrack.release();
+            screenVideoTrack = null;
         }
         super.onDestroy();
     }
