@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "your_mobilesdk_app_id",
         "android_client_info": {
-          "package_name": "com.twilio.voice.quickstart"
+          "package_name": "com.twilio.video.examples.videoinvite"
         }
       },
       "oauth_client": [],
