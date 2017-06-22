@@ -50,7 +50,7 @@ Paste in the `Server API Key` and press Save.
 
 ### <a name="bullet3"></a>3. Download the SDK Starter project
 
-Go to the [SDK Starter Node](https://github.com/TwilioDevEd/sdk-starter-node) project.
+Go to the [SDK Starter Java](https://github.com/TwilioDevEd/sdk-starter-java) project.
 
 Follow the steps in the `README.md` to configure Twilio Video and Twilio Notify. When you create
 the Notify Service make sure you select the FCM credential that you created in the previous step.

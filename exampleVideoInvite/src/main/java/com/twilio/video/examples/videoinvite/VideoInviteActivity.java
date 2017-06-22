@@ -74,7 +74,7 @@ public class VideoInviteActivity extends AppCompatActivity {
      * The sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby here:
      * https://github.com/TwilioDevEd?q=sdk-starter
      */
-    public static final String TWILIO_SDK_STARTER_SERVER_URL = "https://71653b87.ngrok.io";
+    public static final String TWILIO_SDK_STARTER_SERVER_URL = "TWILIO_SDK_STARTER_SERVER_URL";
 
     /*
      * The tag used to notify others when this identity is connecting to a Video room.
@@ -88,7 +88,7 @@ public class VideoInviteActivity extends AppCompatActivity {
      */
     public static final String ACTION_VIDEO_NOTIFICATION = "VIDEO_NOTIFICATION";
     public static final String VIDEO_NOTIFICATION_ROOM_NAME = "VIDEO_NOTIFICATION_ROOM_NAME";
-    public static final String VIDEO_NOTIFICATION_BODY = "VIDEO_NOTIFICATION_BODY";
+    public static final String VIDEO_NOTIFICATION_TITLE = "VIDEO_NOTIFICATION_TITLE";
 
     /*
      * Intent keys used to obtain a token and register with Twilio Notify

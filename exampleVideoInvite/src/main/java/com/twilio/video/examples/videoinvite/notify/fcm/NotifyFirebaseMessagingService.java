@@ -10,14 +10,12 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.R;
 import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
@@ -65,7 +63,7 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Body: " + body);
 
         showNotification(title, body, invite.roomName);
-        broadcastVideoNotification(body, invite.roomName);
+        broadcastVideoNotification(title, invite.roomName);
     }
 
     /**
@@ -74,7 +72,7 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
     private void showNotification(String title, String body, String roomName) {
         Intent intent = new Intent(this, VideoInviteActivity.class);
         intent.setAction(VideoInviteActivity.ACTION_VIDEO_NOTIFICATION);
-        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_BODY, body);
+        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_TITLE, body);
         intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, roomName);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -100,9 +98,9 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
     /*
      * Broadcast the Video Notification to the Activity
      */
-    private void broadcastVideoNotification(String body, String roomName) {
+    private void broadcastVideoNotification(String title, String roomName) {
         Intent intent = new Intent(VideoInviteActivity.ACTION_VIDEO_NOTIFICATION);
-        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_BODY, body);
+        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_TITLE, title);
         intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, roomName);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
