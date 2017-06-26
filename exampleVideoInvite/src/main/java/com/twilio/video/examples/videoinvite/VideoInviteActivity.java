@@ -7,11 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -49,7 +47,6 @@ import com.twilio.video.VideoView;
 import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
 import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
 import com.twilio.video.examples.videoinvite.notify.api.model.Notification;
-import com.twilio.video.examples.videoinvite.notify.api.model.Token;
 import com.twilio.video.examples.videoinvite.notify.service.RegistrationIntentService;
 
 import java.util.ArrayList;
@@ -62,7 +59,6 @@ import retrofit2.Response;
 
 import static com.twilio.video.examples.videoinvite.R.drawable.ic_phonelink_ring_white_24dp;
 import static com.twilio.video.examples.videoinvite.R.drawable.ic_volume_up_white_24dp;
-import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.IDENTITY;
 
 /*
  * This Activity shows how to use Twilio Video with Twilio Notify to invite other participants
@@ -75,8 +71,8 @@ public class VideoInviteActivity extends AppCompatActivity {
      * Set your SDK Starter Server URL to get an access token with Twilio Video and Twilio Notify
      * grants and register this app instance with Twilio Notify.
      *
-     * The sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby here:
-     * https://github.com/TwilioDevEd?q=sdk-starter
+     * At the moment, the sdk-starter project that is compliant with this project is only available
+     * in Java and can be found here: https://github.com/TwilioDevEd/sdk-starter-java
      */
     public static final String TWILIO_SDK_STARTER_SERVER_URL = "YOUR_TWILIO_SDK_STARTER_SERVER_URL";
 
@@ -132,6 +128,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private boolean isReceiverRegistered;
     private LocalBroadcastReceiver localBroadcastReceiver;
     private NotificationManager notificationManager;
+    private Intent cachedVideoNotificationIntent;
 
     /*
      * Android application UI elements
@@ -203,7 +200,12 @@ public class VideoInviteActivity extends AppCompatActivity {
         } else if (intent != null && intent.getAction() == ACTION_REGISTRATION) {
             handleRegistration(intent);
         } else if (intent != null && intent.getAction() == ACTION_VIDEO_NOTIFICATION) {
-            handleVideoNotificationIntent(intent);
+            /*
+             * Cache the video invite notification intent until an access token is obtained through
+             * registration
+             */
+            cachedVideoNotificationIntent = intent;
+            register();
         } else {
             register();
         }
@@ -246,34 +248,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
         if (intent.getAction() == ACTION_VIDEO_NOTIFICATION) {
-            if (token != null) {
-                handleVideoNotificationIntent(intent);
-            } else {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(this);
-                String identity = sharedPreferences.getString(IDENTITY, null);
-                TwilioSDKStarterAPI.fetchToken(identity).enqueue(new Callback<Token>() {
-                    @Override
-                    public void onResponse(Call<Token> call, Response<Token> response) {
-                        if (response.isSuccess()) {
-                            token = response.body().token;
-                            handleVideoNotificationIntent(intent);
-                        } else {
-                            String message = "Fetching token failed: " +
-                                    response.code() + " " + response.message();
-                            Log.e(TAG, message);
-                            statusTextView.setText(message);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Token> call, Throwable t) {
-                        String message = "Fetching token failed: " + t.getMessage();
-                        Log.e(TAG, message);
-                        statusTextView.setText(message);
-                    }
-                });
-            }
+            handleVideoNotificationIntent(intent);
         }
     }
 
@@ -288,6 +263,10 @@ public class VideoInviteActivity extends AppCompatActivity {
             identityTextView.setText(identity);
             statusTextView.setText("Registered");
             intializeUI();
+            if (cachedVideoNotificationIntent != null) {
+                handleVideoNotificationIntent(cachedVideoNotificationIntent);
+                cachedVideoNotificationIntent = null;
+            }
         }
     }
 
