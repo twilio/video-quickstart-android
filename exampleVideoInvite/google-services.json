@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "your_mobilesdk_app_id",
+        "mobilesdk_app_id": "1:012345678901:android:0123456789abcef0",
         "android_client_info": {
           "package_name": "com.twilio.video.examples.videoinvite"
         }
