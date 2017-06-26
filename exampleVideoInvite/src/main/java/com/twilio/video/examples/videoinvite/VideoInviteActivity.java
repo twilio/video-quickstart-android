@@ -297,8 +297,9 @@ public class VideoInviteActivity extends AppCompatActivity {
          * Only handle the notification if not already connected to a Video Room
          */
         if (room == null) {
+            String title = intent.getStringExtra(VIDEO_NOTIFICATION_TITLE);
             String dialogRoomName = intent.getStringExtra(VIDEO_NOTIFICATION_ROOM_NAME);
-            showVideoNotificationConnectDialog("You're invited to join room:", dialogRoomName);
+            showVideoNotificationConnectDialog(title, dialogRoomName);
         }
     }
 
@@ -514,7 +515,7 @@ public class VideoInviteActivity extends AppCompatActivity {
          */
         Notification notification = new Notification(
                 "Join " + identity + " in room " + roomName,
-                identity + " has invited you to join Video room " + roomName,
+                identity + " has invited you to join video room " + roomName,
                 inviteJsonString,
                 NOTIFY_TAGS);
         TwilioSDKStarterAPI.notify(notification).enqueue(new Callback<Void>() {

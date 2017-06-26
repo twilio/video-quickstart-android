@@ -72,7 +72,7 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
     private void showNotification(String title, String body, String roomName) {
         Intent intent = new Intent(this, VideoInviteActivity.class);
         intent.setAction(VideoInviteActivity.ACTION_VIDEO_NOTIFICATION);
-        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_TITLE, body);
+        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_TITLE, title);
         intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, roomName);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
