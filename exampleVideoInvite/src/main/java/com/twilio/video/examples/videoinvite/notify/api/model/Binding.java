@@ -1,5 +1,7 @@
 package com.twilio.video.examples.videoinvite.notify.api.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -8,17 +10,22 @@ import java.util.List;
  * https://www.twilio.com/docs/api/notify/rest/bindings
  */
 public class Binding {
-    public final String Identity;
-    public final String Endpoint;
-    public final String Address;
-    public final String BindingType;
-    public final List<String> Tag;
+    @SerializedName("Identity")
+    public final String identity;
+    @SerializedName("Endpoint")
+    public final String endpoint;
+    @SerializedName("Address")
+    public final String address;
+    @SerializedName("BindingType")
+    public final String bindingType;
+    @SerializedName("Tag")
+    public final List<String> tag;
 
     public Binding(String identity, String endpoint, String address, String bindingType, List<String> tag) {
-        this.Identity = identity;
-        this.Endpoint = endpoint;
-        this.Address = address;
-        this.BindingType = bindingType;
-        this.Tag = tag;
+        this.identity = identity;
+        this.endpoint = endpoint;
+        this.address = address;
+        this.bindingType = bindingType;
+        this.tag = tag;
     }
 }

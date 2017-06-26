@@ -1,5 +1,7 @@
 package com.twilio.video.examples.videoinvite.notify.api.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -8,16 +10,20 @@ import java.util.List;
  * https://www.twilio.com/docs/api/notify/rest/notifications
  */
 public class Notification {
-    public final String Title;
-    public final String Body;
-    public final String Data;
-    public final List<String> Tag;
+    @SerializedName("Title")
+    public final String title;
+    @SerializedName("Body")
+    public final String body;
+    @SerializedName("Data")
+    public final String data;
+    @SerializedName("Tag")
+    public final List<String> tag;
 
     public Notification(String title, String body, String data, List<String> tag) {
-        this.Title = title;
-        this.Body = body;
-        this.Data = data;
-        this.Tag = tag;
+        this.title = title;
+        this.body = body;
+        this.data = data;
+        this.tag = tag;
     }
 
 }
