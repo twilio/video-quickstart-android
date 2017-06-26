@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:id="@+id/video_container"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:keepScreenOn="true"
+             tools:showIn="@layout/activity_video">
+
+    <com.twilio.video.VideoView
+        android:id="@+id/thumbnail_video_view"
+        app:overlaySurface="true"
+        app:mirror="true"
+        android:visibility="gone"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|start"/>
+
+    <com.twilio.video.VideoView
+        android:id="@+id/primary_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/identity_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/status_margin"
+        android:layout_gravity="top|center"
+        android:orientation="vertical"
+        android:textColor="@color/colorAccent"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/status_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/status_margin"
+        android:layout_gravity="bottom|center"
+        android:orientation="vertical"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        android:text="@string/status"/>
+
+</FrameLayout>

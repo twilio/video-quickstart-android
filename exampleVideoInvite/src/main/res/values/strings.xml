@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Video Invite</string>
+    <string name="action_settings">Settings</string>
+    <string name="status">status</string>
+    <string name="error_retrieving_access_token">Error retrieving token</string>
+    <string name="log_out">Log Out</string>
+    <string name="permissions_needed">Camera and Microphone permissions needed. Please allow in App Settings for additional functionality.</string>
+    <string name="progress_dialog_message">Registering Binding...</string>
+    <string name="register_binding">Register Binding</string>
+    <string name="identity">Identity</string>
+    <string name="turn_speaker_on">Speaker ON</string>
+    <string name="twilio_sdk_starter_server_url">YOUR_TWILIO_SDK_STARTER_SERVER_URL</string>
+</resources>
