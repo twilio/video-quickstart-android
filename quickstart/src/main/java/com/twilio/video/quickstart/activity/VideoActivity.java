@@ -74,7 +74,7 @@ public class VideoActivity extends AppCompatActivity {
      * Android application UI elements
      */
     private TextView videoStatusTextView;
-    private CameraCapturerCompat cameraCapturer;
+    private CameraCapturerCompat cameraCapturerCompat;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
     private FloatingActionButton connectActionFab;
@@ -159,7 +159,7 @@ public class VideoActivity extends AppCompatActivity {
          * If the local video track was released when the app was put in the background, recreate.
          */
         if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
-            localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer.getVideoCapturer());
+            localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturerCompat.getVideoCapturer());
             localVideoTrack.addRenderer(localVideoView);
 
             /*
@@ -247,8 +247,8 @@ public class VideoActivity extends AppCompatActivity {
         localAudioTrack = LocalAudioTrack.create(this, true);
 
         // Share your camera
-        cameraCapturer = new CameraCapturerCompat(this, CameraSource.FRONT_CAMERA);
-        localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer.getVideoCapturer());
+        cameraCapturerCompat = new CameraCapturerCompat(this, CameraSource.FRONT_CAMERA);
+        localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturerCompat.getVideoCapturer());
         primaryVideoView.setMirror(true);
         localVideoTrack.addRenderer(primaryVideoView);
         localVideoView = primaryVideoView;
@@ -367,7 +367,7 @@ public class VideoActivity extends AppCompatActivity {
             localVideoTrack.removeRenderer(primaryVideoView);
             localVideoTrack.addRenderer(thumbnailVideoView);
             localVideoView = thumbnailVideoView;
-            thumbnailVideoView.setMirror(cameraCapturer.getCameraSource() ==
+            thumbnailVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
                     CameraSource.FRONT_CAMERA);
         }
     }
@@ -401,7 +401,7 @@ public class VideoActivity extends AppCompatActivity {
             thumbnailVideoView.setVisibility(View.GONE);
             localVideoTrack.addRenderer(primaryVideoView);
             localVideoView = primaryVideoView;
-            primaryVideoView.setMirror(cameraCapturer.getCameraSource() ==
+            primaryVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
                     CameraSource.FRONT_CAMERA);
         }
     }
@@ -570,9 +570,9 @@ public class VideoActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cameraCapturer != null) {
-                    CameraSource cameraSource = cameraCapturer.getCameraSource();
-                    cameraCapturer.switchCamera();
+                if (cameraCapturerCompat != null) {
+                    CameraSource cameraSource = cameraCapturerCompat.getCameraSource();
+                    cameraCapturerCompat.switchCamera();
                     if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
                         thumbnailVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
                     } else {
