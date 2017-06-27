@@ -29,7 +29,6 @@ import com.twilio.video.TwilioException;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
 import com.twilio.video.AudioTrack;
-import com.twilio.video.CameraCapturer;
 import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
@@ -38,6 +37,7 @@ import com.twilio.video.Participant;
 import com.twilio.video.Room;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
+import com.twilio.video.quickstart.util.CameraCapturerCompat;
 
 import java.util.Collections;
 
@@ -74,7 +74,7 @@ public class VideoActivity extends AppCompatActivity {
      * Android application UI elements
      */
     private TextView videoStatusTextView;
-    private CameraCapturer cameraCapturer;
+    private CameraCapturerCompat cameraCapturer;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
     private FloatingActionButton connectActionFab;
@@ -159,7 +159,7 @@ public class VideoActivity extends AppCompatActivity {
          * If the local video track was released when the app was put in the background, recreate.
          */
         if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
-            localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
+            localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer.getVideoCapturer());
             localVideoTrack.addRenderer(localVideoView);
 
             /*
@@ -247,8 +247,8 @@ public class VideoActivity extends AppCompatActivity {
         localAudioTrack = LocalAudioTrack.create(this, true);
 
         // Share your camera
-        cameraCapturer = new CameraCapturer(this, CameraSource.FRONT_CAMERA);
-        localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
+        cameraCapturer = new CameraCapturerCompat(this, CameraSource.FRONT_CAMERA);
+        localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer.getVideoCapturer());
         primaryVideoView.setMirror(true);
         localVideoTrack.addRenderer(primaryVideoView);
         localVideoView = primaryVideoView;
