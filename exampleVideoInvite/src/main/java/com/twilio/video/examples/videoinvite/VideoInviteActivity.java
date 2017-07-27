@@ -622,7 +622,6 @@ public class VideoInviteActivity extends AppCompatActivity {
         if (participant.getVideoTracks().size() > 0) {
             removeParticipantVideo(participant.getVideoTracks().get(0));
         }
-        participant.setListener(null);
         moveLocalVideoToPrimaryView();
     }
 
