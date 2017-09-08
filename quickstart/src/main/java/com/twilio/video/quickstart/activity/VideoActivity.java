@@ -22,18 +22,21 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.twilio.video.LocalParticipant;
+import com.twilio.video.RemoteAudioTrack;
+import com.twilio.video.RemoteAudioTrackPublication;
+import com.twilio.video.RemoteParticipant;
+import com.twilio.video.RemoteVideoTrack;
+import com.twilio.video.RemoteVideoTrackPublication;
 import com.twilio.video.RoomState;
 import com.twilio.video.Video;
 import com.twilio.video.VideoRenderer;
 import com.twilio.video.TwilioException;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
-import com.twilio.video.AudioTrack;
 import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
 import com.twilio.video.LocalVideoTrack;
-import com.twilio.video.Participant;
 import com.twilio.video.Room;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
@@ -83,7 +86,7 @@ public class VideoActivity extends AppCompatActivity {
     private FloatingActionButton muteActionFab;
     private android.support.v7.app.AlertDialog alertDialog;
     private AudioManager audioManager;
-    private String participantIdentity;
+    private String remoteParticipantIdentity;
 
     private int previousAudioMode;
     private boolean previousMicrophoneMute;
@@ -166,7 +169,7 @@ public class VideoActivity extends AppCompatActivity {
              * If connected to a Room then share the local video track.
              */
             if (localParticipant != null) {
-                localParticipant.addVideoTrack(localVideoTrack);
+                localParticipant.publishTrack(localVideoTrack);
             }
         }
     }
@@ -179,12 +182,12 @@ public class VideoActivity extends AppCompatActivity {
          */
         if (localVideoTrack != null) {
             /*
-             * If this local video track is being shared in a Room, remove from local
-             * participant before releasing the video track. Participants will be notified that
-             * the track has been removed.
+             * If this local video track is being shared in a Room, unpublish from room before
+             * releasing the video track. Participants will be notified that the track has been
+             * unpublished.
              */
             if (localParticipant != null) {
-                localParticipant.removeVideoTrack(localVideoTrack);
+                localParticipant.unpublishTrack(localVideoTrack);
             }
 
             localVideoTrack.release();
@@ -323,9 +326,9 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     /*
-     * Called when participant joins the room
+     * Called when remote participant joins the room
      */
-    private void addParticipant(Participant participant) {
+    private void addRemoteParticipant(RemoteParticipant remoteParticipant) {
         /*
          * This app only displays video for one additional participant per Room
          */
@@ -336,26 +339,34 @@ public class VideoActivity extends AppCompatActivity {
                     .setAction("Action", null).show();
             return;
         }
-        participantIdentity = participant.getIdentity();
-        videoStatusTextView.setText("Participant "+ participantIdentity + " joined");
+        remoteParticipantIdentity = remoteParticipant.getIdentity();
+        videoStatusTextView.setText("RemoteParticipant "+ remoteParticipantIdentity + " joined");
 
         /*
-         * Add participant renderer
+         * Add remote participant renderer
          */
-        if (participant.getVideoTracks().size() > 0) {
-            addParticipantVideo(participant.getVideoTracks().get(0));
+        if (remoteParticipant.getRemoteVideoTracks().size() > 0) {
+            RemoteVideoTrackPublication remoteVideoTrackPublication =
+                    remoteParticipant.getRemoteVideoTracks().get(0);
+
+            /*
+             * Only render video tracks that are subscribed to
+             */
+            if (remoteVideoTrackPublication.isTrackSubscribed()) {
+                addRemoteParticipantVideo(remoteVideoTrackPublication.getRemoteVideoTrack());
+            }
         }
 
         /*
          * Start listening for participant events
          */
-        participant.setListener(participantListener());
+        remoteParticipant.setListener(remoteParticipantListener());
     }
 
     /*
      * Set primary view as renderer for participant video track
      */
-    private void addParticipantVideo(VideoTrack videoTrack) {
+    private void addRemoteParticipantVideo(VideoTrack videoTrack) {
         moveLocalVideoToThumbnailView();
         primaryVideoView.setMirror(false);
         videoTrack.addRenderer(primaryVideoView);
@@ -373,19 +384,28 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     /*
-     * Called when participant leaves the room
+     * Called when remote participant leaves the room
      */
-    private void removeParticipant(Participant participant) {
-        videoStatusTextView.setText("Participant "+participant.getIdentity()+ " left.");
-        if (!participant.getIdentity().equals(participantIdentity)) {
+    private void removeRemoteParticipant(RemoteParticipant remoteParticipant) {
+        videoStatusTextView.setText("RemoteParticipant " + remoteParticipant.getIdentity() +
+                " left.");
+        if (!remoteParticipant.getIdentity().equals(remoteParticipantIdentity)) {
             return;
         }
 
         /*
-         * Remove participant renderer
+         * Remove remote participant renderer
          */
-        if (participant.getVideoTracks().size() > 0) {
-            removeParticipantVideo(participant.getVideoTracks().get(0));
+        if (!remoteParticipant.getRemoteVideoTracks().isEmpty()) {
+            RemoteVideoTrackPublication remoteVideoTrackPublication =
+                    remoteParticipant.getRemoteVideoTracks().get(0);
+
+            /*
+             * Remove video only if subscribed to participant track
+             */
+            if (remoteVideoTrackPublication.isTrackSubscribed()) {
+                removeParticipantVideo(remoteVideoTrackPublication.getRemoteVideoTrack());
+            }
         }
         moveLocalVideoToPrimaryView();
     }
@@ -416,8 +436,8 @@ public class VideoActivity extends AppCompatActivity {
                 videoStatusTextView.setText("Connected to " + room.getName());
                 setTitle(room.getName());
 
-                for (Participant participant : room.getParticipants()) {
-                    addParticipant(participant);
+                for (RemoteParticipant remoteParticipant : room.getRemoteParticipants()) {
+                    addRemoteParticipant(remoteParticipant);
                     break;
                 }
             }
@@ -442,14 +462,14 @@ public class VideoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onParticipantConnected(Room room, Participant participant) {
-                addParticipant(participant);
+            public void onParticipantConnected(Room room, RemoteParticipant remoteParticipant) {
+                addRemoteParticipant(remoteParticipant);
 
             }
 
             @Override
-            public void onParticipantDisconnected(Room room, Participant participant) {
-                removeParticipant(participant);
+            public void onParticipantDisconnected(Room room, RemoteParticipant remoteParticipant) {
+                removeRemoteParticipant(remoteParticipant);
             }
 
             @Override
@@ -472,47 +492,83 @@ public class VideoActivity extends AppCompatActivity {
         };
     }
 
-    private Participant.Listener participantListener() {
-        return new Participant.Listener() {
+    private RemoteParticipant.Listener remoteParticipantListener() {
+        return new RemoteParticipant.Listener() {
             @Override
-            public void onAudioTrackAdded(Participant participant, AudioTrack audioTrack) {
-                videoStatusTextView.setText("onAudioTrackAdded");
+            public void onAudioTrackPublished(RemoteParticipant remoteParticipant,
+                                              RemoteAudioTrackPublication remoteAudioTrackPublication) {
+                videoStatusTextView.setText("onAudioTrackPublished");
             }
 
             @Override
-            public void onAudioTrackRemoved(Participant participant, AudioTrack audioTrack) {
-                videoStatusTextView.setText("onAudioTrackRemoved");
+            public void onAudioTrackUnpublished(RemoteParticipant remoteParticipant,
+                                                RemoteAudioTrackPublication remoteAudioTrackPublication) {
+                videoStatusTextView.setText("onAudioTrackUnpublished");
             }
 
             @Override
-            public void onVideoTrackAdded(Participant participant, VideoTrack videoTrack) {
-                videoStatusTextView.setText("onVideoTrackAdded");
-                addParticipantVideo(videoTrack);
+            public void onVideoTrackPublished(RemoteParticipant remoteParticipant,
+                                              RemoteVideoTrackPublication remoteVideoTrackPublication) {
+                videoStatusTextView.setText("onVideoTrackPublished");
             }
 
             @Override
-            public void onVideoTrackRemoved(Participant participant, VideoTrack videoTrack) {
-                videoStatusTextView.setText("onVideoTrackRemoved");
-                removeParticipantVideo(videoTrack);
+            public void onVideoTrackUnpublished(RemoteParticipant remoteParticipant,
+                                                RemoteVideoTrackPublication remoteVideoTrackPublication) {
+                videoStatusTextView.setText("onVideoTrackUnpublished");
             }
 
             @Override
-            public void onAudioTrackEnabled(Participant participant, AudioTrack audioTrack) {
+            public void onAudioTrackSubscribed(RemoteParticipant remoteParticipant,
+                                               RemoteAudioTrackPublication remoteAudioTrackPublication,
+                                               RemoteAudioTrack remoteAudioTrack) {
+                videoStatusTextView.setText("onAudioTrackSubscribed");
+            }
+
+            @Override
+            public void onAudioTrackUnsubscribed(RemoteParticipant remoteParticipant,
+                                                 RemoteAudioTrackPublication remoteAudioTrackPublication,
+                                                 RemoteAudioTrack remoteAudioTrack) {
+                videoStatusTextView.setText("onAudioTrackUnsubscribed");
+            }
+
+            @Override
+            public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant,
+                                               RemoteVideoTrackPublication remoteVideoTrackPublication,
+                                               RemoteVideoTrack remoteVideoTrack) {
+                videoStatusTextView.setText("onVideoTrackSubscribed");
+                addRemoteParticipantVideo(remoteVideoTrack);
+            }
+
+            @Override
+            public void onVideoTrackUnsubscribed(RemoteParticipant remoteParticipant,
+                                                 RemoteVideoTrackPublication remoteVideoTrackPublication,
+                                                 RemoteVideoTrack remoteVideoTrack) {
+                videoStatusTextView.setText("onVideoTrackUnsubscribed");
+                removeParticipantVideo(remoteVideoTrack);
+            }
+
+            @Override
+            public void onAudioTrackEnabled(RemoteParticipant remoteParticipant,
+                                            RemoteAudioTrackPublication remoteAudioTrackPublication) {
 
             }
 
             @Override
-            public void onAudioTrackDisabled(Participant participant, AudioTrack audioTrack) {
+            public void onAudioTrackDisabled(RemoteParticipant remoteParticipant,
+                                             RemoteAudioTrackPublication remoteAudioTrackPublication) {
 
             }
 
             @Override
-            public void onVideoTrackEnabled(Participant participant, VideoTrack videoTrack) {
+            public void onVideoTrackEnabled(RemoteParticipant remoteParticipant,
+                                            RemoteVideoTrackPublication remoteVideoTrackPublication) {
 
             }
 
             @Override
-            public void onVideoTrackDisabled(Participant participant, VideoTrack videoTrack) {
+            public void onVideoTrackDisabled(RemoteParticipant remoteParticipant,
+                                             RemoteVideoTrackPublication remoteVideoTrackPublication) {
 
             }
         };
