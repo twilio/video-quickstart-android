@@ -147,7 +147,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private FloatingActionButton muteActionFab;
     private android.support.v7.app.AlertDialog alertDialog;
     private AudioManager audioManager;
-    private String remoteParticipantIdentify;
+    private String remoteParticipantIdentity;
 
     private int previousAudioMode;
     private VideoRenderer localVideoView;
@@ -579,8 +579,8 @@ public class VideoInviteActivity extends AppCompatActivity {
                     .show();
             return;
         }
-        remoteParticipantIdentify = remoteParticipant.getIdentity();
-        statusTextView.setText("RemoteParticipant " + remoteParticipantIdentify + " joined");
+        remoteParticipantIdentity = remoteParticipant.getIdentity();
+        statusTextView.setText("RemoteParticipant " + remoteParticipantIdentity + " joined");
 
         /*
          * Add remote participant renderer
@@ -628,7 +628,7 @@ public class VideoInviteActivity extends AppCompatActivity {
      */
     private void removeParticipant(RemoteParticipant remoteParticipant) {
         statusTextView.setText("Participant "+remoteParticipant.getIdentity()+ " left.");
-        if (!remoteParticipant.getIdentity().equals(remoteParticipantIdentify)) {
+        if (!remoteParticipant.getIdentity().equals(remoteParticipantIdentity)) {
             return;
         }
 
