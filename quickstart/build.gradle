@@ -44,5 +44,6 @@ dependencies {
     compile "com.twilio:video-android:2.0.0-preview1"
     compile 'com.koushikdutta.ion:ion:2.1.7'
     compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:preference-v14:24.2.1'
     compile 'com.android.support:design:24.2.1'
 }
