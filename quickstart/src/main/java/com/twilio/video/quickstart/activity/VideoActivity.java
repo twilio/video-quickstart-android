@@ -4,9 +4,12 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -34,7 +37,10 @@ import com.twilio.video.RemoteParticipant;
 import com.twilio.video.RemoteVideoTrack;
 import com.twilio.video.RemoteVideoTrackPublication;
 import com.twilio.video.RoomState;
+import com.twilio.video.StatsListener;
+import com.twilio.video.StatsReport;
 import com.twilio.video.Video;
+import com.twilio.video.VideoCodec;
 import com.twilio.video.VideoRenderer;
 import com.twilio.video.TwilioException;
 import com.twilio.video.quickstart.R;
@@ -49,6 +55,7 @@ import com.twilio.video.VideoView;
 import com.twilio.video.quickstart.util.CameraCapturerCompat;
 
 import java.util.Collections;
+import java.util.List;
 
 public class VideoActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
@@ -73,11 +80,23 @@ public class VideoActivity extends AppCompatActivity {
     private LocalParticipant localParticipant;
 
     /*
+     * AudioCodec and VideoCodec represent the preferred codec for encoding and decoding audio and
+     * video.
+     */
+    private AudioCodec audioCodec;
+    private VideoCodec videoCodec;
+
+    /*
      * A VideoView receives frames from a local or remote video track and renders them
      * to an associated view.
      */
     private VideoView primaryVideoView;
     private VideoView thumbnailVideoView;
+
+    /*
+     * Android shared preferences used for settings
+     */
+    private SharedPreferences preferences;
 
     /*
      * Android application UI elements
@@ -112,6 +131,11 @@ public class VideoActivity extends AppCompatActivity {
         switchCameraActionFab = (FloatingActionButton) findViewById(R.id.switch_camera_action_fab);
         localVideoActionFab = (FloatingActionButton) findViewById(R.id.local_video_action_fab);
         muteActionFab = (FloatingActionButton) findViewById(R.id.mute_action_fab);
+
+        /*
+         * Get shared preferences to read settings
+         */
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         /*
          * Enable changing the volume using the up/down keys during a conversation
@@ -182,6 +206,17 @@ public class VideoActivity extends AppCompatActivity {
     @Override
     protected  void onResume() {
         super.onResume();
+
+        /*
+         * Update preferred audio and video codec in case changed in settings
+         */
+        audioCodec = getCodecPreference(SettingsActivity.PREF_AUDIO_CODEC,
+                SettingsActivity.PREF_AUDIO_CODEC_DEFAULT,
+                AudioCodec.class);
+        videoCodec = getCodecPreference(SettingsActivity.PREF_VIDEO_CODEC,
+                SettingsActivity.PREF_VIDEO_CODEC_DEFAULT,
+                VideoCodec.class);
+
         /*
          * If the local video track was released when the app was put in the background, recreate.
          */
@@ -309,6 +344,13 @@ public class VideoActivity extends AppCompatActivity {
         if (localVideoTrack != null) {
             connectOptionsBuilder.videoTracks(Collections.singletonList(localVideoTrack));
         }
+
+        /*
+         * Set the preferred audio and video codec for media.
+         */
+        connectOptionsBuilder.preferAudioCodecs(Collections.singletonList(audioCodec));
+        connectOptionsBuilder.preferVideoCodecs(Collections.singletonList(videoCodec));
+
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener());
         setDisconnectAction();
     }
@@ -327,6 +369,17 @@ public class VideoActivity extends AppCompatActivity {
         localVideoActionFab.setOnClickListener(localVideoClickListener());
         muteActionFab.show();
         muteActionFab.setOnClickListener(muteClickListener());
+    }
+
+    /*
+     * Get the preferred audio or video codec from shared preferences
+     */
+    private <T extends Enum<T>> T getCodecPreference(String key,
+                                                     String defaultValue,
+                                                     final Class<T> enumClass) {
+
+        final String codec = preferences.getString(key, defaultValue);
+        return Enum.valueOf(enumClass, codec);
     }
 
     /*
