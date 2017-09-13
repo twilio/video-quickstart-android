@@ -13,7 +13,7 @@
     <string name="codec_title">Set your preferred audio and video codec. Not all codecs are supported with Group rooms. The media server will fallback to OPUS or VP8 if a preferred codec is not supported.</string>
     <string name="pref_title_audio_codec">Audio Codec</string>
     <string name="pref_title_video_codec">Video Codec</string>
-    <string name="sender_bandwidth_constraints">Set sender bandwidth constraints.</string>
+    <string name="sender_bandwidth_constraints">Set sender bandwidth constraints. Zero represents the WebRTC default value which varies by codec.</string>
     <string name="max_audio_bitrate">Max Audio Bitrate (bits per second)</string>
     <string name="max_video_bitrate">Max Video Bitrate (bits per second)</string>
 </resources>
