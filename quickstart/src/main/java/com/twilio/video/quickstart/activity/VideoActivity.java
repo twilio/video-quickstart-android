@@ -30,6 +30,7 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.twilio.video.AudioCodec;
+import com.twilio.video.EncodingParameters;
 import com.twilio.video.LocalParticipant;
 import com.twilio.video.RemoteAudioTrack;
 import com.twilio.video.RemoteAudioTrackPublication;
@@ -85,6 +86,11 @@ public class VideoActivity extends AppCompatActivity {
      */
     private AudioCodec audioCodec;
     private VideoCodec videoCodec;
+
+    /*
+     * Encoding parameters represent the sender side bandwidth constraints.
+     */
+    private EncodingParameters encodingParameters;
 
     /*
      * A VideoView receives frames from a local or remote video track and renders them
@@ -218,6 +224,11 @@ public class VideoActivity extends AppCompatActivity {
                 VideoCodec.class);
 
         /*
+         * Get latest encoding parameters
+         */
+        final EncodingParameters newEncodingParameters = getEncodingParameters();
+
+        /*
          * If the local video track was released when the app was put in the background, recreate.
          */
         if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
@@ -229,8 +240,20 @@ public class VideoActivity extends AppCompatActivity {
              */
             if (localParticipant != null) {
                 localParticipant.publishTrack(localVideoTrack);
+
+                /*
+                 * Update encoding parameters if they have changed.
+                 */
+                if (!newEncodingParameters.equals(encodingParameters)) {
+                    localParticipant.setEncodingParameters(newEncodingParameters);
+                }
             }
         }
+
+        /*
+         * Update encoding parameters
+         */
+        encodingParameters = newEncodingParameters;
     }
 
     @Override
@@ -351,6 +374,11 @@ public class VideoActivity extends AppCompatActivity {
         connectOptionsBuilder.preferAudioCodecs(Collections.singletonList(audioCodec));
         connectOptionsBuilder.preferVideoCodecs(Collections.singletonList(videoCodec));
 
+        /*
+         * Set the sender side encoding parameters.
+         */
+        connectOptionsBuilder.encodingParameters(encodingParameters);
+
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener());
         setDisconnectAction();
     }
@@ -380,6 +408,17 @@ public class VideoActivity extends AppCompatActivity {
 
         final String codec = preferences.getString(key, defaultValue);
         return Enum.valueOf(enumClass, codec);
+    }
+
+    private EncodingParameters getEncodingParameters() {
+        final int maxAudioBitrate = Integer.parseInt(
+                preferences.getString(SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE,
+                        SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT));
+        final int maxVideoBitrate = Integer.parseInt(
+                preferences.getString(SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE,
+                        SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT));
+
+        return new EncodingParameters(maxAudioBitrate, maxVideoBitrate);
     }
 
     /*
