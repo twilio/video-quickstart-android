@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -26,6 +27,10 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String PREF_AUDIO_CODEC_DEFAULT = "OPUS";
     public static final String PREF_VIDEO_CODEC = "video_codec";
     public static final String PREF_VIDEO_CODEC_DEFAULT = "VP8";
+    public static final String PREF_SENDER_MAX_AUDIO_BITRATE = "sender_max_audio_bitrate";
+    public static final String PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT = "0";
+    public static final String PREF_SENDER_MAX_VIDEO_BITRATE = "sender_max_video_bitrate";
+    public static final String PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT = "0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +85,15 @@ public class SettingsActivity extends AppCompatActivity {
                     PREF_VIDEO_CODEC,
                     PREF_VIDEO_CODEC_DEFAULT,
                     (ListPreference) findPreference(PREF_VIDEO_CODEC));
+            setupSenderBandwidthPreferences(PREF_SENDER_MAX_AUDIO_BITRATE,
+                    PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT,
+                    (EditTextPreference) findPreference(PREF_SENDER_MAX_AUDIO_BITRATE));
+            setupSenderBandwidthPreferences(PREF_SENDER_MAX_VIDEO_BITRATE,
+                    PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT,
+                    (EditTextPreference) findPreference(PREF_SENDER_MAX_VIDEO_BITRATE));
         }
+
+
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
@@ -120,6 +133,23 @@ public class SettingsActivity extends AppCompatActivity {
             preference.setValue(value);
             preference.setSummary(value);
             preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    preference.setSummary(newValue.toString());
+                    return true;
+                }
+            });
+        }
+
+        private void setupSenderBandwidthPreferences(String key,
+                                                     String defaultValue,
+                                                     EditTextPreference editTextPreference) {
+            String value = sharedPreferences.getString(key, defaultValue);
+
+            // Set layout with input type number for edit text
+            editTextPreference.setDialogLayoutResource(R.layout.preference_dialog_number_edittext);
+            editTextPreference.setSummary(value);
+            editTextPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     preference.setSummary(newValue.toString());
