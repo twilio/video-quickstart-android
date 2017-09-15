@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion "${versions.buildTools}"
 
     defaultConfig {
         applicationId "com.twilio.video.examples.videoinvite"
-        minSdkVersion 16
-        targetSdkVersion 25
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -34,14 +34,14 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile "com.twilio:video-android:2.0.0-preview1"
-    compile "com.google.firebase:firebase-messaging:10.0.1"
-    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    compile 'com.squareup.retrofit2:converter-jackson:2.0.0-beta4'
-    compile 'com.koushikdutta.ion:ion:2.1.7'
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:design:25.1.1'
+    compile "com.twilio:video-android:${versions.videoAndroid}"
+    compile "com.google.firebase:firebase-messaging:${versions.firebase}"
+    compile "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    compile "com.squareup.retrofit2:converter-jackson:${versions.retrofit}"
+    compile "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
+    compile "com.koushikdutta.ion:ion:${versions.ion}"
+    compile "com.android.support:appcompat-v7:${versions.supportLibrary}"
+    compile "com.android.support:design:${versions.supportLibrary}"
 }
 
 apply plugin: 'com.google.gms.google-services'
