@@ -20,13 +20,18 @@ To get started with the Quickstart application follow these steps:
 
 1. Open this project in Android Studio and select the quickstart app module.
   <img width="700px" src="images/quickstart/android_studio_quickstart.png"/>
-2. Type in an identity and click on "Generate Access Token" from the [testing tools page](https://www.twilio.com/user/account/video/dev-tools/testing-tools).
+
+2. Type in an identity and click on "Generate Access Token" from the [Testing Tools page](https://www.twilio.com/console/video/runtime/testing-tools).
   <img width="700px" src="images/quickstart/generate_access_token.png"/>
+
 3. Paste the Access Token into the VideoActivity.java.
   <img width="700px" src="images/quickstart/activity_access_token.png"/>
+
 4. Run the quickstart app on an Android device or Android emulator.
+
 5. Press the call button at the bottom right portion of the screen and type a room name to connect to a Room.
   <img height="500px" src="images/quickstart/connect_dialog.png"/>
+
 6. On another device, use an additional access token with a different identity to connect to the same room. 
 
 ## Examples
@@ -174,9 +179,9 @@ You'll need to gather a couple of configuration options from your Twilio develop
  
 Credential | Description
 ---------- | -----------
-Twilio Account SID | Your main Twilio account identifier - [find it on your dashboard](https://www.twilio.com/user/account/video).
-API Key | Used to authenticate - [generate one here](https://www.twilio.com/user/account/messaging/dev-tools/api-keys).
-API Secret | Used to authenticate - [just like the above, you'll get one here](https://www.twilio.com/user/account/messaging/dev-tools/api-keys).
+Twilio Account SID | Your main Twilio account identifier - [find it on your dashboard](https://www.twilio.com/console).
+API Key | Used to authenticate - [generate one here](https://www.twilio.com/console/video/runtime/api-keys).
+API Secret | Used to authenticate - [just like the above, you'll get one here](https://www.twilio.com/console/video/runtime/api-keys).
 
 #### A Note on API Keys
 
