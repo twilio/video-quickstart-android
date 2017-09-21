@@ -2,16 +2,16 @@
 
 buildscript {
     ext.versions = [
-            'compileSdk': 25,
-            'buildTools': '25.0.2',
+            'compileSdk': 26,
+            'buildTools': '26.0.1',
             'minSdk': 16,
-            'targetSdk': 25,
-            'supportLibrary': '25.1.0',
+            'targetSdk': 26,
+            'supportLibrary': '26.1.0',
             'firebase': '10.0.1',
             'retrofit': '2.0.0-beta4',
             'okhttp': '3.6.0',
             'ion': '2.1.7',
-            'videoAndroid': '1.3.1'
+            'videoAndroid': '1.3.2'
     ]
     repositories {
         jcenter()
