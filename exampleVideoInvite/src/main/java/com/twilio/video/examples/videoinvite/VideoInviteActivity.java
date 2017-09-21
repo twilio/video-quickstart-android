@@ -456,11 +456,17 @@ public class VideoInviteActivity extends AppCompatActivity {
         localAudioTrack = LocalAudioTrack.create(this, true);
 
         // Share your camera
-        cameraCapturer = new CameraCapturer(this, CameraSource.FRONT_CAMERA);
+        cameraCapturer = new CameraCapturer(this, getAvailableCameraSource());
         localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
         primaryVideoView.setMirror(true);
         localVideoTrack.addRenderer(primaryVideoView);
         localVideoView = primaryVideoView;
+    }
+
+    private CameraSource getAvailableCameraSource() {
+        return (CameraCapturer.isSourceAvailable(CameraSource.FRONT_CAMERA)) ?
+                (CameraSource.FRONT_CAMERA) :
+                (CameraSource.BACK_CAMERA);
     }
 
     private void connectToRoom(String roomName) {

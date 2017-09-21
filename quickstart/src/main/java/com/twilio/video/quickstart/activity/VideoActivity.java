@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.twilio.video.CameraCapturer;
 import com.twilio.video.LocalParticipant;
 import com.twilio.video.RoomState;
 import com.twilio.video.Video;
@@ -250,11 +251,17 @@ public class VideoActivity extends AppCompatActivity {
         localAudioTrack = LocalAudioTrack.create(this, true);
 
         // Share your camera
-        cameraCapturerCompat = new CameraCapturerCompat(this, CameraSource.FRONT_CAMERA);
+        cameraCapturerCompat = new CameraCapturerCompat(this, getAvailableCameraSource());
         localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturerCompat.getVideoCapturer());
         primaryVideoView.setMirror(true);
         localVideoTrack.addRenderer(primaryVideoView);
         localVideoView = primaryVideoView;
+    }
+
+    private CameraSource getAvailableCameraSource() {
+        return (CameraCapturer.isSourceAvailable(CameraSource.FRONT_CAMERA)) ?
+                (CameraSource.FRONT_CAMERA) :
+                (CameraSource.BACK_CAMERA);
     }
 
     private void setAccessToken() {
