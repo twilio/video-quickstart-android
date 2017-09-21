@@ -337,11 +337,20 @@ public class VideoInviteActivity extends AppCompatActivity {
         super.onResume();
         registerReceiver();
         /*
-         * If the local video track was removed when the app was put in the background, add it back.
+         * If the local video track was released when the app was put in the background, recreate.
          */
-        if (checkPermissionForCameraAndMicrophone() && localVideoTrack == null && cameraCapturer != null) {
+        if (localVideoTrack == null &&
+                checkPermissionForCameraAndMicrophone() &&
+                cameraCapturer != null) {
             localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
             localVideoTrack.addRenderer(localVideoView);
+
+            /*
+             * If connected to a Room then share the local video track.
+             */
+            if (localParticipant != null) {
+                localParticipant.addVideoTrack(localVideoTrack);
+            }
         }
     }
 
