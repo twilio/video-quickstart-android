@@ -11,7 +11,6 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -42,8 +41,6 @@ import com.twilio.video.RemoteParticipant;
 import com.twilio.video.RemoteVideoTrack;
 import com.twilio.video.RemoteVideoTrackPublication;
 import com.twilio.video.RoomState;
-import com.twilio.video.StatsListener;
-import com.twilio.video.StatsReport;
 import com.twilio.video.Video;
 import com.twilio.video.VideoCodec;
 import com.twilio.video.VideoRenderer;
@@ -60,11 +57,21 @@ import com.twilio.video.VideoView;
 import com.twilio.video.quickstart.util.CameraCapturerCompat;
 
 import java.util.Collections;
-import java.util.List;
 
 public class VideoActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
     private static final String TAG = "VideoActivity";
+
+    /*
+     * Audio and video tracks can be created with names. This feature is useful for categorizing
+     * tracks of participants. For example, if one participant publishes a video track with
+     * ScreenCapturer and CameraCapturer with the names "screen" and "camera" respectively then
+     * other participants can use RemoteVideoTrack#getName to determine which video track is
+     * produced from the other participant's screen or camera.
+     *
+     */
+    private static final String LOCAL_AUDIO_TRACK_NAME = "mic";
+    private static final String LOCAL_VIDEO_TRACK_NAME = "camera";
 
     /*
      * You must provide a Twilio Access Token to connect to the Video service
@@ -236,7 +243,10 @@ public class VideoActivity extends AppCompatActivity {
          * If the local video track was released when the app was put in the background, recreate.
          */
         if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
-            localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturerCompat.getVideoCapturer());
+            localVideoTrack = LocalVideoTrack.create(this,
+                    true,
+                    cameraCapturerCompat.getVideoCapturer(),
+                    LOCAL_VIDEO_TRACK_NAME);
             localVideoTrack.addRenderer(localVideoView);
 
             /*
@@ -333,11 +343,14 @@ public class VideoActivity extends AppCompatActivity {
 
     private void createAudioAndVideoTracks() {
         // Share your microphone
-        localAudioTrack = LocalAudioTrack.create(this, true);
+        localAudioTrack = LocalAudioTrack.create(this, true, LOCAL_AUDIO_TRACK_NAME);
 
         // Share your camera
         cameraCapturerCompat = new CameraCapturerCompat(this, getAvailableCameraSource());
-        localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturerCompat.getVideoCapturer());
+        localVideoTrack = LocalVideoTrack.create(this,
+                true,
+                cameraCapturerCompat.getVideoCapturer(),
+                LOCAL_VIDEO_TRACK_NAME);
         primaryVideoView.setMirror(true);
         localVideoTrack.addRenderer(primaryVideoView);
         localVideoView = primaryVideoView;
@@ -627,24 +640,60 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onAudioTrackPublished(RemoteParticipant remoteParticipant,
                                               RemoteAudioTrackPublication remoteAudioTrackPublication) {
+                Log.i(TAG, String.format("onAudioTrackPublished: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteAudioTrackPublication: sid=%s, enabled=%b, " +
+                                "subscribed=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteAudioTrackPublication.getTrackSid(),
+                        remoteAudioTrackPublication.isTrackEnabled(),
+                        remoteAudioTrackPublication.isTrackSubscribed(),
+                        remoteAudioTrackPublication.getTrackName()));
                 videoStatusTextView.setText("onAudioTrackPublished");
             }
 
             @Override
             public void onAudioTrackUnpublished(RemoteParticipant remoteParticipant,
                                                 RemoteAudioTrackPublication remoteAudioTrackPublication) {
+                Log.i(TAG, String.format("onAudioTrackUnpublished: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteAudioTrackPublication: sid=%s, enabled=%b, " +
+                                "subscribed=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteAudioTrackPublication.getTrackSid(),
+                        remoteAudioTrackPublication.isTrackEnabled(),
+                        remoteAudioTrackPublication.isTrackSubscribed(),
+                        remoteAudioTrackPublication.getTrackName()));
                 videoStatusTextView.setText("onAudioTrackUnpublished");
             }
 
             @Override
             public void onVideoTrackPublished(RemoteParticipant remoteParticipant,
                                               RemoteVideoTrackPublication remoteVideoTrackPublication) {
+                Log.i(TAG, String.format("onVideoTrackPublished: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteVideoTrackPublication: sid=%s, enabled=%b, " +
+                                "subscribed=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteVideoTrackPublication.getTrackSid(),
+                        remoteVideoTrackPublication.isTrackEnabled(),
+                        remoteVideoTrackPublication.isTrackSubscribed(),
+                        remoteVideoTrackPublication.getTrackName()));
                 videoStatusTextView.setText("onVideoTrackPublished");
             }
 
             @Override
             public void onVideoTrackUnpublished(RemoteParticipant remoteParticipant,
                                                 RemoteVideoTrackPublication remoteVideoTrackPublication) {
+                Log.i(TAG, String.format("onVideoTrackUnpublished: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteVideoTrackPublication: sid=%s, enabled=%b, " +
+                                "subscribed=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteVideoTrackPublication.getTrackSid(),
+                        remoteVideoTrackPublication.isTrackEnabled(),
+                        remoteVideoTrackPublication.isTrackSubscribed(),
+                        remoteVideoTrackPublication.getTrackName()));
                 videoStatusTextView.setText("onVideoTrackUnpublished");
             }
 
@@ -652,6 +701,13 @@ public class VideoActivity extends AppCompatActivity {
             public void onAudioTrackSubscribed(RemoteParticipant remoteParticipant,
                                                RemoteAudioTrackPublication remoteAudioTrackPublication,
                                                RemoteAudioTrack remoteAudioTrack) {
+                Log.i(TAG, String.format("onAudioTrackSubscribed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteAudioTrack: enabled=%b, playbackEnabled=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteAudioTrack.isEnabled(),
+                        remoteAudioTrack.isPlaybackEnabled(),
+                        remoteAudioTrack.getName()));
                 videoStatusTextView.setText("onAudioTrackSubscribed");
             }
 
@@ -659,6 +715,13 @@ public class VideoActivity extends AppCompatActivity {
             public void onAudioTrackUnsubscribed(RemoteParticipant remoteParticipant,
                                                  RemoteAudioTrackPublication remoteAudioTrackPublication,
                                                  RemoteAudioTrack remoteAudioTrack) {
+                Log.i(TAG, String.format("onAudioTrackUnsubscribed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteAudioTrack: enabled=%b, playbackEnabled=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteAudioTrack.isEnabled(),
+                        remoteAudioTrack.isPlaybackEnabled(),
+                        remoteAudioTrack.getName()));
                 videoStatusTextView.setText("onAudioTrackUnsubscribed");
             }
 
@@ -666,6 +729,12 @@ public class VideoActivity extends AppCompatActivity {
             public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant,
                                                RemoteVideoTrackPublication remoteVideoTrackPublication,
                                                RemoteVideoTrack remoteVideoTrack) {
+                Log.i(TAG, String.format("onVideoTrackSubscribed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteVideoTrack: enabled=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteVideoTrack.isEnabled(),
+                        remoteVideoTrack.getName()));
                 videoStatusTextView.setText("onVideoTrackSubscribed");
                 addRemoteParticipantVideo(remoteVideoTrack);
             }
@@ -674,6 +743,12 @@ public class VideoActivity extends AppCompatActivity {
             public void onVideoTrackUnsubscribed(RemoteParticipant remoteParticipant,
                                                  RemoteVideoTrackPublication remoteVideoTrackPublication,
                                                  RemoteVideoTrack remoteVideoTrack) {
+                Log.i(TAG, String.format("onVideoTrackUnsubscribed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteVideoTrack: enabled=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteVideoTrack.isEnabled(),
+                        remoteVideoTrack.getName()));
                 videoStatusTextView.setText("onVideoTrackUnsubscribed");
                 removeParticipantVideo(remoteVideoTrack);
             }
