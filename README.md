@@ -187,7 +187,24 @@ software implementations of AEC, NS, and AGC.
     
     // Use software AGC
     WebRtcAudioUtils.setWebRtcBasedAutomaticGainControl(true);
+    
+### Configuring OpenSL ES
+Our library will use [OpenSL ES](https://developer.android.com/ndk/guides/audio/opensl/index.html)
+for audio playback if the device is compatible. Using OpenSL ES is more efficient, but can cause
+problems with other audio effects. If you are experiencing audio problems with a device that cannot
+be resolved using software audio effects, reference the following snippet for enabling OpenSL ES:
 
+    /*
+     * Execute any time before creating a LocalAudioTrack and connecting 
+     * to a Room.
+     */
+    
+    // Disable OpenSL ES 
+    WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(true);
+    
+    // Check if OpenSL ES is disabled 
+    WebRtcAudioUtils.deviceIsBlacklistedForOpenSLESUsage()
+    
 
 ## Setup an Access Token Server
 
