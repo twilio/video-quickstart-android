@@ -192,8 +192,10 @@ software implementations of AEC, NS, and AGC.
 ### Configuring OpenSL ES
 Our library will use [OpenSL ES](https://developer.android.com/ndk/guides/audio/opensl/index.html)
 for audio playback if the device is compatible. Using OpenSL ES is more efficient, but can cause
-problems with other audio effects. If you are experiencing audio problems with a device that cannot
-be resolved using software audio effects, reference the following snippet for enabling OpenSL ES:
+problems with other audio effects. For example, we found on the Nexus 6P that OpenSL ES affected
+the device's hardware echo canceller so we blacklisted the Nexus 6P from using OpenSL ES. If you 
+are experiencing audio problems with a device that cannot be resolved using software audio 
+effects, reference the following snippet for enabling OpenSL ES:
 
     /*
      * Execute any time before creating a LocalAudioTrack and connecting 
@@ -293,7 +295,7 @@ represented as a texture, `I420Frame#textureId` will be set to a positive non ze
 the texture using an instance of `org.webrtc.YuvConverter` and the `I420Frame#samplingMatrix`. When 
 a frame is represented as an array of `ByteBuffer`, `I420Frame#textureId` will be 0, 
 `I420Frame#yuvPlanes` contains the YUV pixel data, and `I420Frame#yuvStrides` contains each plane's 
-stride. For a an example of implementing a custom `VideoRenderer` we recommend referencing the
+stride. For an example of implementing a custom `VideoRenderer` we recommend referencing the
 [Custom Video Renderer](exampleCustomVideoRenderer) module.
 
 
