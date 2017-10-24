@@ -37,6 +37,8 @@ import com.twilio.video.CameraCapturer;
 import com.twilio.video.LocalParticipant;
 import com.twilio.video.RemoteAudioTrack;
 import com.twilio.video.RemoteAudioTrackPublication;
+import com.twilio.video.RemoteDataTrack;
+import com.twilio.video.RemoteDataTrackPublication;
 import com.twilio.video.RemoteParticipant;
 import com.twilio.video.RemoteVideoTrack;
 import com.twilio.video.RemoteVideoTrackPublication;
@@ -666,6 +668,36 @@ public class VideoActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onDataTrackPublished(RemoteParticipant remoteParticipant,
+                                              RemoteDataTrackPublication remoteDataTrackPublication) {
+                Log.i(TAG, String.format("onDataTrackPublished: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteDataTrackPublication: sid=%s, enabled=%b, " +
+                                "subscribed=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteDataTrackPublication.getTrackSid(),
+                        remoteDataTrackPublication.isTrackEnabled(),
+                        remoteDataTrackPublication.isTrackSubscribed(),
+                        remoteDataTrackPublication.getTrackName()));
+                videoStatusTextView.setText("onDataTrackPublished");
+            }
+
+            @Override
+            public void onDataTrackUnpublished(RemoteParticipant remoteParticipant,
+                                                RemoteDataTrackPublication remoteDataTrackPublication) {
+                Log.i(TAG, String.format("onDataTrackUnpublished: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteDataTrackPublication: sid=%s, enabled=%b, " +
+                                "subscribed=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteDataTrackPublication.getTrackSid(),
+                        remoteDataTrackPublication.isTrackEnabled(),
+                        remoteDataTrackPublication.isTrackSubscribed(),
+                        remoteDataTrackPublication.getTrackName()));
+                videoStatusTextView.setText("onDataTrackUnpublished");
+            }
+
+            @Override
             public void onVideoTrackPublished(RemoteParticipant remoteParticipant,
                                               RemoteVideoTrackPublication remoteVideoTrackPublication) {
                 Log.i(TAG, String.format("onVideoTrackPublished: " +
@@ -721,6 +753,32 @@ public class VideoActivity extends AppCompatActivity {
                         remoteAudioTrack.isPlaybackEnabled(),
                         remoteAudioTrack.getName()));
                 videoStatusTextView.setText("onAudioTrackUnsubscribed");
+            }
+
+            @Override
+            public void onDataTrackSubscribed(RemoteParticipant remoteParticipant,
+                                               RemoteDataTrackPublication remoteDataTrackPublication,
+                                               RemoteDataTrack remoteDataTrack) {
+                Log.i(TAG, String.format("onDataTrackSubscribed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteDataTrack: enabled=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteDataTrack.isEnabled(),
+                        remoteDataTrack.getName()));
+                videoStatusTextView.setText("onDataTrackSubscribed");
+            }
+
+            @Override
+            public void onDataTrackUnsubscribed(RemoteParticipant remoteParticipant,
+                                                 RemoteDataTrackPublication remoteDataTrackPublication,
+                                                 RemoteDataTrack remoteDataTrack) {
+                Log.i(TAG, String.format("onDataTrackUnsubscribed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteDataTrack: enabled=%b, name=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteDataTrack.isEnabled(),
+                        remoteDataTrack.getName()));
+                videoStatusTextView.setText("onDataTrackUnsubscribed");
             }
 
             @Override

@@ -40,6 +40,8 @@ import com.twilio.video.LocalParticipant;
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.RemoteAudioTrack;
 import com.twilio.video.RemoteAudioTrackPublication;
+import com.twilio.video.RemoteDataTrack;
+import com.twilio.video.RemoteDataTrackPublication;
 import com.twilio.video.RemoteParticipant;
 import com.twilio.video.RemoteVideoTrack;
 import com.twilio.video.RemoteVideoTrackPublication;
@@ -772,6 +774,18 @@ public class VideoInviteActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onDataTrackPublished(RemoteParticipant remoteParticipant,
+                                             RemoteDataTrackPublication remoteDataTrackPublication) {
+                statusTextView.setText("onDataTrackPublished");
+            }
+
+            @Override
+            public void onDataTrackUnpublished(RemoteParticipant remoteParticipant,
+                                               RemoteDataTrackPublication remoteDataTrackPublication) {
+                statusTextView.setText("onDataTrackUnpublished");
+            }
+
+            @Override
             public void onAudioTrackSubscribed(RemoteParticipant remoteParticipant,
                                                RemoteAudioTrackPublication remoteAudioTrackPublication,
                                                RemoteAudioTrack remoteAudioTrack) {
@@ -799,6 +813,20 @@ public class VideoInviteActivity extends AppCompatActivity {
                                                  RemoteVideoTrack remoteVideoTrack) {
                 statusTextView.setText("onVideoTrackUnsubscribed");
                 removeParticipantVideo(remoteVideoTrack);
+            }
+
+            @Override
+            public void onDataTrackSubscribed(RemoteParticipant remoteParticipant,
+                                              RemoteDataTrackPublication remoteDataTrackPublication,
+                                              RemoteDataTrack remoteDataTrack) {
+                statusTextView.setText("onDataTrackSubscribed");
+            }
+
+            @Override
+            public void onDataTrackUnsubscribed(RemoteParticipant remoteParticipant,
+                                                RemoteDataTrackPublication remoteDataTrackPublication,
+                                                RemoteDataTrack remoteDataTrack) {
+                statusTextView.setText("onDataTrackUnsubscribed");
             }
 
             @Override
