@@ -5,8 +5,6 @@
 update them throughout the preview and beta period. For examples using our GA 1.x APIs, please see 
 the [master](https://github.com/twilio/video-quickstart-android) branch.
 
-> NOTE: These sample applications use the Twilio Video 1.x APIs. For examples using our 2.x APIs, please see the [2.0](https://github.com/twilio/video-quickstart-android/tree/2.0) branch.
-
 # Twilio Video Quickstart for Android
 
 Get started with Video on Android:
