@@ -11,7 +11,7 @@ buildscript {
             'retrofit': '2.0.0-beta4',
             'okhttp': '3.6.0',
             'ion': '2.1.7',
-            'videoAndroid': '1.3.4'
+            'videoAndroid': '1.3.5'
     ]
     repositories {
         jcenter()
