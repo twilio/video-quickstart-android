@@ -1,9 +1,11 @@
-[ ![Download](https://api.bintray.com/packages/twilio/releases/video-android/images/download.svg) ](https://bintray.com/twilio/releases/video-android/2.0.0-preview3)
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://media.twiliocdn.com/sdk/android/video/releases/2.0.0-preview3/docs/)
+[ ![Download](https://api.bintray.com/packages/twilio/releases/video-android/images/download.svg) ](https://bintray.com/twilio/releases/video-android/2.0.0-preview4)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://media.twiliocdn.com/sdk/android/video/releases/2.0.0-preview4/docs/)
 
 > NOTE: These sample applications use the Twilio Video 2.0.0 APIs. We will continue to 
 update them throughout the preview and beta period. For examples using our GA 1.x APIs, please see 
 the [master](https://github.com/twilio/video-quickstart-android) branch.
+
+> NOTE: These sample applications use the Twilio Video 1.x APIs. For examples using our 2.x APIs, please see the [2.0](https://github.com/twilio/video-quickstart-android/tree/2.0) branch.
 
 # Twilio Video Quickstart for Android
 
@@ -14,6 +16,7 @@ Get started with Video on Android:
 - [Using an Emulator](#using-an-emulator) - Setup an emulator in Android Studio
 - [Reducing APK Size](#reducing-apk-size) - Use ABI splits to reduce your APK size
 - [Troubleshooting Audio](#troubleshooting-audio) - Mitigate audio issues in your application
+- [Rendering Video](#rendering-video) - A guide to rendering video in your application
 - [Setup an Access Token Server](#setup-an-access-token-server) - Setup an access token server
 - [More Documentation](#more-documentation) - More documentation related to the Video Android SDK
 - [Issues & Support](#issues-and-support) - Filing issues and general support
@@ -189,6 +192,115 @@ software implementations of AEC, NS, and AGC.
     
     // Use software AGC
     WebRtcAudioUtils.setWebRtcBasedAutomaticGainControl(true);
+    
+### Configuring OpenSL ES
+Our library will use [OpenSL ES](https://developer.android.com/ndk/guides/audio/opensl/index.html)
+for audio playback if the device is compatible. Using OpenSL ES is more efficient, but can cause
+problems with other audio effects. For example, we found on the Nexus 6P that OpenSL ES affected
+the device's hardware echo canceller so we blacklisted the Nexus 6P from using OpenSL ES. If you 
+are experiencing audio problems with a device that cannot be resolved using software audio 
+effects, reference the following snippet for enabling OpenSL ES:
+
+    /*
+     * Execute any time before creating a LocalAudioTrack and connecting 
+     * to a Room.
+     */
+    
+    // Disable OpenSL ES 
+    WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(true);
+    
+    // Check if OpenSL ES is disabled 
+    WebRtcAudioUtils.deviceIsBlacklistedForOpenSLESUsage()
+    
+## Rendering Video 
+A `VideoTrack` can be rendered in your application using `addRenderer` which takes an
+implementation of `VideoRenderer`. A `VideoRenderer` is most commonly used to render video to a UI,
+but could be used for other scenarios such as rendering to a file. The following section provides 
+guidance on how to render video in your application.
+
+### Working with VideoView
+For simply rendering video to your application's UI, we recommend using `VideoView`. `VideoView` extends
+`SurfaceView` and can be added to your view hierarchy in a layout file or programmatically. To render
+a `VideoTrack` to a `VideoView` simply call `videoTrack.addRenderer(videoView)`. The
+following snippets demonstrate how to setup the a thumbnail video overlayed on a primary video as
+seen in the screenshot below.
+
+<img width="500px" src="images/quickstart/video_view_example.png"/>
+
+
+#### VideoView in a Layout File 
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                 android:id="@+id/video_container"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:keepScreenOn="true">
+
+        <com.twilio.video.VideoView
+            android:id="@+id/thumbnail_video_view"
+            app:overlaySurface="true"
+            app:mirror="true"
+            android:layout_width="96dp"
+            android:layout_height="146dp"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|start"/>
+
+        <com.twilio.video.VideoView
+            android:id="@+id/primary_video_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+            
+    </FrameLayout>
+
+
+#### Adding VideoView Programmatically
+
+    /*
+     * Get videoContainer
+     */
+    FrameLayout videoContainer = findViewById(R.id.video_container);
+
+    /*
+     * Create thumbnail video view
+     */
+    VideoView thumbnailVideoView = new VideoView(context);
+
+    /*
+     * Mirror the video. Set to true when rendering video from a local video track using the 
+     * front facing camera. Set to false otherwise.
+     */
+    thumbnailVideoView.setMirror(true);
+
+    /*
+     * Overlays the thumbnail video view on top of the primary video view
+     */
+    thumbnailVideoView.applyZOrder(true);
+
+    /*
+     * Create primary video view
+     */
+    VideoView primaryVideoView = new VideoView(context);
+
+    /*
+     * Add video views to container
+     */
+    videoContainer.addView(thumbnailVideoView);
+    videoContainer.addView(primaryVideoView);
+
+
+### Custom Renderers and I420Frame
+For advanced use cases you can provide a custom `VideoRenderer` where your custom renderer will be
+provided with an `I420Frame` to render. An `I420Frame` can be represented with a ByteBuffer array 
+of Y, U, and V pixel data with an array of strides for each plane or as a texture. When a frame is 
+represented as a texture, `I420Frame#textureId` will be set to a positive non zero value with 
+`I420Frame#yuvPlanes` and `I420Frame#yuvStrides` set to `null`. The YUV data can be extracted from 
+the texture using an instance of `org.webrtc.YuvConverter` and the `I420Frame#samplingMatrix`. When 
+a frame is represented as an array of `ByteBuffer`, `I420Frame#textureId` will be 0, 
+`I420Frame#yuvPlanes` contains the YUV pixel data, and `I420Frame#yuvStrides` contains each plane's 
+stride. For an example of implementing a custom `VideoRenderer` we recommend referencing the
+[Custom Video Renderer](exampleCustomVideoRenderer) module.
 
 
 ## Setup an Access Token Server
