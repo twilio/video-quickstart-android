@@ -1,4 +1,4 @@
-[ ![Download](https://api.bintray.com/packages/twilio/releases/video-android/images/download.svg) ](https://bintray.com/twilio/releases/video-android/1.3.4)
+[ ![Download](https://api.bintray.com/packages/twilio/releases/video-android/images/download.svg) ](https://bintray.com/twilio/releases/video-android/1.3.5)
 [![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://media.twiliocdn.com/sdk/android/video/latest/docs/)
 
 > NOTE: These sample applications use the Twilio Video 1.x APIs. For examples using our 2.x APIs, please see the [2.0](https://github.com/twilio/video-quickstart-android/tree/2.0) branch.
