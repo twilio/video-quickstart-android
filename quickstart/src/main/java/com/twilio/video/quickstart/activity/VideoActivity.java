@@ -54,7 +54,6 @@ public class VideoActivity extends AppCompatActivity {
      */
     private static final String TWILIO_ACCESS_TOKEN = "TWILIO_ACCESS_TOKEN";
 
-
     /*
      * Access token used to connect. This field will be set either from the console generated token
      * or the request to the token server.
@@ -408,8 +407,8 @@ public class VideoActivity extends AppCompatActivity {
         if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
             thumbnailVideoView.setVisibility(View.GONE);
             if (localVideoTrack != null) {
-                localVideoTrack.removeRenderer(primaryVideoView);
-                localVideoTrack.addRenderer(thumbnailVideoView);
+                localVideoTrack.removeRenderer(thumbnailVideoView);
+                localVideoTrack.addRenderer(primaryVideoView);
             }
             localVideoView = primaryVideoView;
             primaryVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
