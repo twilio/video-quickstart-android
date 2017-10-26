@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">DataTrack</string>
+    <string name="connect">Connect</string>
+    <string name="room">Room</string>
+    <string name="connect_to_share">Connect to room to share drawing</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="error_retrieving_access_token">Error retrieving access token</string>
+    <string name="start_drawing">Starting drawing!</string>
+</resources>

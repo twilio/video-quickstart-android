@@ -13,6 +13,25 @@ buildscript {
             'ion': '2.1.7',
             'videoAndroid': '2.0.0-preview4'
     ]
+
+    ext.getSecretProperty = { key, defaultValue ->
+        def value = System.getenv(key);
+
+        if (value == null) {
+            Properties properties = new Properties()
+            if (project.rootProject.file('local.properties').exists()) {
+                properties.load(project.rootProject.file('local.properties').newDataInputStream())
+                value = properties.getProperty(key)
+            }
+        }
+
+        if (value == null) {
+            value = defaultValue
+        }
+
+        return value;
+    }
+
     repositories {
         jcenter()
         maven {

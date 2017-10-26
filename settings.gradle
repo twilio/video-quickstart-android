@@ -1,1 +1,1 @@
-include ':quickstart', ':exampleCustomVideoCapturer', ':exampleCustomVideoRenderer', ':exampleScreenCapturer', ':exampleAdvancedCameraCapturer', ':exampleVideoInvite'
+include ':quickstart', ':exampleCustomVideoCapturer', ':exampleCustomVideoRenderer', ':exampleScreenCapturer', ':exampleAdvancedCameraCapturer', ':exampleVideoInvite', ':exampleDataTrack'
