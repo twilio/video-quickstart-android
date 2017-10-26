@@ -38,7 +38,7 @@ TWILIO_ACCESS_TOKEN=YOUR_ACCESS_TOKEN
 
 ##### Add token server to local.properties 
 You can use a token server you setup with [our guide](https://github.com/twilio/video-quickstart-android#setup-an-access-token-server) 
-to retrieve tokens t runtime. See example below.
+to retrieve tokens at runtime. See example below.
 
 ```
 ACCESS_TOKEN_SERVER=http://localhost:3000

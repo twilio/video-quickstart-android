@@ -42,27 +42,3 @@ dependencies {
     compile "com.android.support:design:${versions.supportLibrary}"
     compile "com.koushikdutta.ion:ion:${versions.ion}"
 }
-
-def getTwilioVideoAccessToken() {
-    // Possible values for TWILIO_VIDEO_ACCESS_TOKEN are 'debug' and 'release'.
-
-    // Attempt to get it from the environment variable
-    def publishConfig = System.getenv("PUBLISH_CONFIG");
-
-    if (publishConfig == null) {
-        println "Could not locate PUBLISH_CONFIG environment variable. Trying local.properties"
-        Properties properties = new Properties()
-        if (project.rootProject.file('local.properties').exists()) {
-            properties.load(project.rootProject.file('local.properties').newDataInputStream())
-            publishConfig = properties.getProperty('PUBLISH_CONFIG')
-        }
-    }
-
-    if (publishConfig == null) {
-        println "Could not locate PUBLISH_CONFIG in local.properties."
-        publishConfig = "release"
-    }
-
-    println "Publish Config: " + publishConfig
-    return publishConfig;
-}
