@@ -5,4 +5,5 @@
     <string name="error_retrieving_access_token">Error retrieving token</string>
     <string name="log_out">Log Out</string>
     <string name="permissions_needed">Camera and Microphone permissions needed. Please allow in App Settings for additional functionality.</string>
+    <string name="turn_speaker_on">Speaker ON</string>
 </resources>

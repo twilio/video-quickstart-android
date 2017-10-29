@@ -16,6 +16,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,6 +47,9 @@ import com.twilio.video.VideoView;
 import com.twilio.video.quickstart.util.CameraCapturerCompat;
 
 import java.util.Collections;
+
+import static com.twilio.video.quickstart.R.drawable.ic_phonelink_ring_white_24dp;
+import static com.twilio.video.quickstart.R.drawable.ic_volume_up_white_24dp;
 
 public class VideoActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
@@ -98,14 +104,14 @@ public class VideoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
-        primaryVideoView = (VideoView) findViewById(R.id.primary_video_view);
-        thumbnailVideoView = (VideoView) findViewById(R.id.thumbnail_video_view);
-        videoStatusTextView = (TextView) findViewById(R.id.video_status_textview);
+        primaryVideoView = findViewById(R.id.primary_video_view);
+        thumbnailVideoView = findViewById(R.id.thumbnail_video_view);
+        videoStatusTextView = findViewById(R.id.video_status_textview);
 
-        connectActionFab = (FloatingActionButton) findViewById(R.id.connect_action_fab);
-        switchCameraActionFab = (FloatingActionButton) findViewById(R.id.switch_camera_action_fab);
-        localVideoActionFab = (FloatingActionButton) findViewById(R.id.local_video_action_fab);
-        muteActionFab = (FloatingActionButton) findViewById(R.id.mute_action_fab);
+        connectActionFab = findViewById(R.id.connect_action_fab);
+        switchCameraActionFab = findViewById(R.id.switch_camera_action_fab);
+        localVideoActionFab = findViewById(R.id.local_video_action_fab);
+        muteActionFab = findViewById(R.id.mute_action_fab);
 
         /*
          * Enable changing the volume using the up/down keys during a conversation
@@ -116,6 +122,7 @@ public class VideoActivity extends AppCompatActivity {
          * Needed for setting/abandoning audio focus during call
          */
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setSpeakerphoneOn(true);
 
         /*
          * Check camera and microphone permissions. Needed in Android M.
@@ -223,6 +230,29 @@ public class VideoActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.speaker_menu_item:
+                if (audioManager.isSpeakerphoneOn()) {
+                    audioManager.setSpeakerphoneOn(false);
+                    item.setIcon(ic_phonelink_ring_white_24dp);
+                } else {
+                    audioManager.setSpeakerphoneOn(true);
+                    item.setIcon(ic_volume_up_white_24dp);
+                }
+                break;
+        }
+        return true;
+    }
+
     private boolean checkPermissionForCameraAndMicrophone(){
         int resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         int resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
@@ -300,7 +330,7 @@ public class VideoActivity extends AppCompatActivity {
      */
     private void intializeUI() {
         connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_white_24px));
+                R.drawable.ic_video_call_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(connectActionClickListener());
         switchCameraActionFab.show();
@@ -437,6 +467,7 @@ public class VideoActivity extends AppCompatActivity {
             public void onConnectFailure(Room room, TwilioException e) {
                 videoStatusTextView.setText("Failed to connect");
                 configureAudio(false);
+                intializeUI();
             }
 
             @Override
@@ -605,10 +636,10 @@ public class VideoActivity extends AppCompatActivity {
                     localVideoTrack.enable(enable);
                     int icon;
                     if (enable) {
-                        icon = R.drawable.ic_videocam_green_24px;
+                        icon = R.drawable.ic_videocam_white_24dp;
                         switchCameraActionFab.show();
                     } else {
-                        icon = R.drawable.ic_videocam_off_red_24px;
+                        icon = R.drawable.ic_videocam_off_black_24dp;
                         switchCameraActionFab.hide();
                     }
                     localVideoActionFab.setImageDrawable(
@@ -631,7 +662,7 @@ public class VideoActivity extends AppCompatActivity {
                     boolean enable = !localAudioTrack.isEnabled();
                     localAudioTrack.enable(enable);
                     int icon = enable ?
-                            R.drawable.ic_mic_green_24px : R.drawable.ic_mic_off_red_24px;
+                            R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
                     muteActionFab.setImageDrawable(ContextCompat.getDrawable(
                             VideoActivity.this, icon));
                 }
