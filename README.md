@@ -32,7 +32,7 @@ To get started with the Quickstart application follow these steps:
 
 4. Run the quickstart app on an Android device or Android emulator.
 
-5. Press the call button at the bottom right portion of the screen and type a room name to connect to a Room.
+5. Press the video call button at the bottom right portion of the screen and type a room name to connect to a Room.
   <img height="500px" src="images/quickstart/connect_dialog.png"/>
 
 6. On another device, use an additional access token with a different identity to connect to the same room. 
@@ -221,7 +221,7 @@ a `VideoTrack` to a `VideoView` simply call `videoTrack.addRenderer(videoView)`.
 following snippets demonstrate how to setup the a thumbnail video overlayed on a primary video as
 seen in the screenshot below.
 
-<img width="500px" src="images/quickstart/video_view_example.png"/>
+<img height="500px" src="images/quickstart/video_view_example.png"/>
 
 
 #### VideoView in a Layout File 
