@@ -15,7 +15,7 @@ public class Dialog {
                                                   Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
-        alertDialogBuilder.setIcon(R.drawable.ic_call_black_24dp);
+        alertDialogBuilder.setIcon(R.drawable.ic_video_call_white_24dp);
         alertDialogBuilder.setTitle("Connect to a room");
         alertDialogBuilder.setPositiveButton("Connect", callParticipantsClickListener);
         alertDialogBuilder.setNegativeButton("Cancel", cancelClickListener);

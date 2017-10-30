@@ -16,4 +16,5 @@
     <string name="sender_bandwidth_constraints">Set sender bandwidth constraints. Zero represents the WebRTC default value which varies by codec.</string>
     <string name="max_audio_bitrate">Max Audio Bitrate (bits per second)</string>
     <string name="max_video_bitrate">Max Video Bitrate (bits per second)</string>
+    <string name="turn_speaker_on">Speaker ON</string>
 </resources>
