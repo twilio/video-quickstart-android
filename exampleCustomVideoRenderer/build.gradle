@@ -22,9 +22,9 @@ android {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
-    compile "com.twilio:video-android:${versions.videoAndroid}"
-    compile "com.android.support:appcompat-v7:${versions.supportLibrary}"
-    compile "com.android.support:design:${versions.supportLibrary}"
+    implementation "com.twilio:video-android:${versions.videoAndroid}"
+    implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
+    implementation "com.android.support:design:${versions.supportLibrary}"
 }

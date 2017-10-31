@@ -32,19 +32,19 @@ android {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile "com.twilio:video-android:${versions.videoAndroid}"
-    compile "com.google.firebase:firebase-messaging:${versions.firebase}"
-    compile "com.squareup.retrofit2:retrofit:${versions.retrofit}"
-    compile "com.squareup.retrofit2:converter-jackson:${versions.retrofit}"
-    compile "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
-    compile "com.koushikdutta.ion:ion:${versions.ion}"
-    compile "com.android.support:appcompat-v7:${versions.supportLibrary}"
-    compile "com.android.support:design:${versions.supportLibrary}"
+    implementation "com.twilio:video-android:${versions.videoAndroid}"
+    implementation "com.google.firebase:firebase-messaging:${versions.firebase}"
+    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-jackson:${versions.retrofit}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
+    implementation "com.koushikdutta.ion:ion:${versions.ion}"
+    implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
+    implementation "com.android.support:design:${versions.supportLibrary}"
 }
 
 apply plugin: 'com.google.gms.google-services'
