@@ -14,8 +14,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String",
-                "TWILIO_ACCESS_TOKEN_SERVER",
-                "\"${getSecretProperty("TWILIO_ACCESS_TOKEN_SERVER", "TWILIO_ACCESS_TOKEN_SERVER")}\"")
+                "TWILIO_SDK_STARTER_SERVER_URL",
+                "\"${getSecretProperty("TWILIO_SDK_STARTER_SERVER_URL", "TWILIO_SDK_STARTER_SERVER_URL")}\"")
     }
 
     buildTypes {

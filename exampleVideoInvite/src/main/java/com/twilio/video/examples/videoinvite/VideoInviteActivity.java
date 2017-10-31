@@ -78,7 +78,7 @@ public class VideoInviteActivity extends AppCompatActivity {
      * in Java and can be found here: https://github.com/TwilioDevEd/sdk-starter-java
      */
     public static final String TWILIO_SDK_STARTER_SERVER_URL =
-            BuildConfig.TWILIO_ACCESS_TOKEN_SERVER;
+            BuildConfig.TWILIO_SDK_STARTER_SERVER_URL;
 
     /*
      * The tag used to notify others when this identity is connecting to a Video room.
