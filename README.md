@@ -332,7 +332,7 @@ When you get a URL from ngrok, go ahead and update local.properties. Reference t
 # Insert the URL from ngrok
 ACCESS_TOKEN_SERVER=http://localhost:3000
 
-# Inform apps you want to use a token server
+# Inform quickstart you want to use a token server
 USE_TOKEN_SERVER=true
 ```
 
