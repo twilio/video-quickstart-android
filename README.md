@@ -27,8 +27,8 @@ To get started with the Quickstart application follow these steps:
 2. Type in an identity and click on "Generate Access Token" from the [Testing Tools page](https://www.twilio.com/console/video/runtime/testing-tools).
   <img width="700px" src="images/quickstart/generate_access_token.png"/>
 
-3. Paste the Access Token into the VideoActivity.java.
-  <img width="700px" src="images/quickstart/activity_access_token.png"/>
+3. Paste the Access Token into local.properties.
+  <img width="700px" src="images/quickstart/local_properties_access_token.png"/>
 
 4. Run the quickstart app on an Android device or Android emulator.
 
@@ -326,7 +326,15 @@ be shown once - make sure to save this in a secure location.
 
 If you run your video chat application on an Android device, you'll need to provide an externally accessible URL for the app. The [ngrok](https://ngrok.com/) tool creates a publicly accessible URL that you can use to send HTTP/HTTPS traffic to a server running on your localhost. Use HTTPS to make web connections that retrieve a Twilio access token.
 
-When you get a URL from ngrok, go ahead and update VideoActivity.java with the new URL. At the very bottom is the retrieveAccessTokenfromServer() method.  If you go down this path, be sure to follow the directions in the comments in the initializeTwilioSdk() method at the top of the source file - you will need to comment out everything under "OPTION 1" and uncomment the one line under "OPTION 2". You will also need to update the code if your ngrok URL changes.
+When you get a URL from ngrok, go ahead and update local.properties. Reference the following snippet.
+
+```
+# Insert the URL from ngrok
+ACCESS_TOKEN_SERVER=http://localhost:3000
+
+# Inform apps you want to use a token server
+USE_TOKEN_SERVER=true
+```
 
 ## More Documentation
 

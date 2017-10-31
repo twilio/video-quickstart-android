@@ -33,6 +33,7 @@ import com.twilio.video.RoomState;
 import com.twilio.video.Video;
 import com.twilio.video.VideoRenderer;
 import com.twilio.video.TwilioException;
+import com.twilio.video.quickstart.BuildConfig;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
 import com.twilio.video.AudioTrack;
@@ -47,6 +48,7 @@ import com.twilio.video.VideoView;
 import com.twilio.video.quickstart.util.CameraCapturerCompat;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.twilio.video.quickstart.R.drawable.ic_phonelink_ring_white_24dp;
 import static com.twilio.video.quickstart.R.drawable.ic_volume_up_white_24dp;
@@ -58,7 +60,8 @@ public class VideoActivity extends AppCompatActivity {
     /*
      * You must provide a Twilio Access Token to connect to the Video service
      */
-    private static final String TWILIO_ACCESS_TOKEN = "TWILIO_ACCESS_TOKEN";
+    private static final String TWILIO_ACCESS_TOKEN = BuildConfig.TWILIO_ACCESS_TOKEN;
+    private static final String ACCESS_TOKEN_SERVER = BuildConfig.ACCESS_TOKEN_SERVER;
 
     /*
      * Access token used to connect. This field will be set either from the console generated token
@@ -294,12 +297,16 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     private void setAccessToken() {
-        // OPTION 1- Generate an access token from the getting started portal
-        // https://www.twilio.com/console/video/dev-tools/testing-tools
-        this.accessToken = TWILIO_ACCESS_TOKEN;
-
-        // OPTION 2- Retrieve an access token from your own web app
-        // retrieveAccessTokenfromServer();
+        if (!BuildConfig.USE_TOKEN_SERVER) {
+            /*
+             * OPTION 1 - Generate an access token from the getting started portal
+             * https://www.twilio.com/console/video/dev-tools/testing-tools
+             */
+            this.accessToken = TWILIO_ACCESS_TOKEN;
+        } else {
+            // OPTION 2 - Retrieve an access token from your own web app
+            retrieveAccessTokenfromServer();
+        }
     }
 
     private void connectToRoom(String roomName) {
@@ -672,13 +679,14 @@ public class VideoActivity extends AppCompatActivity {
 
     private void retrieveAccessTokenfromServer() {
         Ion.with(this)
-                .load("http://localhost:8000/token.php")
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
+                .load(String.format("%s?identity=%s", ACCESS_TOKEN_SERVER,
+                        UUID.randomUUID().toString()))
+                .asString()
+                .setCallback(new FutureCallback<String>() {
                     @Override
-                    public void onCompleted(Exception e, JsonObject result) {
+                    public void onCompleted(Exception e, String token) {
                         if (e == null) {
-                            VideoActivity.this.accessToken = result.get("token").getAsString();
+                            VideoActivity.this.accessToken = token;
                         } else {
                             Toast.makeText(VideoActivity.this,
                                     R.string.error_retrieving_access_token, Toast.LENGTH_LONG)

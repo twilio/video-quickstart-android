@@ -11,6 +11,16 @@ android {
         targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
+
+        buildConfigField("String",
+                "TWILIO_ACCESS_TOKEN",
+                "\"${getSecretProperty("TWILIO_ACCESS_TOKEN", "TWILIO_ACCESS_TOKEN")}\"")
+        buildConfigField("String",
+                "ACCESS_TOKEN_SERVER",
+                "\"${getSecretProperty("ACCESS_TOKEN_SERVER", "http://localhost:3000")}\"")
+        buildConfigField("boolean",
+                "USE_TOKEN_SERVER",
+                "${getSecretProperty("USE_TOKEN_SERVER", false)}")
     }
 
     buildTypes {
