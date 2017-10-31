@@ -16,8 +16,8 @@ android {
                 "TWILIO_ACCESS_TOKEN",
                 "\"${getSecretProperty("TWILIO_ACCESS_TOKEN", "TWILIO_ACCESS_TOKEN")}\"")
         buildConfigField("String",
-                "ACCESS_TOKEN_SERVER",
-                "\"${getSecretProperty("ACCESS_TOKEN_SERVER", "http://localhost:3000")}\"")
+                "TWILIO_ACCESS_TOKEN_SERVER",
+                "\"${getSecretProperty("TWILIO_ACCESS_TOKEN_SERVER", "http://localhost:3000")}\"")
         buildConfigField("boolean",
                 "USE_TOKEN_SERVER",
                 "${getSecretProperty("USE_TOKEN_SERVER", false)}")

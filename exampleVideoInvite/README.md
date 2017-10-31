@@ -63,6 +63,6 @@ Using ngrok type `ngrok http 3000`
 
 ### <a name="bullet5"></a>5. Run the application
 
-Update the `TWILIO_SDK_STARTER_SERVER_URL` in `VideoInviteActivity.java` with the url provided by ngrok and run the example
+Update the `TWILIO_SDK_STARTER_SERVER_URL` in `local.properties` with the url provided by ngrok and run the example
 on at least two devices. Once both devices are registered use one of the devices to connect to a room.
 The other device should receive a push notification alerting them to join the room.

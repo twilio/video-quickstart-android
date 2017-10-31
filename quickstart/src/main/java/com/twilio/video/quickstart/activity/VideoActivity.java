@@ -61,7 +61,7 @@ public class VideoActivity extends AppCompatActivity {
      * You must provide a Twilio Access Token to connect to the Video service
      */
     private static final String TWILIO_ACCESS_TOKEN = BuildConfig.TWILIO_ACCESS_TOKEN;
-    private static final String ACCESS_TOKEN_SERVER = BuildConfig.ACCESS_TOKEN_SERVER;
+    private static final String ACCESS_TOKEN_SERVER = BuildConfig.TWILIO_ACCESS_TOKEN_SERVER;
 
     /*
      * Access token used to connect. This field will be set either from the console generated token
