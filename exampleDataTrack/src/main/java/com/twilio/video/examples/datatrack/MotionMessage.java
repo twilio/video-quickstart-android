@@ -59,8 +59,8 @@ public class MotionMessage {
             JSONObject motionMessageJsonObject = new JSONObject(json);
             boolean actionDown = motionMessageJsonObject.getBoolean("mouseDown");
             JSONObject coordinates = motionMessageJsonObject.getJSONObject("mouseCoordinates");
-            float x = Float.valueOf(coordinates.getString("x"));
-            float y = Float.valueOf(coordinates.getString("y"));
+            float x = Double.valueOf(coordinates.getDouble("x")).floatValue();
+            float y = Double.valueOf(coordinates.getDouble("y")).floatValue();
 
             motionMessage = new MotionMessage(actionDown, x, y);
         } catch (JSONException e) {
@@ -85,8 +85,8 @@ public class MotionMessage {
              * deserialized using this convention.
              */
             motionMessageJson.put("mouseDown", actionDown);
-            coordinatesJson.put("x", String.valueOf(coordinates.first));
-            coordinatesJson.put("y", String.valueOf(coordinates.second));
+            coordinatesJson.put("x", coordinates.first.doubleValue());
+            coordinatesJson.put("y", coordinates.second.doubleValue());
             motionMessageJson.put("mouseCoordinates", coordinatesJson);
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
