@@ -71,7 +71,11 @@ public class DataTrackActivity extends AppCompatActivity {
                     Log.d(TAG, String.format("onTouchEvent: actionEvent=%d, x=%f, y=%f",
                             actionEvent, x, y));
                     boolean actionDown = (actionEvent == MotionEvent.ACTION_DOWN);
-                    MotionMessage motionMessage = new MotionMessage(actionDown, x, y);
+                    float normalizedX = x / (float) collaborativeDrawingView.getWidth();
+                    float normalizedY = y / (float) collaborativeDrawingView.getHeight();
+                    MotionMessage motionMessage = new MotionMessage(actionDown,
+                            normalizedX,
+                            normalizedY);
 
                     if (localDataTrack != null) {
                         localDataTrack.send(motionMessage.toJsonString());
@@ -482,10 +486,14 @@ public class DataTrackActivity extends AppCompatActivity {
                             MotionEvent.ACTION_UP;
 
                     // Process remote drawing event
+                    float projectedX = motionMessage.coordinates.first *
+                            (float) collaborativeDrawingView.getWidth();
+                    float projectedY = motionMessage.coordinates.second *
+                            (float) collaborativeDrawingView.getHeight();
                     collaborativeDrawingView.onRemoteTouchEvent(remoteParticipant,
                             actionEvent,
-                            motionMessage.coordinates.first,
-                            motionMessage.coordinates.second);
+                            projectedX,
+                            projectedY);
                 } else {
                     Log.e(TAG, "Failed to deserialize message: " + message);
                 }
