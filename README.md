@@ -1,5 +1,4 @@
-[ ![Download](https://api.bintray.com/packages/twilio/releases/video-android/images/download.svg) ](https://bintray.com/twilio/releases/video-android/2.0.0-preview4)
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://media.twiliocdn.com/sdk/android/video/releases/2.0.0-preview4/docs/)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/2.0.0-preview4/)
 
 > NOTE: These sample applications use the Twilio Video 2.0.0 APIs. We will continue to 
 update them throughout the preview and beta period. For examples using our GA 1.x APIs, please see 
