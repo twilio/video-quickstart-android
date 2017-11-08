@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Quickstart Kotlin</string>
+    <string name="room_status">status</string>
+    <string name="permissions_needed">Camera and Microphone permissions needed. Please allow in App Settings for additional functionality.</string>
+    <string name="turn_speaker_on">Speaker ON</string>
+    <string name="error_retrieving_access_token">Error retrieving token</string>
+</resources>
