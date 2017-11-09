@@ -137,7 +137,7 @@ class VideoActivity : AppCompatActivity() {
             /*
              * If connected to a Room then share the local video track.
              */
-            localVideoTrack.notNull { localParticipant?.addVideoTrack(it) }
+            localVideoTrack?.let { localParticipant?.addVideoTrack(it) }
         }
     }
 
@@ -147,7 +147,7 @@ class VideoActivity : AppCompatActivity() {
          * participant before releasing the video track. Participants will be notified that
          * the track has been removed.
          */
-        localVideoTrack.notNull { localParticipant?.removeVideoTrack(it) }
+        localVideoTrack?.let { localParticipant?.removeVideoTrack(it) }
 
 
         /*
@@ -266,12 +266,12 @@ class VideoActivity : AppCompatActivity() {
         /*
          * Add local audio track to connect options to share with participants.
          */
-        localAudioTrack.notNull { connectOptionsBuilder.audioTracks(listOf(it)) }
+        localAudioTrack?.let { connectOptionsBuilder.audioTracks(listOf(it)) }
 
         /*
          * Add local video track to connect options to share with participants.
          */
-        localVideoTrack.notNull { connectOptionsBuilder.videoTracks(listOf(it)) }
+        localVideoTrack?.let { connectOptionsBuilder.videoTracks(listOf(it)) }
 
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener)
         setDisconnectAction()
@@ -540,7 +540,7 @@ class VideoActivity : AppCompatActivity() {
             /*
              * Enable/disable the local video track
              */
-            localVideoTrack.notNull {
+            localVideoTrack?.let {
                 val enable = !it.isEnabled
                 it.enable(enable)
                 val icon: Int
@@ -564,7 +564,7 @@ class VideoActivity : AppCompatActivity() {
              * signaled to other Participants in the same Room. When an audio track is
              * disabled, the audio is muted.
              */
-            localAudioTrack.notNull {
+            localAudioTrack?.let {
                 val enable = !it.isEnabled
                 it.enable(enable)
                 val icon = if (enable)
@@ -663,9 +663,5 @@ class VideoActivity : AppCompatActivity() {
                 verticalPadding,
                 horizontalPadding,
                 0)
-    }
-
-    private fun <T : Any> T?.notNull(f: (it: T) -> Any?) {
-        if (this != null) f(this)
     }
 }
