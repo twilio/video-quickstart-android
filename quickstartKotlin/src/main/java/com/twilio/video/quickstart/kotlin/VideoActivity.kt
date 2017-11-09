@@ -131,14 +131,14 @@ class VideoActivity : AppCompatActivity() {
             localVideoTrack = LocalVideoTrack.create(this,
                     true,
                     cameraCapturerCompat.getVideoCapturer())
+
+            localVideoTrack?.addRenderer(localVideoView)
+
+            /*
+             * If connected to a Room then share the local video track.
+             */
+            localVideoTrack.notNull { localParticipant?.addVideoTrack(it) }
         }
-
-        localVideoTrack?.addRenderer(localVideoView)
-
-        /*
-         * If connected to a Room then share the local video track.
-         */
-        localVideoTrack.notNull { localParticipant?.addVideoTrack(it) }
     }
 
     override fun onPause() {
@@ -417,7 +417,7 @@ class VideoActivity : AppCompatActivity() {
             initializeUI()
         }
 
-        override fun onDisconnected(room: Room, e: TwilioException) {
+        override fun onDisconnected(room: Room, e: TwilioException?) {
             localParticipant = null
             videoStatusTextView.text = "Disconnected from " + room.name
             this@VideoActivity.room = null
