@@ -67,12 +67,17 @@ class VideoActivity : AppCompatActivity() {
 
     private var previousAudioMode: Int = 0
     private var previousMicrophoneMute: Boolean = false
-    private var localVideoView: VideoRenderer? = null
+    private lateinit var localVideoView: VideoRenderer
     private var disconnectedFromOnDestroy: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
+
+        /*
+         * Set local video view to primary view
+         */
+        localVideoView = primaryVideoView
 
         /*
          * Enable changing the volume using the up/down keys during a conversation
@@ -85,14 +90,14 @@ class VideoActivity : AppCompatActivity() {
         audioManager.isSpeakerphoneOn = true
 
         /*
-         * Check camera and microphone permissions. Needed in Android M.
+         * Set access token
          */
-        if (!checkPermissionForCameraAndMicrophone()) {
-            requestPermissionForCameraAndMicrophone()
-        } else {
-            createAudioAndVideoTracks()
-            setAccessToken()
-        }
+        setAccessToken()
+
+        /*
+         * Request permissions.
+         */
+        requestPermissionForCameraAndMicrophone()
 
         /*
          * Set the initial state of the UI
@@ -113,7 +118,6 @@ class VideoActivity : AppCompatActivity() {
 
             if (cameraAndMicPermissionGranted) {
                 createAudioAndVideoTracks()
-                setAccessToken()
             } else {
                 Toast.makeText(this,
                         R.string.permissions_needed,
@@ -127,18 +131,12 @@ class VideoActivity : AppCompatActivity() {
         /*
          * If the local video track was released when the app was put in the background, recreate.
          */
-        if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
-            localVideoTrack = LocalVideoTrack.create(this,
-                    true,
-                    cameraCapturerCompat.getVideoCapturer())
+        localVideoTrack?.addRenderer(localVideoView)
 
-            localVideoTrack?.addRenderer(localVideoView)
-
-            /*
-             * If connected to a Room then share the local video track.
-             */
-            localVideoTrack?.let { localParticipant?.addVideoTrack(it) }
-        }
+        /*
+         * If connected to a Room then share the local video track.
+         */
+        localVideoTrack?.let { localParticipant?.addVideoTrack(it) }
     }
 
     override fun onPause() {
@@ -196,13 +194,6 @@ class VideoActivity : AppCompatActivity() {
         return true
     }
 
-    private fun checkPermissionForCameraAndMicrophone(): Boolean {
-        val resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-        val resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-        return resultCamera == PackageManager.PERMISSION_GRANTED &&
-                resultMic == PackageManager.PERMISSION_GRANTED
-    }
-
     private fun requestPermissionForCameraAndMicrophone() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -226,9 +217,6 @@ class VideoActivity : AppCompatActivity() {
         localVideoTrack = LocalVideoTrack.create(this,
                 true,
                 cameraCapturerCompat.getVideoCapturer())
-        localVideoTrack?.addRenderer(primaryVideoView)
-        primaryVideoView.mirror = true
-        localVideoView = primaryVideoView
     }
 
     private fun getAvailableCameraSource(): CameraCapturer.CameraSource {
