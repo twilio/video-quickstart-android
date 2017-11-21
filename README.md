@@ -20,7 +20,7 @@ Get started with Video on Android:
 
 To get started with the Quickstart application follow these steps:
 
-1. Open this project in Android Studio and select the quickstart app module.
+1. Open this project in Android Studio and select the quickstart or quickstartKotlin app module.
   <img width="700px" src="images/quickstart/android_studio_quickstart.png"/>
 
 2. Type in an identity and click on "Generate Access Token" from the [Testing Tools page](https://www.twilio.com/console/video/runtime/testing-tools).
