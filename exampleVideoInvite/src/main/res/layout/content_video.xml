@@ -6,6 +6,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:keepScreenOn="true"
+             android:background="@android:color/black"
              tools:showIn="@layout/activity_video">
 
     <com.twilio.video.VideoView
@@ -20,8 +21,9 @@
 
     <com.twilio.video.VideoView
         android:id="@+id/primary_video_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 
     <TextView
         android:id="@+id/identity_textview"
