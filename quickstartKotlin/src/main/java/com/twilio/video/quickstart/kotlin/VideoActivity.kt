@@ -131,6 +131,13 @@ class VideoActivity : AppCompatActivity() {
         /*
          * If the local video track was released when the app was put in the background, recreate.
          */
+        localVideoTrack = if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
+            LocalVideoTrack.create(this,
+                    true,
+                    cameraCapturerCompat.getVideoCapturer())
+        } else {
+            localVideoTrack
+        }
         localVideoTrack?.addRenderer(localVideoView)
 
         /*
@@ -207,6 +214,14 @@ class VideoActivity : AppCompatActivity() {
                     arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
                     CAMERA_MIC_PERMISSION_REQUEST_CODE)
         }
+    }
+
+    private fun checkPermissionForCameraAndMicrophone(): Boolean {
+        val resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        val resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+
+        return resultCamera == PackageManager.PERMISSION_GRANTED &&
+                resultMic == PackageManager.PERMISSION_GRANTED
     }
 
     private fun createAudioAndVideoTracks() {
