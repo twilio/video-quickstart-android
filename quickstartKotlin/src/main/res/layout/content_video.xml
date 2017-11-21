@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:id="@+id/videoContainer"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:keepScreenOn="true"
-             tools:showIn="@layout/activity_video">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/videoContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    android:background="@android:color/black"
+    tools:showIn="@layout/activity_video">
 
     <com.twilio.video.VideoView
         android:id="@+id/thumbnailVideoView"
@@ -21,8 +22,9 @@
     <com.twilio.video.VideoView
         android:id="@+id/primaryVideoView"
         app:mirror="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 
     <LinearLayout
         android:id="@+id/status"
