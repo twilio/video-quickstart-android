@@ -640,13 +640,13 @@ class VideoActivity : AppCompatActivity() {
                                     callParticipantsClickListener: DialogInterface.OnClickListener,
                                     cancelClickListener: DialogInterface.OnClickListener,
                                     context: Context): AlertDialog {
-        val alertDialogBuilder = AlertDialog.Builder(context)
-
-        alertDialogBuilder.setIcon(R.drawable.ic_video_call_white_24dp)
-        alertDialogBuilder.setTitle("Connect to a room")
-        alertDialogBuilder.setPositiveButton("Connect", callParticipantsClickListener)
-        alertDialogBuilder.setNegativeButton("Cancel", cancelClickListener)
-        alertDialogBuilder.setCancelable(false)
+        val alertDialogBuilder = AlertDialog.Builder(context).apply {
+            setIcon(R.drawable.ic_video_call_white_24dp)
+            setTitle("Connect to a room")
+            setPositiveButton("Connect", callParticipantsClickListener)
+            setNegativeButton("Cancel", cancelClickListener)
+            setCancelable(false)
+        }
 
         setRoomNameFieldInDialog(participantEditText, alertDialogBuilder, context)
 
