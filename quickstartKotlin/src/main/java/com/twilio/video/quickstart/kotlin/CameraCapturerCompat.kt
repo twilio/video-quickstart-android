@@ -21,13 +21,34 @@ class CameraCapturerCompat(context: Context, cameraSource: CameraCapturer.Camera
         }
 
         override fun onCameraSwitched(newCameraId: String) {
-            Log.i(TAG, "onCameraSwitched: newCameraId = " + newCameraId)
+            Log.i(TAG, "onCameraSwitched: newCameraId = $newCameraId")
         }
 
         override fun onError(camera2CapturerException: Camera2Capturer.Exception) {
             Log.e(TAG, camera2CapturerException.message)
         }
     }
+    val cameraSource: CameraCapturer.CameraSource
+        get() {
+            if (usingCamera1()) {
+                return camera1Capturer!!.cameraSource
+            } else {
+                return getCameraSource(camera2Capturer!!.cameraId)
+            }
+        }
+    /*
+     * This property is required because this class is not an implementation of VideoCapturer due to
+     * a shortcoming in the Video Android SDK.
+     */
+    val videoCapturer: VideoCapturer
+        get() {
+            if (usingCamera1()) {
+                return camera1Capturer!!
+            } else {
+                return camera2Capturer!!
+            }
+        }
+
 
     init {
         if (Camera2Capturer.isSupported(context)) {
@@ -37,14 +58,6 @@ class CameraCapturerCompat(context: Context, cameraSource: CameraCapturer.Camera
                     camera2Listener)
         } else {
             camera1Capturer = CameraCapturer(context, cameraSource)
-        }
-    }
-
-    fun getCameraSource(): CameraCapturer.CameraSource {
-        return if (usingCamera1()) {
-            camera1Capturer!!.cameraSource
-        } else {
-            getCameraSource(camera2Capturer!!.cameraId)
         }
     }
 
@@ -60,18 +73,6 @@ class CameraCapturerCompat(context: Context, cameraSource: CameraCapturer.Camera
             } else {
                 camera2Capturer!!.switchCamera(frontCameraPair!!.second)
             }
-        }
-    }
-
-    /*
-     * This method is required because this class is not an implementation of VideoCapturer due to
-     * a shortcoming in the Video Android SDK.
-     */
-    fun getVideoCapturer(): VideoCapturer {
-        return if (usingCamera1()) {
-            camera1Capturer as VideoCapturer
-        } else {
-            camera2Capturer as VideoCapturer
         }
     }
 

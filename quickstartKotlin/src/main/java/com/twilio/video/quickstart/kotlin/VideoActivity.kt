@@ -48,7 +48,103 @@ class VideoActivity : AppCompatActivity() {
      * A Room represents communication between a local participant and one or more participants.
      */
     private var room: Room? = null
+
+    /*
+     * Room events listener
+     */
+    private val roomListener = object : Room.Listener {
+        override fun onConnected(room: Room) {
+            localParticipant = room.localParticipant
+            videoStatusTextView.text = "Connected to " + room.name
+            title = room.name
+
+            // Only one participant is supported
+            room.participants.firstOrNull()?.let { addParticipant(it) }
+        }
+
+        override fun onConnectFailure(room: Room, e: TwilioException) {
+            videoStatusTextView.text = "Failed to connect"
+            configureAudio(false)
+            initializeUI()
+        }
+
+        override fun onDisconnected(room: Room, e: TwilioException?) {
+            localParticipant = null
+            videoStatusTextView.text = "Disconnected from " + room.name
+            this@VideoActivity.room = null
+            // Only reinitialize the UI if disconnect was not called from onDestroy()
+            if (!disconnectedFromOnDestroy) {
+                configureAudio(false)
+                initializeUI()
+                moveLocalVideoToPrimaryView()
+            }
+        }
+
+        override fun onParticipantConnected(room: Room, participant: Participant) {
+            addParticipant(participant)
+
+        }
+
+        override fun onParticipantDisconnected(room: Room, participant: Participant) {
+            removeParticipant(participant)
+        }
+
+        override fun onRecordingStarted(room: Room) {
+            /*
+             * Indicates when media shared to a Room is being recorded. Note that
+             * recording is only available in our Group Rooms developer preview.
+             */
+            Log.d(TAG, "onRecordingStarted")
+        }
+
+        override fun onRecordingStopped(room: Room) {
+            /*
+             * Indicates when media shared to a Room is no longer being recorded. Note that
+             * recording is only available in our Group Rooms developer preview.
+             */
+            Log.d(TAG, "onRecordingStopped")
+        }
+    }
     private var localParticipant: LocalParticipant? = null
+
+    /*
+     * Participant events listener
+     */
+    private val participantListener = object : Participant.Listener {
+        override fun onAudioTrackAdded(participant: Participant, audioTrack: AudioTrack) {
+            videoStatusTextView.text = "onAudioTrackAdded"
+        }
+
+        override fun onAudioTrackRemoved(participant: Participant, audioTrack: AudioTrack) {
+            videoStatusTextView.text = "onAudioTrackRemoved"
+        }
+
+        override fun onVideoTrackAdded(participant: Participant, videoTrack: VideoTrack) {
+            videoStatusTextView.text = "onVideoTrackAdded"
+            addParticipantVideo(videoTrack)
+        }
+
+        override fun onVideoTrackRemoved(participant: Participant, videoTrack: VideoTrack) {
+            videoStatusTextView.text = "onVideoTrackRemoved"
+            removeParticipantVideo(videoTrack)
+        }
+
+        override fun onAudioTrackEnabled(participant: Participant, audioTrack: AudioTrack) {
+
+        }
+
+        override fun onAudioTrackDisabled(participant: Participant, audioTrack: AudioTrack) {
+
+        }
+
+        override fun onVideoTrackEnabled(participant: Participant, videoTrack: VideoTrack) {
+
+        }
+
+        override fun onVideoTrackDisabled(participant: Participant, videoTrack: VideoTrack) {
+
+        }
+    }
 
     /*
      * Android application UI elements
@@ -134,7 +230,7 @@ class VideoActivity : AppCompatActivity() {
         localVideoTrack = if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
             LocalVideoTrack.create(this,
                     true,
-                    cameraCapturerCompat.getVideoCapturer())
+                    cameraCapturerCompat.videoCapturer)
         } else {
             localVideoTrack
         }
@@ -231,7 +327,7 @@ class VideoActivity : AppCompatActivity() {
         // Share your camera
         localVideoTrack = LocalVideoTrack.create(this,
                 true,
-                cameraCapturerCompat.getVideoCapturer())
+                cameraCapturerCompat.videoCapturer)
     }
 
     private fun getAvailableCameraSource(): CameraCapturer.CameraSource {
@@ -336,14 +432,14 @@ class VideoActivity : AppCompatActivity() {
         /*
          * Add participant renderer
          */
-        if (participant.videoTracks.size > 0) {
-            addParticipantVideo(participant.videoTracks[0])
+        if (participant.videoTracks.isNotEmpty()) {
+            addParticipantVideo(participant.videoTracks.first())
         }
 
         /*
          * Start listening for participant events
          */
-        participant.setListener(participantListener())
+        participant.setListener(participantListener)
     }
 
     /*
@@ -361,7 +457,7 @@ class VideoActivity : AppCompatActivity() {
             localVideoTrack?.removeRenderer(primaryVideoView)
             localVideoTrack?.addRenderer(thumbnailVideoView)
             localVideoView = thumbnailVideoView
-            thumbnailVideoView.mirror = cameraCapturerCompat.getCameraSource() ==
+            thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
                     CameraCapturer.CameraSource.FRONT_CAMERA
         }
     }
@@ -394,105 +490,8 @@ class VideoActivity : AppCompatActivity() {
             localVideoTrack?.removeRenderer(thumbnailVideoView)
             localVideoTrack?.addRenderer(primaryVideoView)
             localVideoView = primaryVideoView
-            primaryVideoView.mirror = cameraCapturerCompat.getCameraSource() ==
+            primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
                     CameraCapturer.CameraSource.FRONT_CAMERA
-        }
-    }
-
-    /*
-     * Room events listener
-     */
-    private val roomListener = object : Room.Listener {
-        override fun onConnected(room: Room) {
-            localParticipant = room.localParticipant
-            videoStatusTextView.text = "Connected to " + room.name
-            title = room.name
-
-            for (participant in room.participants) {
-                addParticipant(participant)
-                break
-            }
-        }
-
-        override fun onConnectFailure(room: Room, e: TwilioException) {
-            videoStatusTextView.text = "Failed to connect"
-            configureAudio(false)
-            initializeUI()
-        }
-
-        override fun onDisconnected(room: Room, e: TwilioException?) {
-            localParticipant = null
-            videoStatusTextView.text = "Disconnected from " + room.name
-            this@VideoActivity.room = null
-            // Only reinitialize the UI if disconnect was not called from onDestroy()
-            if (!disconnectedFromOnDestroy) {
-                configureAudio(false)
-                initializeUI()
-                moveLocalVideoToPrimaryView()
-            }
-        }
-
-        override fun onParticipantConnected(room: Room, participant: Participant) {
-            addParticipant(participant)
-
-        }
-
-        override fun onParticipantDisconnected(room: Room, participant: Participant) {
-            removeParticipant(participant)
-        }
-
-        override fun onRecordingStarted(room: Room) {
-            /*
-             * Indicates when media shared to a Room is being recorded. Note that
-             * recording is only available in our Group Rooms developer preview.
-             */
-            Log.d(TAG, "onRecordingStarted")
-        }
-
-        override fun onRecordingStopped(room: Room) {
-            /*
-             * Indicates when media shared to a Room is no longer being recorded. Note that
-             * recording is only available in our Group Rooms developer preview.
-             */
-            Log.d(TAG, "onRecordingStopped")
-        }
-    }
-
-    private fun participantListener(): Participant.Listener {
-        return object : Participant.Listener {
-            override fun onAudioTrackAdded(participant: Participant, audioTrack: AudioTrack) {
-                videoStatusTextView.text = "onAudioTrackAdded"
-            }
-
-            override fun onAudioTrackRemoved(participant: Participant, audioTrack: AudioTrack) {
-                videoStatusTextView.text = "onAudioTrackRemoved"
-            }
-
-            override fun onVideoTrackAdded(participant: Participant, videoTrack: VideoTrack) {
-                videoStatusTextView.text = "onVideoTrackAdded"
-                addParticipantVideo(videoTrack)
-            }
-
-            override fun onVideoTrackRemoved(participant: Participant, videoTrack: VideoTrack) {
-                videoStatusTextView.text = "onVideoTrackRemoved"
-                removeParticipantVideo(videoTrack)
-            }
-
-            override fun onAudioTrackEnabled(participant: Participant, audioTrack: AudioTrack) {
-
-            }
-
-            override fun onAudioTrackDisabled(participant: Participant, audioTrack: AudioTrack) {
-
-            }
-
-            override fun onVideoTrackEnabled(participant: Participant, videoTrack: VideoTrack) {
-
-            }
-
-            override fun onVideoTrackDisabled(participant: Participant, videoTrack: VideoTrack) {
-
-            }
         }
     }
 
@@ -528,7 +527,7 @@ class VideoActivity : AppCompatActivity() {
 
     private fun switchCameraClickListener(): View.OnClickListener {
         return View.OnClickListener {
-            val cameraSource = cameraCapturerCompat.getCameraSource()
+            val cameraSource = cameraCapturerCompat.cameraSource
             cameraCapturerCompat.switchCamera()
             if (thumbnailVideoView.visibility == View.VISIBLE) {
                 thumbnailVideoView.mirror = cameraSource == CameraCapturer.CameraSource.BACK_CAMERA
