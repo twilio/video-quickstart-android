@@ -161,10 +161,10 @@ class VideoActivity : AppCompatActivity() {
 
     private var participantIdentity: String? = null
 
-    private var previousAudioMode: Int = 0
-    private var previousMicrophoneMute: Boolean = false
+    private var previousAudioMode = 0
+    private var previousMicrophoneMute = false
     private lateinit var localVideoView: VideoRenderer
-    private var disconnectedFromOnDestroy: Boolean = false
+    private var disconnectedFromOnDestroy = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
