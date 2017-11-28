@@ -9,7 +9,10 @@ import com.twilio.video.quickstart.R;
 
 public class Dialog {
 
-    public static AlertDialog createConnectDialog(EditText participantEditText, DialogInterface.OnClickListener callParticipantsClickListener, DialogInterface.OnClickListener cancelClickListener, Context context) {
+    public static AlertDialog createConnectDialog(EditText participantEditText,
+                                                  DialogInterface.OnClickListener callParticipantsClickListener,
+                                                  DialogInterface.OnClickListener cancelClickListener,
+                                                  Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
         alertDialogBuilder.setIcon(R.drawable.ic_video_call_white_24dp);
@@ -23,11 +26,17 @@ public class Dialog {
         return alertDialogBuilder.create();
     }
 
-    private static void setRoomNameFieldInDialog(EditText roomNameEditText, AlertDialog.Builder alertDialogBuilder, Context context) {
+    private static void setRoomNameFieldInDialog(EditText roomNameEditText,
+                                                 AlertDialog.Builder alertDialogBuilder,
+                                                 Context context) {
         roomNameEditText.setHint("room name");
         int horizontalPadding = context.getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin);
         int verticalPadding = context.getResources().getDimensionPixelOffset(R.dimen.activity_vertical_margin);
-        alertDialogBuilder.setView(roomNameEditText, horizontalPadding, verticalPadding, horizontalPadding, 0);
+        alertDialogBuilder.setView(roomNameEditText,
+                horizontalPadding,
+                verticalPadding,
+                horizontalPadding,
+                0);
     }
 
 }

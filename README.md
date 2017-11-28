@@ -1,6 +1,8 @@
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/latest/)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/2.0.0-preview5/)
 
-> NOTE: These sample applications use the Twilio Video 1.x APIs. For examples using our 2.x APIs, please see the [2.0](https://github.com/twilio/video-quickstart-android/tree/2.0) branch.
+> NOTE: These sample applications use the Twilio Video 2.0.0 APIs. We will continue to 
+update them throughout the preview and beta period. For examples using our GA 1.x APIs, please see 
+the [master](https://github.com/twilio/video-quickstart-android) branch.
 
 # Twilio Video Quickstart for Android
 
@@ -48,6 +50,7 @@ In addition to the quickstart we've also added a few examples of use cases that 
 - [Screen Capturer](exampleScreenCapturer) - Demonstrates how to use the screen capturer.
 - [Advanced Camera Capturer](exampleAdvancedCameraCapturer) - Demonstrates advanced use cases of `CameraCapturer` like injecting custom camera paremeters.
 - [Video Invite](exampleVideoInvite) - Demonstrates how to use Twilio Notify to invite other participants to a room.
+- [Data Tracks](exampleDataTrack) - Demonstrates how to use `DataTrack`s to write a simple collaborative drawing app.
 
 ## Using an Emulator
 
@@ -225,7 +228,6 @@ following snippets demonstrate how to setup the a thumbnail video overlayed on a
 seen in the screenshot below.
 
 <img height="500px" src="images/quickstart/video_view_example.png"/>
-
 
 #### VideoView in a Layout File 
 

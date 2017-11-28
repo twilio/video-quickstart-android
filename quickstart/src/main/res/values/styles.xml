@@ -17,4 +17,10 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="AppTheme.Settings" parent="AppTheme">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="displayOptions">showHome|showTitle|homeAsUp</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    </style>
+
 </resources>

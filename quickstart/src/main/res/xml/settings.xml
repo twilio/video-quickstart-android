@@ -1,0 +1,27 @@
+<android.support.v7.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.preference.PreferenceCategory
+        android:title="@string/codec_title">
+        <android.support.v7.preference.ListPreference
+            android:key="audio_codec"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_audio_codec" />
+        <android.support.v7.preference.ListPreference
+            android:key="video_codec"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_video_codec" />
+    </android.support.v7.preference.PreferenceCategory>
+    <android.support.v7.preference.PreferenceCategory
+        android:title="@string/sender_bandwidth_constraints">
+        <android.support.v7.preference.EditTextPreference
+            android:key="sender_max_audio_bitrate"
+            android:title="@string/max_audio_bitrate"
+            android:defaultValue="0"/>
+        <android.support.v7.preference.EditTextPreference
+            android:key="sender_max_video_bitrate"
+            android:title="@string/max_video_bitrate"
+            android:defaultValue="0" />
+    </android.support.v7.preference.PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>
