@@ -42,12 +42,13 @@ class VideoActivity : AppCompatActivity() {
      * Access token used to connect. This field will be set either from the console generated token
      * or the request to the token server.
      */
-    private var accessToken: String? = null
+    private lateinit var accessToken: String
 
     /*
      * A Room represents communication between a local participant and one or more participants.
      */
     private var room: Room? = null
+    private var localParticipant: LocalParticipant? = null
 
     /*
      * Room events listener
@@ -55,7 +56,7 @@ class VideoActivity : AppCompatActivity() {
     private val roomListener = object : Room.Listener {
         override fun onConnected(room: Room) {
             localParticipant = room.localParticipant
-            videoStatusTextView.text = "Connected to " + room.name
+            videoStatusTextView.text = "Connected to $room.name"
             title = room.name
 
             // Only one participant is supported
@@ -70,7 +71,7 @@ class VideoActivity : AppCompatActivity() {
 
         override fun onDisconnected(room: Room, e: TwilioException?) {
             localParticipant = null
-            videoStatusTextView.text = "Disconnected from " + room.name
+            videoStatusTextView.text = "Disconnected from $room.name"
             this@VideoActivity.room = null
             // Only reinitialize the UI if disconnect was not called from onDestroy()
             if (!disconnectedFromOnDestroy) {
@@ -82,7 +83,6 @@ class VideoActivity : AppCompatActivity() {
 
         override fun onParticipantConnected(room: Room, participant: Participant) {
             addParticipant(participant)
-
         }
 
         override fun onParticipantDisconnected(room: Room, participant: Participant) {
@@ -105,7 +105,6 @@ class VideoActivity : AppCompatActivity() {
             Log.d(TAG, "onRecordingStopped")
         }
     }
-    private var localParticipant: LocalParticipant? = null
 
     /*
      * Participant events listener
@@ -146,16 +145,13 @@ class VideoActivity : AppCompatActivity() {
         }
     }
 
-    /*
-     * Android application UI elements
-     */
     private var localAudioTrack: LocalAudioTrack? = null
     private var localVideoTrack: LocalVideoTrack? = null
     private var alertDialog: android.support.v7.app.AlertDialog? = null
-    private val cameraCapturerCompat: CameraCapturerCompat by lazy {
+    private val cameraCapturerCompat by lazy {
         CameraCapturerCompat(this, getAvailableCameraSource())
     }
-    private val audioManager: AudioManager by lazy {
+    private val audioManager by lazy {
         this@VideoActivity.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
 
@@ -454,8 +450,10 @@ class VideoActivity : AppCompatActivity() {
     private fun moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.visibility == View.GONE) {
             thumbnailVideoView.visibility = View.VISIBLE
-            localVideoTrack?.removeRenderer(primaryVideoView)
-            localVideoTrack?.addRenderer(thumbnailVideoView)
+            with(localVideoTrack) {
+                this?.removeRenderer(primaryVideoView)
+                this?.addRenderer(thumbnailVideoView)
+            }
             localVideoView = thumbnailVideoView
             thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
                     CameraCapturer.CameraSource.FRONT_CAMERA
@@ -466,7 +464,7 @@ class VideoActivity : AppCompatActivity() {
      * Called when participant leaves the room
      */
     private fun removeParticipant(participant: Participant) {
-        videoStatusTextView.text = "Participant " + participant.identity + " left."
+        videoStatusTextView.text = "Participant $participant.identity left."
         if (participant.identity != participantIdentity) {
             return
         }
@@ -474,7 +472,7 @@ class VideoActivity : AppCompatActivity() {
         /*
          * Remove participant renderer
          */
-        if (participant.videoTracks.size > 0) {
+        participant.videoTracks.firstOrNull()?.let {
             removeParticipantVideo(participant.videoTracks[0])
         }
         moveLocalVideoToPrimaryView()
@@ -487,8 +485,10 @@ class VideoActivity : AppCompatActivity() {
     private fun moveLocalVideoToPrimaryView() {
         if (thumbnailVideoView.visibility == View.VISIBLE) {
             thumbnailVideoView.visibility = View.GONE
-            localVideoTrack?.removeRenderer(thumbnailVideoView)
-            localVideoTrack?.addRenderer(primaryVideoView)
+            with(localVideoTrack) {
+                this?.removeRenderer(thumbnailVideoView)
+                this?.addRenderer(primaryVideoView)
+            }
             localVideoView = primaryVideoView
             primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
                     CameraCapturer.CameraSource.FRONT_CAMERA
@@ -595,26 +595,28 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private fun configureAudio(enable: Boolean) {
-        if (enable) {
-            previousAudioMode = audioManager.mode
-            // Request audio focus before making any device switch
-            requestAudioFocus()
-            /*
-             * Use MODE_IN_COMMUNICATION as the default audio mode. It is required
-             * to be in this mode when playout and/or recording starts for the best
-             * possible VoIP performance. Some devices have difficulties with
-             * speaker mode if this is not set.
-             */
-            audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-            /*
-             * Always disable microphone mute during a WebRTC call.
-             */
-            previousMicrophoneMute = audioManager.isMicrophoneMute
-            audioManager.isMicrophoneMute = false
-        } else {
-            audioManager.mode = previousAudioMode
-            audioManager.abandonAudioFocus(null)
-            audioManager.isMicrophoneMute = previousMicrophoneMute
+        with(audioManager) {
+            if (enable) {
+                previousAudioMode = audioManager.mode
+                // Request audio focus before making any device switch
+                requestAudioFocus()
+                /*
+                 * Use MODE_IN_COMMUNICATION as the default audio mode. It is required
+                 * to be in this mode when playout and/or recording starts for the best
+                 * possible VoIP performance. Some devices have difficulties with
+                 * speaker mode if this is not set.
+                 */
+                mode = AudioManager.MODE_IN_COMMUNICATION
+                /*
+                 * Always disable microphone mute during a WebRTC call.
+                 */
+                previousMicrophoneMute = isMicrophoneMute
+                isMicrophoneMute = false
+            } else {
+                mode = previousAudioMode
+                abandonAudioFocus(null)
+                isMicrophoneMute = previousMicrophoneMute
+            }
         }
     }
 
