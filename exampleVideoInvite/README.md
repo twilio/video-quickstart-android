@@ -4,7 +4,7 @@ There are many use cases using real-time video that require inviting, notifying,
 interested parties to join a video session in real-time.
 
 This example illustrates how to do so using push notifications via
-[Twilio Notify](twilio.com/notify) enabling you to notify other participants to join a named video
+[Twilio Notify](https://twilio.com/notify) enabling you to notify other participants to join a named video
 room via GCM, FCM, APNS and other channels.
 
 In this example, when a participant joins a named video room it notifies all other participants
