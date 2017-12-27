@@ -1,4 +1,4 @@
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/2.0.0-preview5/)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/2.0.0-preview7/)
 
 > NOTE: These sample applications use the Twilio Video 2.0.0 APIs. We will continue to 
 update them throughout the preview and beta period. For examples using our GA 1.x APIs, please see 
