@@ -230,6 +230,18 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onAudioTrackUnsubscribed"
         }
 
+        override fun onAudioTrackSubscriptionFailed(remoteParticipant: RemoteParticipant,
+                                                    remoteAudioTrackPublication: RemoteAudioTrackPublication,
+                                                    twilioException: TwilioException) {
+            Log.i(TAG, "onAudioTrackSubscriptionFailed: " +
+                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                    "[RemoteAudioTrackPublication: sid=${remoteAudioTrackPublication.trackSid}, " +
+                    "name=${remoteAudioTrackPublication.trackName}]" +
+                    "[TwilioException: code=${twilioException.code}, " +
+                    "message=${twilioException.message}]")
+            videoStatusTextView.text = "onAudioTrackSubscriptionFailed"
+        }
+
         override fun onDataTrackSubscribed(remoteParticipant: RemoteParticipant,
                                            remoteDataTrackPublication: RemoteDataTrackPublication,
                                            remoteDataTrack: RemoteDataTrack) {
@@ -248,6 +260,18 @@ class VideoActivity : AppCompatActivity() {
                     "[RemoteDataTrack: enabled=${remoteDataTrack.isEnabled}, " +
                     "name=${remoteDataTrack.name}]")
             videoStatusTextView.text = "onDataTrackUnsubscribed"
+        }
+
+        override fun onDataTrackSubscriptionFailed(remoteParticipant: RemoteParticipant,
+                                                    remoteDataTrackPublication: RemoteDataTrackPublication,
+                                                    twilioException: TwilioException) {
+            Log.i(TAG, "onDataTrackSubscriptionFailed: " +
+                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                    "[RemoteDataTrackPublication: sid=${remoteDataTrackPublication.trackSid}, " +
+                    "name=${remoteDataTrackPublication.trackName}]" +
+                    "[TwilioException: code=${twilioException.code}, " +
+                    "message=${twilioException.message}]")
+            videoStatusTextView.text = "onDataTrackSubscriptionFailed"
         }
 
         override fun onVideoTrackSubscribed(remoteParticipant: RemoteParticipant,
@@ -270,6 +294,22 @@ class VideoActivity : AppCompatActivity() {
                     "name=${remoteVideoTrack.name}]")
             videoStatusTextView.text = "onVideoTrackUnsubscribed"
             removeParticipantVideo(remoteVideoTrack)
+        }
+
+        override fun onVideoTrackSubscriptionFailed(remoteParticipant: RemoteParticipant,
+                                                    remoteVideoTrackPublication: RemoteVideoTrackPublication,
+                                                    twilioException: TwilioException) {
+            Log.i(TAG, "onVideoTrackSubscriptionFailed: " +
+                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                    "[RemoteVideoTrackPublication: sid=${remoteVideoTrackPublication.trackSid}, " +
+                    "name=${remoteVideoTrackPublication.trackName}]" +
+                    "[TwilioException: code=${twilioException.code}, " +
+                    "message=${twilioException.message}]")
+            videoStatusTextView.text = "onVideoTrackSubscriptionFailed"
+            Snackbar.make(connectActionFab,
+                    "Failed to subscribe to ${remoteParticipant.identity}",
+                    Snackbar.LENGTH_LONG)
+                    .show()
         }
 
         override fun onAudioTrackEnabled(remoteParticipant: RemoteParticipant,

@@ -408,6 +408,12 @@ public class DataTrackActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onAudioTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                       RemoteAudioTrackPublication remoteAudioTrackPublication,
+                                                       TwilioException twilioException) {
+            }
+
+            @Override
             public void onDataTrackSubscribed(final RemoteParticipant remoteParticipant,
                                               RemoteDataTrackPublication remoteDataTrackPublication,
                                               final RemoteDataTrack remoteDataTrack) {
@@ -430,6 +436,12 @@ public class DataTrackActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onDataTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                      RemoteDataTrackPublication remoteDataTrackPublication,
+                                                      TwilioException twilioException) {
+            }
+
+            @Override
             public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant,
                                                RemoteVideoTrackPublication remoteVideoTrackPublication,
                                                RemoteVideoTrack remoteVideoTrack) {
@@ -439,6 +451,12 @@ public class DataTrackActivity extends AppCompatActivity {
             public void onVideoTrackUnsubscribed(RemoteParticipant remoteParticipant,
                                                  RemoteVideoTrackPublication remoteVideoTrackPublication,
                                                  RemoteVideoTrack remoteVideoTrack) {
+            }
+
+            @Override
+            public void onVideoTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                       RemoteVideoTrackPublication remoteVideoTrackPublication,
+                                                       TwilioException twilioException) {
             }
 
             @Override

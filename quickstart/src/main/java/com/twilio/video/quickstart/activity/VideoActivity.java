@@ -787,9 +787,25 @@ public class VideoActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onAudioTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                       RemoteAudioTrackPublication remoteAudioTrackPublication,
+                                                       TwilioException twilioException) {
+                Log.i(TAG, String.format("onAudioTrackSubscriptionFailed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteAudioTrackPublication: sid=%b, name=%s]" +
+                                "[TwilioException: code=%d, message=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteAudioTrackPublication.getTrackSid(),
+                        remoteAudioTrackPublication.getTrackName(),
+                        twilioException.getCode(),
+                        twilioException.getMessage()));
+                videoStatusTextView.setText("onAudioTrackSubscriptionFailed");
+            }
+
+            @Override
             public void onDataTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteDataTrackPublication remoteDataTrackPublication,
-                                               RemoteDataTrack remoteDataTrack) {
+                                              RemoteDataTrackPublication remoteDataTrackPublication,
+                                              RemoteDataTrack remoteDataTrack) {
                 Log.i(TAG, String.format("onDataTrackSubscribed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteDataTrack: enabled=%b, name=%s]",
@@ -801,8 +817,8 @@ public class VideoActivity extends AppCompatActivity {
 
             @Override
             public void onDataTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteDataTrackPublication remoteDataTrackPublication,
-                                                 RemoteDataTrack remoteDataTrack) {
+                                                RemoteDataTrackPublication remoteDataTrackPublication,
+                                                RemoteDataTrack remoteDataTrack) {
                 Log.i(TAG, String.format("onDataTrackUnsubscribed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteDataTrack: enabled=%b, name=%s]",
@@ -810,6 +826,22 @@ public class VideoActivity extends AppCompatActivity {
                         remoteDataTrack.isEnabled(),
                         remoteDataTrack.getName()));
                 videoStatusTextView.setText("onDataTrackUnsubscribed");
+            }
+
+            @Override
+            public void onDataTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                      RemoteDataTrackPublication remoteDataTrackPublication,
+                                                      TwilioException twilioException) {
+                Log.i(TAG, String.format("onDataTrackSubscriptionFailed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteDataTrackPublication: sid=%b, name=%s]" +
+                                "[TwilioException: code=%d, message=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteDataTrackPublication.getTrackSid(),
+                        remoteDataTrackPublication.getTrackName(),
+                        twilioException.getCode(),
+                        twilioException.getMessage()));
+                videoStatusTextView.setText("onDataTrackSubscriptionFailed");
             }
 
             @Override
@@ -838,6 +870,27 @@ public class VideoActivity extends AppCompatActivity {
                         remoteVideoTrack.getName()));
                 videoStatusTextView.setText("onVideoTrackUnsubscribed");
                 removeParticipantVideo(remoteVideoTrack);
+            }
+
+            @Override
+            public void onVideoTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                       RemoteVideoTrackPublication remoteVideoTrackPublication,
+                                                       TwilioException twilioException) {
+                Log.i(TAG, String.format("onVideoTrackSubscriptionFailed: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[RemoteVideoTrackPublication: sid=%b, name=%s]" +
+                                "[TwilioException: code=%d, message=%s]",
+                        remoteParticipant.getIdentity(),
+                        remoteVideoTrackPublication.getTrackSid(),
+                        remoteVideoTrackPublication.getTrackName(),
+                        twilioException.getCode(),
+                        twilioException.getMessage()));
+                videoStatusTextView.setText("onVideoTrackSubscriptionFailed");
+                Snackbar.make(connectActionFab,
+                        String.format("Failed to subscribe to %s video track",
+                                remoteParticipant.getIdentity()),
+                        Snackbar.LENGTH_LONG)
+                        .show();
             }
 
             @Override

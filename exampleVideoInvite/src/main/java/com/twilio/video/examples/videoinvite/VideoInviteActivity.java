@@ -801,6 +801,13 @@ public class VideoInviteActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onAudioTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                       RemoteAudioTrackPublication remoteAudioTrackPublication,
+                                                       TwilioException twilioException) {
+                statusTextView.setText("onAudioTrackSubscriptionFailed");
+            }
+
+            @Override
             public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant,
                                                RemoteVideoTrackPublication remoteVideoTrackPublication,
                                                RemoteVideoTrack remoteVideoTrack) {
@@ -817,6 +824,18 @@ public class VideoInviteActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onVideoTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                       RemoteVideoTrackPublication remoteVideoTrackPublication,
+                                                       TwilioException twilioException) {
+                statusTextView.setText("onVideoTrackSubscriptionFailed");
+                Snackbar.make(connectActionFab,
+                        String.format("Failed to subscribe to %s video track",
+                                remoteParticipant.getIdentity()),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
+
+            @Override
             public void onDataTrackSubscribed(RemoteParticipant remoteParticipant,
                                               RemoteDataTrackPublication remoteDataTrackPublication,
                                               RemoteDataTrack remoteDataTrack) {
@@ -828,6 +847,13 @@ public class VideoInviteActivity extends AppCompatActivity {
                                                 RemoteDataTrackPublication remoteDataTrackPublication,
                                                 RemoteDataTrack remoteDataTrack) {
                 statusTextView.setText("onDataTrackUnsubscribed");
+            }
+
+            @Override
+            public void onDataTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
+                                                      RemoteDataTrackPublication remoteDataTrackPublication,
+                                                      TwilioException twilioException) {
+                statusTextView.setText("onDataTrackSubscriptionFailed");
             }
 
             @Override
