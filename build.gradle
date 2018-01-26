@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.1.60'
+    ext.kotlin_version = '1.2.10'
     ext.versions = [
             'compileSdk': 26,
             'buildTools': '26.0.2',
@@ -12,11 +12,11 @@ buildscript {
             'retrofit': '2.0.0-beta4',
             'okhttp': '3.6.0',
             'ion': '2.1.7',
-            'videoAndroid': '2.0.0-preview8'
+            'videoAndroid': '2.0.0-preview9'
     ]
 
     ext.getSecretProperty = { key, defaultValue ->
-        def value = System.getenv(key);
+        def value = System.getenv(key)
 
         if (value == null) {
             Properties properties = new Properties()
@@ -30,7 +30,7 @@ buildscript {
             value = defaultValue
         }
 
-        return value;
+        return value
     }
     repositories {
         google()
