@@ -12,10 +12,10 @@ buildscript {
             'retrofit': '2.0.0-beta4',
             'okhttp': '3.6.0',
             'ion': '2.1.7',
-            'videoAndroid': '1.3.9'
+            'videoAndroid': '1.3.10'
     ]
     ext.getSecretProperty = { key, defaultValue ->
-        def value = System.getenv(key);
+        def value = System.getenv(key)
 
         if (value == null) {
             Properties properties = new Properties()
@@ -37,7 +37,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'com.google.gms:google-services:3.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
