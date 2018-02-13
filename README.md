@@ -1,8 +1,8 @@
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/2.0.0-preview7/)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/2.0.0-beta1/)
 
-> NOTE: These sample applications use the Twilio Video 2.0.0 APIs. We will continue to 
-update them throughout the preview and beta period. For examples using our GA 1.x APIs, please see 
-the [master](https://github.com/twilio/video-quickstart-android) branch.
+> NOTE: These sample applications use the Twilio Video 2.0.0 APIs. We will continue to
+update them throughout the beta period. For examples using our 1.x APIs, please see
+the [1.x](https://github.com/twilio/video-quickstart-android/tree/1.x) branch.
 
 # Twilio Video Quickstart for Android
 
