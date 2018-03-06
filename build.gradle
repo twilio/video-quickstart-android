@@ -12,7 +12,7 @@ buildscript {
             'retrofit': '2.0.0-beta4',
             'okhttp': '3.6.0',
             'ion': '2.1.7',
-            'videoAndroid': '1.3.12'
+            'videoAndroid': '1.3.13'
     ]
     ext.getSecretProperty = { key, defaultValue ->
         def value = System.getenv(key)
