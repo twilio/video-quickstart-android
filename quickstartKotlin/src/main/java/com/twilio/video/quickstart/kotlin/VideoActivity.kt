@@ -88,7 +88,7 @@ class VideoActivity : AppCompatActivity() {
     private val roomListener = object : Room.Listener {
         override fun onConnected(room: Room) {
             localParticipant = room.localParticipant
-            videoStatusTextView.text = "Connected to $room.name"
+            videoStatusTextView.text = "Connected to ${room.name}"
             title = room.name
 
             // Only one participant is supported
@@ -103,7 +103,7 @@ class VideoActivity : AppCompatActivity() {
 
         override fun onDisconnected(room: Room, e: TwilioException?) {
             localParticipant = null
-            videoStatusTextView.text = "Disconnected from $room.name"
+            videoStatusTextView.text = "Disconnected from ${room.name}"
             this@VideoActivity.room = null
             // Only reinitialize the UI if disconnect was not called from onDestroy()
             if (!disconnectedFromOnDestroy) {
@@ -704,7 +704,7 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private fun connectClickListener(roomEditText: EditText): DialogInterface.OnClickListener {
-        return DialogInterface.OnClickListener { dialog, which ->
+        return DialogInterface.OnClickListener { _, _ ->
             /*
              * Connect to room
              */
@@ -727,7 +727,7 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private fun cancelConnectDialogClickListener(): DialogInterface.OnClickListener {
-        return DialogInterface.OnClickListener { dialog, which ->
+        return DialogInterface.OnClickListener { _, _ ->
             initializeUI()
             alertDialog!!.dismiss()
         }
