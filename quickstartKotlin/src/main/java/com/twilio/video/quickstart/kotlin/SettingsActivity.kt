@@ -9,22 +9,26 @@ import android.support.v7.preference.ListPreference
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.MenuItem
-import com.twilio.video.AudioCodec
-import com.twilio.video.VideoCodec
+import com.twilio.video.*
 import org.webrtc.MediaCodecVideoDecoder
 import org.webrtc.MediaCodecVideoEncoder
-import java.util.ArrayList
+import java.util.*
 
 class SettingsActivity : AppCompatActivity() {
     companion object {
-        val PREF_AUDIO_CODEC = "audio_codec"
-        val PREF_AUDIO_CODEC_DEFAULT = "OPUS"
-        val PREF_VIDEO_CODEC = "video_codec"
-        val PREF_VIDEO_CODEC_DEFAULT = "VP8"
-        val PREF_SENDER_MAX_AUDIO_BITRATE = "sender_max_audio_bitrate"
-        val PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT = "0"
-        val PREF_SENDER_MAX_VIDEO_BITRATE = "sender_max_video_bitrate"
-        val PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT = "0"
+        const val PREF_AUDIO_CODEC = "audio_codec"
+        const val PREF_AUDIO_CODEC_DEFAULT = OpusCodec.NAME
+        const val PREF_VIDEO_CODEC = "video_codec"
+        const val PREF_VIDEO_CODEC_DEFAULT = Vp8Codec.NAME
+        const val PREF_SENDER_MAX_AUDIO_BITRATE = "sender_max_audio_bitrate"
+        const val PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT = "0"
+        const val PREF_SENDER_MAX_VIDEO_BITRATE = "sender_max_video_bitrate"
+        const val PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT = "0"
+
+        val VIDEO_CODEC_NAMES = arrayOf(Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME)
+
+        val AUDIO_CODEC_NAMES = arrayOf(IsacCodec.NAME, OpusCodec.NAME, PcmaCodec.NAME,
+                PcmuCodec.NAME, G722Codec.NAME)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,17 +86,20 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        private fun <T : Enum<T>> setupCodecListPreference(enumClass: Class<T>,
-                                                           key: String,
-                                                           defaultValue: String,
-                                                           listPreference: ListPreference) {
-            // Create codec entries
-            val codecEntries = enumClass.enumConstants.mapTo(ArrayList()) { it.toString() }
+        private fun setupCodecListPreference(codecClass: Class<*>,
+                                             key: String,
+                                             defaultValue: String,
+                                             listPreference: ListPreference) {
+            // Set codec entries
+            val codecEntries = if (codecClass == AudioCodec::class.java)
+                AUDIO_CODEC_NAMES.toMutableList()
+            else
+                VIDEO_CODEC_NAMES.toMutableList()
 
             // Remove H264 if not supported
             if (!MediaCodecVideoDecoder.isH264HwSupported() ||
                     !MediaCodecVideoEncoder.isH264HwSupported()) {
-                codecEntries.remove(VideoCodec.H264.name)
+                codecEntries.remove(H264Codec.NAME)
             }
 
             // Bind value

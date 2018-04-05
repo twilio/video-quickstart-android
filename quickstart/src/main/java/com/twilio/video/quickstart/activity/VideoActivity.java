@@ -34,7 +34,13 @@ import com.koushikdutta.ion.Ion;
 import com.twilio.video.AudioCodec;
 import com.twilio.video.EncodingParameters;
 import com.twilio.video.CameraCapturer;
+import com.twilio.video.G722Codec;
+import com.twilio.video.H264Codec;
+import com.twilio.video.IsacCodec;
 import com.twilio.video.LocalParticipant;
+import com.twilio.video.OpusCodec;
+import com.twilio.video.PcmaCodec;
+import com.twilio.video.PcmuCodec;
 import com.twilio.video.RemoteAudioTrack;
 import com.twilio.video.RemoteAudioTrackPublication;
 import com.twilio.video.RemoteDataTrack;
@@ -47,6 +53,8 @@ import com.twilio.video.Video;
 import com.twilio.video.VideoCodec;
 import com.twilio.video.VideoRenderer;
 import com.twilio.video.TwilioException;
+import com.twilio.video.Vp8Codec;
+import com.twilio.video.Vp9Codec;
 import com.twilio.video.quickstart.BuildConfig;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
@@ -246,12 +254,10 @@ public class VideoActivity extends AppCompatActivity {
         /*
          * Update preferred audio and video codec in case changed in settings
          */
-        audioCodec = getCodecPreference(SettingsActivity.PREF_AUDIO_CODEC,
-                SettingsActivity.PREF_AUDIO_CODEC_DEFAULT,
-                AudioCodec.class);
-        videoCodec = getCodecPreference(SettingsActivity.PREF_VIDEO_CODEC,
-                SettingsActivity.PREF_VIDEO_CODEC_DEFAULT,
-                VideoCodec.class);
+        audioCodec = getAudioCodecPreference(SettingsActivity.PREF_AUDIO_CODEC,
+                SettingsActivity.PREF_AUDIO_CODEC_DEFAULT);
+        videoCodec = getVideoCodecPreference(SettingsActivity.PREF_VIDEO_CODEC,
+                SettingsActivity.PREF_VIDEO_CODEC_DEFAULT);
 
         /*
          * Get latest encoding parameters
@@ -453,14 +459,43 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     /*
-     * Get the preferred audio or video codec from shared preferences
+     * Get the preferred audio codec from shared preferences
      */
-    private <T extends Enum<T>> T getCodecPreference(String key,
-                                                     String defaultValue,
-                                                     final Class<T> enumClass) {
+    private AudioCodec getAudioCodecPreference(String key, String defaultValue) {
+        final String audioCodecName = preferences.getString(key, defaultValue);
 
-        final String codec = preferences.getString(key, defaultValue);
-        return Enum.valueOf(enumClass, codec);
+        switch (audioCodecName) {
+            case IsacCodec.NAME:
+                return new IsacCodec();
+            case OpusCodec.NAME:
+                return new OpusCodec();
+            case PcmaCodec.NAME:
+                return new PcmaCodec();
+            case PcmuCodec.NAME:
+                return new PcmuCodec();
+            case G722Codec.NAME:
+                return new G722Codec();
+            default:
+                return new OpusCodec();
+        }
+    }
+
+    /*
+     * Get the preferred video codec from shared preferences
+     */
+    private VideoCodec getVideoCodecPreference(String key, String defaultValue) {
+        final String videoCodecName = preferences.getString(key, defaultValue);
+
+        switch (videoCodecName) {
+            case Vp8Codec.NAME:
+                return new Vp8Codec();
+            case H264Codec.NAME:
+                return new H264Codec();
+            case Vp9Codec.NAME:
+                return new Vp9Codec();
+            default:
+                return new Vp8Codec();
+        }
     }
 
     private EncodingParameters getEncodingParameters() {

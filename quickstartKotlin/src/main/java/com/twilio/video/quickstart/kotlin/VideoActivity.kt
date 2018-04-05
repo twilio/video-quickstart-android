@@ -58,13 +58,29 @@ class VideoActivity : AppCompatActivity() {
      */
     private val audioCodec: AudioCodec
         get() {
-            return AudioCodec.valueOf(sharedPreferences.getString(SettingsActivity.PREF_AUDIO_CODEC,
-                    SettingsActivity.PREF_AUDIO_CODEC_DEFAULT))
+            val audioCodecName = sharedPreferences.getString(SettingsActivity.PREF_AUDIO_CODEC,
+                    SettingsActivity.PREF_AUDIO_CODEC_DEFAULT)
+
+            return when (audioCodecName) {
+                IsacCodec.NAME -> IsacCodec()
+                OpusCodec.NAME -> OpusCodec()
+                PcmaCodec.NAME -> PcmaCodec()
+                PcmuCodec.NAME -> PcmuCodec()
+                G722Codec.NAME -> G722Codec()
+                else -> OpusCodec()
+            }
         }
     private val videoCodec: VideoCodec
         get() {
-            return VideoCodec.valueOf(sharedPreferences.getString(SettingsActivity.PREF_VIDEO_CODEC,
-                    SettingsActivity.PREF_VIDEO_CODEC_DEFAULT))
+            val videoCodecName = sharedPreferences.getString(SettingsActivity.PREF_VIDEO_CODEC,
+                    SettingsActivity.PREF_VIDEO_CODEC_DEFAULT)
+
+            return when (videoCodecName) {
+                Vp8Codec.NAME -> Vp8Codec()
+                H264Codec.NAME -> H264Codec()
+                Vp9Codec.NAME -> Vp9Codec()
+                else -> Vp8Codec()
+            }
         }
 
     /*

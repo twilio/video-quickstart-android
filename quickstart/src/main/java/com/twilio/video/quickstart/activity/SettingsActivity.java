@@ -13,24 +13,41 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.MenuItem;
 
 import com.twilio.video.AudioCodec;
+import com.twilio.video.G722Codec;
+import com.twilio.video.H264Codec;
+import com.twilio.video.IsacCodec;
+import com.twilio.video.OpusCodec;
+import com.twilio.video.PcmaCodec;
+import com.twilio.video.PcmuCodec;
 import com.twilio.video.VideoCodec;
+import com.twilio.video.Vp8Codec;
+import com.twilio.video.Vp9Codec;
 import com.twilio.video.quickstart.R;
 
 import org.webrtc.MediaCodecVideoDecoder;
 import org.webrtc.MediaCodecVideoEncoder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
     public static final String PREF_AUDIO_CODEC = "audio_codec";
-    public static final String PREF_AUDIO_CODEC_DEFAULT = "OPUS";
+    public static final String PREF_AUDIO_CODEC_DEFAULT = OpusCodec.NAME;
     public static final String PREF_VIDEO_CODEC = "video_codec";
-    public static final String PREF_VIDEO_CODEC_DEFAULT = "VP8";
+    public static final String PREF_VIDEO_CODEC_DEFAULT = Vp8Codec.NAME;
     public static final String PREF_SENDER_MAX_AUDIO_BITRATE = "sender_max_audio_bitrate";
     public static final String PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT = "0";
     public static final String PREF_SENDER_MAX_VIDEO_BITRATE = "sender_max_video_bitrate";
     public static final String PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT = "0";
+
+    private static final String[] VIDEO_CODEC_NAMES = new String[] {
+            Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME
+    };
+
+    private static final String[] AUDIO_CODEC_NAMES = new String[] {
+            IsacCodec.NAME, OpusCodec.NAME, PcmaCodec.NAME, PcmuCodec.NAME, G722Codec.NAME
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,29 +122,25 @@ public class SettingsActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
 
-        private <T extends Enum<T>> void setupCodecListPreference(Class<T> enumClass,
-                                                                  String key,
-                                                                  String defaultValue,
-                                                                  ListPreference preference) {
-            final List<String> codecEntries = new ArrayList<>();
-            final T[] codecs = enumClass.getEnumConstants();
-
-            // Create codec entries
-            for (T codec : codecs) {
-                codecEntries.add(codec.toString());
-            }
+        private void setupCodecListPreference(Class codecClass,
+                                              String key,
+                                              String defaultValue,
+                                              ListPreference preference) {
+            List<String> codecEntries = (codecClass == AudioCodec.class) ?
+                    Arrays.asList(AUDIO_CODEC_NAMES) :
+                    Arrays.asList(VIDEO_CODEC_NAMES);
 
             // Remove H264 if not supported
             if (!MediaCodecVideoDecoder.isH264HwSupported() ||
                     !MediaCodecVideoEncoder.isH264HwSupported()) {
-                codecEntries.remove(VideoCodec.H264.name());
+                codecEntries.remove(H264Codec.NAME);
             }
+            String[] codecStrings = (String[]) codecEntries.toArray();
 
-            // Bind value
+            // Saved value
             final String value = sharedPreferences.getString(key, defaultValue);
-            final String[] codecStrings = new String[codecEntries.size()];
-            codecEntries.toArray(codecStrings);
 
+            // Bind values
             preference.setEntries(codecStrings);
             preference.setEntryValues(codecStrings);
             preference.setValue(value);
