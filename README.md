@@ -1,7 +1,6 @@
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/2.0.0-beta1/)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/latest/)
 
-> NOTE: These sample applications use the Twilio Video 2.0.0 APIs. We will continue to
-update them throughout the beta period. For examples using our 1.x APIs, please see
+> NOTE: These sample applications use the Twilio Video 2.x APIs. For examples using our 1.x APIs, please see
 the [1.x](https://github.com/twilio/video-quickstart-android/tree/1.x) branch.
 
 # Twilio Video Quickstart for Android
@@ -347,7 +346,7 @@ USE_TOKEN_SERVER=true
 You can find more documentation on getting started as well as our latest Javadoc below:
 
 * [Getting Started](https://www.twilio.com/docs/api/video/getting-started)
-* [Javadoc](https://media.twiliocdn.com/sdk/android/video/latest/docs/)
+* [Javadoc](https://twilio.github.io/twilio-video-android/docs/latest/)
 
 ## Issues and Support
 
