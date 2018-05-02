@@ -28,7 +28,7 @@ import org.webrtc.MediaCodecVideoDecoder;
 import org.webrtc.MediaCodecVideoEncoder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -126,16 +126,19 @@ public class SettingsActivity extends AppCompatActivity {
                                               String key,
                                               String defaultValue,
                                               ListPreference preference) {
-            List<String> codecEntries = (codecClass == AudioCodec.class) ?
-                    Arrays.asList(AUDIO_CODEC_NAMES) :
-                    Arrays.asList(VIDEO_CODEC_NAMES);
+            List<String> codecEntries = new ArrayList<>();
+            if(codecClass == AudioCodec.class){
+                Collections.addAll(codecEntries, AUDIO_CODEC_NAMES);
+            }else{
+                Collections.addAll(codecEntries, VIDEO_CODEC_NAMES);
+            }
 
             // Remove H264 if not supported
             if (!MediaCodecVideoDecoder.isH264HwSupported() ||
                     !MediaCodecVideoEncoder.isH264HwSupported()) {
                 codecEntries.remove(H264Codec.NAME);
             }
-            String[] codecStrings = (String[]) codecEntries.toArray();
+            String[] codecStrings = codecEntries.toArray(new String[codecEntries.size()]);
 
             // Saved value
             final String value = sharedPreferences.getString(key, defaultValue);
