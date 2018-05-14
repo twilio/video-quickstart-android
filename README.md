@@ -4,6 +4,10 @@
 
 # Twilio Video Quickstart for Android
 
+> **Deprecation Notice - Versions 1.0.0-beta10 and earlier**
+>
+> Please note that **older versions of the Programmable Video Android SDK prior to 1.0.0-beta11 are deprecated and will stop working on September 13, 2018**. Please make sure you’re using the latest version of the library in your apps, and make sure your customers update their apps by that date. For more information please review the following knowledge base [article](https://support.twilio.com/hc/en-us/articles/360002897814-Legacy-Twilio-Programmable-Voice-SDKs-impacted-by-SSL-certificate-deprecation).
+
 Get started with Video on Android:
 
 - [Quickstart](#quickstart) - Run the quickstart app
