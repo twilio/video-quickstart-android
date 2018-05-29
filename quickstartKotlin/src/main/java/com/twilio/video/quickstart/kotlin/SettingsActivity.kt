@@ -24,6 +24,8 @@ class SettingsActivity : AppCompatActivity() {
         const val PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT = "0"
         const val PREF_SENDER_MAX_VIDEO_BITRATE = "sender_max_video_bitrate"
         const val PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT = "0"
+        const val PREF_VP8_SIMULCAST = "vp8_simulcast"
+        const val PREF_VP8_SIMULCAST_DEFAULT = false
 
         val VIDEO_CODEC_NAMES = arrayOf(Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME)
 

@@ -40,6 +40,8 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT = "0";
     public static final String PREF_SENDER_MAX_VIDEO_BITRATE = "sender_max_video_bitrate";
     public static final String PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT = "0";
+    public static final String PREF_VP8_SIMULCAST = "vp8_simulcast";
+    public static final boolean PREF_VP8_SIMULCAST_DEFAULT = false;
 
     private static final String[] VIDEO_CODEC_NAMES = new String[] {
             Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME

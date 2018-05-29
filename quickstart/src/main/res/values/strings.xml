@@ -17,4 +17,5 @@
     <string name="max_audio_bitrate">Max Audio Bitrate (bits per second)</string>
     <string name="max_video_bitrate">Max Video Bitrate (bits per second)</string>
     <string name="turn_speaker_on">Speaker ON</string>
+    <string name="vp8_simulcast">VP8 Simulcast</string>
 </resources>

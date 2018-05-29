@@ -76,7 +76,12 @@ class VideoActivity : AppCompatActivity() {
                     SettingsActivity.PREF_VIDEO_CODEC_DEFAULT)
 
             return when (videoCodecName) {
-                Vp8Codec.NAME -> Vp8Codec()
+                Vp8Codec.NAME -> {
+                    val simulcast = sharedPreferences.getBoolean(
+                            SettingsActivity.PREF_VP8_SIMULCAST,
+                            SettingsActivity.PREF_VP8_SIMULCAST_DEFAULT)
+                    Vp8Codec(simulcast)
+                }
                 H264Codec.NAME -> H264Codec()
                 Vp9Codec.NAME -> Vp9Codec()
                 else -> Vp8Codec()

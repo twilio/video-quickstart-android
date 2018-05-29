@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -488,7 +489,9 @@ public class VideoActivity extends AppCompatActivity {
 
         switch (videoCodecName) {
             case Vp8Codec.NAME:
-                return new Vp8Codec();
+                boolean simulcast = preferences.getBoolean(SettingsActivity.PREF_VP8_SIMULCAST,
+                        SettingsActivity.PREF_VP8_SIMULCAST_DEFAULT);
+                return new Vp8Codec(simulcast);
             case H264Codec.NAME:
                 return new H264Codec();
             case Vp9Codec.NAME:

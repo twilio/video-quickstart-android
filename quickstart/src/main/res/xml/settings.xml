@@ -12,6 +12,10 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:title="@string/pref_title_video_codec" />
+        <android.support.v7.preference.CheckBoxPreference
+            android:key="vp8_simulcast"
+            android:title="@string/vp8_simulcast"
+            android:defaultValue="false"/>
     </android.support.v7.preference.PreferenceCategory>
     <android.support.v7.preference.PreferenceCategory
         android:title="@string/sender_bandwidth_constraints">
