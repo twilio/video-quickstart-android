@@ -18,6 +18,11 @@ android {
                 "\"${getSecretProperty("TWILIO_SDK_STARTER_SERVER_URL", "TWILIO_SDK_STARTER_SERVER_URL")}\"")
     }
 
+    compileOptions {
+        sourceCompatibility versions.java
+        targetCompatibility versions.java
+    }
+
     buildTypes {
         release {
             minifyEnabled false
