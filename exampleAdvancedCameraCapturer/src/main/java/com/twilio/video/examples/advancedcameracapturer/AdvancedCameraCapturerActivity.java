@@ -42,34 +42,24 @@ public class AdvancedCameraCapturerActivity extends Activity {
     private CameraCapturer cameraCapturer;
     private LocalVideoTrack localVideoTrack;
     private boolean flashOn = false;
-    private final View.OnClickListener toggleFlashButtonClickListener = new View.OnClickListener() {
-        @Override public void onClick(View v) {
-            toggleFlash();
-        }
-    };
-    private final View.OnClickListener takePictureButtonClickListener = new View.OnClickListener() {
-        @Override public void onClick(View v) {
-            takePicture();
-        }
-    };
+    private final View.OnClickListener toggleFlashButtonClickListener = v -> toggleFlash();
+    private final View.OnClickListener takePictureButtonClickListener = v -> takePicture();
 
     /**
      * An example of a {@link CameraParameterUpdater} that shows how to toggle the flash of a
      * camera if supported by the device.
      */
-    private final CameraParameterUpdater flashToggler = new CameraParameterUpdater() {
-        @Override public void apply(Camera.Parameters parameters) {
-            if (parameters.getFlashMode() != null) {
-                String flashMode = flashOn ?
-                        Camera.Parameters.FLASH_MODE_OFF :
-                        Camera.Parameters.FLASH_MODE_TORCH;
-                parameters.setFlashMode(flashMode);
-                flashOn = !flashOn;
-            } else {
-                Toast.makeText(AdvancedCameraCapturerActivity.this,
-                        R.string.flash_not_supported,
-                        Toast.LENGTH_LONG).show();
-            }
+    private final CameraParameterUpdater flashToggler = parameters -> {
+        if (parameters.getFlashMode() != null) {
+            String flashMode = flashOn ?
+                    Camera.Parameters.FLASH_MODE_OFF :
+                    Camera.Parameters.FLASH_MODE_TORCH;
+            parameters.setFlashMode(flashMode);
+            flashOn = !flashOn;
+        } else {
+            Toast.makeText(AdvancedCameraCapturerActivity.this,
+                    R.string.flash_not_supported,
+                    Toast.LENGTH_LONG).show();
         }
     };
 
@@ -111,12 +101,7 @@ public class AdvancedCameraCapturerActivity extends Activity {
         pictureDialog = new AlertDialog.Builder(this)
                 .setView(pictureImageView)
                 .setTitle(null)
-                .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).create();
+                .setPositiveButton(R.string.close, (dialog, which) -> dialog.dismiss()).create();
 
         if (!checkPermissionForCamera()) {
             requestPermissionForCamera();

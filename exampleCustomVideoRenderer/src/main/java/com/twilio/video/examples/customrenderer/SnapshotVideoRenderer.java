@@ -47,15 +47,12 @@ public class SnapshotVideoRenderer implements VideoRenderer {
             final Bitmap bitmap = i420Frame.yuvPlanes == null ?
                     captureBitmapFromTexture(i420Frame) :
                     captureBitmapFromYuvFrame(i420Frame);
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Update the bitmap of image view
-                    imageView.setImageBitmap(bitmap);
+            handler.post(() -> {
+                // Update the bitmap of image view
+                imageView.setImageBitmap(bitmap);
 
-                    // Frames must be released after rendering to free the native memory
-                    i420Frame.release();
-                }
+                // Frames must be released after rendering to free the native memory
+                i420Frame.release();
             });
         } else {
             i420Frame.release();

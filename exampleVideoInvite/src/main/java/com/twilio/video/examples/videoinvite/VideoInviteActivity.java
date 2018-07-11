@@ -883,129 +883,101 @@ public class VideoInviteActivity extends AppCompatActivity {
     }
 
     private DialogInterface.OnClickListener connectClickListener(final EditText roomEditText) {
-        return new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final String roomName = roomEditText.getText().toString();
-                /*
-                 * Connect to room
-                 */
-                connectToRoom(roomName);
-                /*
-                 * Notify other participants to join the room
-                 */
-                VideoInviteActivity.this.notify(roomName);
-            }
+        return (dialog, which) -> {
+            final String roomName = roomEditText.getText().toString();
+            /*
+             * Connect to room
+             */
+            connectToRoom(roomName);
+            /*
+             * Notify other participants to join the room
+             */
+            VideoInviteActivity.this.notify(roomName);
         };
     }
 
     private DialogInterface.OnClickListener videoNotificationConnectClickListener(final EditText roomEditText) {
-        return new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                /*
-                 * Connect to room
-                 */
-                connectToRoom(roomEditText.getText().toString());
-            }
+        return (dialog, which) -> {
+            /*
+             * Connect to room
+             */
+            connectToRoom(roomEditText.getText().toString());
         };
     }
 
     private View.OnClickListener disconnectClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                 * Disconnect from room
-                 */
-                if (room != null) {
-                    room.disconnect();
-                }
-                intializeUI();
+        return v -> {
+            /*
+             * Disconnect from room
+             */
+            if (room != null) {
+                room.disconnect();
             }
+            intializeUI();
         };
     }
 
     private View.OnClickListener connectActionClickListener() {
-        return new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                showConnectDialog();
-            }
-        };
+        return v -> showConnectDialog();
     }
 
     private DialogInterface.OnClickListener cancelConnectDialogClickListener() {
-        return new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                intializeUI();
-                alertDialog.dismiss();
-            }
+        return (dialog, which) -> {
+            intializeUI();
+            alertDialog.dismiss();
         };
     }
 
     private View.OnClickListener switchCameraClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cameraCapturer != null) {
-                    CameraSource cameraSource = cameraCapturer.getCameraSource();
-                    cameraCapturer.switchCamera();
-                    if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-                        thumbnailVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
-                    } else {
-                        primaryVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
-                    }
+        return v -> {
+            if (cameraCapturer != null) {
+                CameraSource cameraSource = cameraCapturer.getCameraSource();
+                cameraCapturer.switchCamera();
+                if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
+                    thumbnailVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                } else {
+                    primaryVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
                 }
             }
         };
     }
 
     private View.OnClickListener localVideoClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                 * Enable/disable the local video track
-                 */
-                if (localVideoTrack != null) {
-                    boolean enable = !localVideoTrack.isEnabled();
-                    localVideoTrack.enable(enable);
-                    int icon;
-                    if (enable) {
-                        icon = R.drawable.ic_videocam_white_24dp;
-                        switchCameraActionFab.show();
-                    } else {
-                        icon = R.drawable.ic_videocam_off_black_24dp;
-                        switchCameraActionFab.hide();
-                    }
-                    localVideoActionFab.setImageDrawable(
-                            ContextCompat.getDrawable(VideoInviteActivity.this, icon));
+        return v -> {
+            /*
+             * Enable/disable the local video track
+             */
+            if (localVideoTrack != null) {
+                boolean enable = !localVideoTrack.isEnabled();
+                localVideoTrack.enable(enable);
+                int icon;
+                if (enable) {
+                    icon = R.drawable.ic_videocam_white_24dp;
+                    switchCameraActionFab.show();
+                } else {
+                    icon = R.drawable.ic_videocam_off_black_24dp;
+                    switchCameraActionFab.hide();
                 }
+                localVideoActionFab.setImageDrawable(
+                        ContextCompat.getDrawable(VideoInviteActivity.this, icon));
             }
         };
     }
 
     private View.OnClickListener muteClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                 * Enable/disable the local audio track. The results of this operation are
-                 * signaled to other Participants in the same Room. When an audio track is
-                 * disabled, the audio is muted.
-                 */
-                if (localAudioTrack != null) {
-                    boolean enable = !localAudioTrack.isEnabled();
-                    localAudioTrack.enable(enable);
-                    int icon = enable ?
-                            R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
-                    muteActionFab.setImageDrawable(ContextCompat.getDrawable(
-                            VideoInviteActivity.this, icon));
-                }
+        return v -> {
+            /*
+             * Enable/disable the local audio track. The results of this operation are
+             * signaled to other Participants in the same Room. When an audio track is
+             * disabled, the audio is muted.
+             */
+            if (localAudioTrack != null) {
+                boolean enable = !localAudioTrack.isEnabled();
+                localAudioTrack.enable(enable);
+                int icon = enable ?
+                        R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
+                muteActionFab.setImageDrawable(ContextCompat.getDrawable(
+                        VideoInviteActivity.this, icon));
             }
         };
     }
@@ -1039,10 +1011,7 @@ public class VideoInviteActivity extends AppCompatActivity {
                             .setAudioAttributes(playbackAttributes)
                             .setAcceptsDelayedFocusGain(true)
                             .setOnAudioFocusChangeListener(
-                                    new AudioManager.OnAudioFocusChangeListener() {
-                                        @Override
-                                        public void onAudioFocusChange(int i) { }
-                                    })
+                                    i -> { })
                             .build();
             audioManager.requestAudioFocus(focusRequest);
         } else {

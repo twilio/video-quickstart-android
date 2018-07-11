@@ -183,18 +183,15 @@ public class DataTrackActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener connectButtonClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (connectButton.getText().equals(getString(R.string.connect))) {
-                    String roomName = roomEditText.getText().toString();
-                    roomEditText.setEnabled(false);
-                    connectButton.setEnabled(false);
-                    snackbar.setText("Connecting to " + roomName);
-                    connectToRoom(roomName);
-                } else {
-                    disconnectFromRoom();
-                }
+        return view -> {
+            if (connectButton.getText().equals(getString(R.string.connect))) {
+                String roomName = roomEditText.getText().toString();
+                roomEditText.setEnabled(false);
+                connectButton.setEnabled(false);
+                snackbar.setText("Connecting to " + roomName);
+                connectToRoom(roomName);
+            } else {
+                disconnectFromRoom();
             }
         };
     }
@@ -231,23 +228,20 @@ public class DataTrackActivity extends AppCompatActivity {
                 .load(String.format("%s?identity=%s", ACCESS_TOKEN_SERVER,
                         UUID.randomUUID().toString()))
                 .asString()
-                .setCallback(new FutureCallback<String>() {
-                    @Override
-                    public void onCompleted(Exception e, String token) {
-                        boolean requestSucceeded = e == null;
+                .setCallback((e, token) -> {
+                    boolean requestSucceeded = e == null;
 
-                        if (requestSucceeded) {
-                            DataTrackActivity.this.accessToken = token;
-                        } else {
-                            Toast.makeText(DataTrackActivity.this,
-                                    R.string.error_retrieving_access_token, Toast.LENGTH_LONG)
-                                    .show();
-                        }
-
-                        // Setup UI based on request result
-                        roomEditText.setEnabled(requestSucceeded);
-                        connectButton.setEnabled(requestSucceeded);
+                    if (requestSucceeded) {
+                        DataTrackActivity.this.accessToken = token;
+                    } else {
+                        Toast.makeText(DataTrackActivity.this,
+                                R.string.error_retrieving_access_token, Toast.LENGTH_LONG)
+                                .show();
                     }
+
+                    // Setup UI based on request result
+                    roomEditText.setEnabled(requestSucceeded);
+                    connectButton.setEnabled(requestSucceeded);
                 });
     }
 
@@ -341,13 +335,8 @@ public class DataTrackActivity extends AppCompatActivity {
              * invocation of setting the listener onto our dedicated data track message thread.
              */
             if (remoteDataTrackPublication.isTrackSubscribed()) {
-                dataTrackMessageThreadHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        addRemoteDataTrack(remoteParticipant,
-                                remoteDataTrackPublication.getRemoteDataTrack());
-                    }
-                });
+                dataTrackMessageThreadHandler.post(() -> addRemoteDataTrack(remoteParticipant,
+                        remoteDataTrackPublication.getRemoteDataTrack()));
             }
         }
     }
@@ -421,12 +410,7 @@ public class DataTrackActivity extends AppCompatActivity {
                  * Data track messages are received on the thread that calls setListener. Post the
                  * invocation of setting the listener onto our dedicated data track message thread.
                  */
-                dataTrackMessageThreadHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        addRemoteDataTrack(remoteParticipant, remoteDataTrack);
-                    }
-                });
+                dataTrackMessageThreadHandler.post(() -> addRemoteDataTrack(remoteParticipant, remoteDataTrack));
             }
 
             @Override
