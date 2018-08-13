@@ -812,7 +812,7 @@ class VideoActivity : AppCompatActivity() {
         Ion.with(this)
                 .load("$ACCESS_TOKEN_SERVER?identity=${UUID.randomUUID()}")
                 .asString()
-                .setCallback({ e, token ->
+                .setCallback { e, token ->
                     if (e == null) {
                         this@VideoActivity.accessToken = token
                     } else {
@@ -820,7 +820,7 @@ class VideoActivity : AppCompatActivity() {
                                 R.string.error_retrieving_access_token, Toast.LENGTH_LONG)
                                 .show()
                     }
-                })
+                }
     }
 
     private fun configureAudio(enable: Boolean) {
