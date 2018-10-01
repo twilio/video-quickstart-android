@@ -5,18 +5,6 @@ aliases:
   - &workspace
     ~/video-quickstart-android
 
-  # Cache
-  - &android-ndk-cache-key
-    key: android-ndk-r12b-{{ checksum "scripts/install-android-ndk.sh" }}
-  - &restore-cache-android-ndk
-    <<: *android-ndk-cache-key
-    name: Restore Android NDK
-  - &save-cache-android-ndk
-    <<: *android-ndk-cache-key
-    name: Save Android NDK Cache
-    paths:
-      - /opt/android-ndk
-
   - &gradle-cache-key
     key: jars-{{ checksum "build.gradle" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
   - &restore-cache-gradle
@@ -28,18 +16,6 @@ aliases:
     paths:
       - ~/.gradle/caches
       - ~/.gradle/wrapper
-
-  # Dependencies
-  - &create-android-ndk-directory
-    name: Create Android NDK Directory
-    command: |
-      if [[ ! -e /opt/android-ndk ]]; then
-        sudo mkdir /opt/android-ndk
-      fi
-      sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/android-ndk
-  - &install-android-ndk
-    name: Install Android NDK
-    command: scripts/install-android-ndk.sh
 
   # Configure git user
   - &configure-git-user
@@ -70,14 +46,8 @@ jobs:
       # Setup code and workspace for downstream jobs
       - checkout
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
-      - persist_to_workspace:
-          root: .
-
+      
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
   check-format:
@@ -87,9 +57,6 @@ jobs:
       # Setup
       - checkout
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Run spotless check
       - run:
@@ -98,7 +65,6 @@ jobs:
 
       # Save cache
       - save-cache: *save-cache-gradle
-      - save-cache: *save-cache-android-ndk
 
   build-exampleAdvancedCameraCapturer:
     <<: *build-defaults
@@ -109,9 +75,6 @@ jobs:
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Build app
       - run:
@@ -125,7 +88,6 @@ jobs:
             - exampleAdvancedCameraCapturer/build
 
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
   build-exampleCustomVideoCapturer:
@@ -137,9 +99,6 @@ jobs:
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Build app
       - run:
@@ -153,7 +112,6 @@ jobs:
             - exampleCustomVideoCapturer/build
 
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
 
@@ -166,9 +124,6 @@ jobs:
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Build app
       - run:
@@ -182,7 +137,6 @@ jobs:
             - exampleCustomVideoRenderer/build
 
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
   build-exampleDataTrack:
@@ -194,9 +148,6 @@ jobs:
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Build app
       - run:
@@ -210,7 +161,6 @@ jobs:
             - exampleDataTrack/build
 
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
 
@@ -223,9 +173,6 @@ jobs:
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Build app
       - run:
@@ -239,7 +186,6 @@ jobs:
             - exampleScreenCapturer/build
 
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
   build-exampleVideoInvite:
@@ -251,9 +197,6 @@ jobs:
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Build app
       - run:
@@ -267,7 +210,6 @@ jobs:
             - exampleVideoInvite/build
 
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
   build-quickstart:
@@ -279,9 +221,6 @@ jobs:
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Build app
       - run:
@@ -295,7 +234,6 @@ jobs:
             - quickstart/build
 
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
 
@@ -308,9 +246,6 @@ jobs:
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-      - run: *create-android-ndk-directory
-      - restore-cache: *restore-cache-android-ndk
-      - run: *install-android-ndk
 
       # Build app
       - run:
@@ -324,7 +259,6 @@ jobs:
             - quickstartKotlin/build
 
       # Save cache
-      - save-cache: *save-cache-android-ndk
       - save-cache: *save-cache-gradle
 
 workflows:
