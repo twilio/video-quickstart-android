@@ -1,0 +1,296 @@
+version: 2.0
+
+aliases:
+  # Workspace
+  - &workspace
+    ~/video-quickstart-android
+
+  - &gradle-cache-key
+    key: jars-{{ checksum "build.gradle" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+  - &restore-cache-gradle
+    <<: *gradle-cache-key
+    name: Restore Gradle Cache
+  - &save-cache-gradle
+    <<: *gradle-cache-key
+    name: Save Gradle Cache
+    paths:
+      - ~/.gradle/caches
+      - ~/.gradle/wrapper
+
+  # Configure git user
+  - &configure-git-user
+    name: Configure git user
+    command: |
+      git config --global user.email "twilio-sdk-build@twilio.com"
+      git config --global user.name "twilio-sdk-build"
+
+  # Filters
+  - &filter-snapshot
+    branches:
+      only:
+        - master
+
+  # Containers
+  - &build-defaults
+    working_directory: *workspace
+    docker:
+      - image: circleci/android:api-28-node8-alpha
+    environment:
+      - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+
+jobs:
+  setup-workspace:
+    <<: *build-defaults
+    resource_class: medium+
+    steps:
+      # Setup code and workspace for downstream jobs
+      - checkout
+      - restore-cache: *restore-cache-gradle
+      
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+  check-format:
+    <<: *build-defaults
+    resource_class: medium+
+    steps:
+      # Setup
+      - checkout
+      - restore-cache: *restore-cache-gradle
+
+      # Run spotless check
+      - run:
+          name: Spotless Check
+          command: ./gradlew -q spotlessCheck
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+  build-exampleAdvancedCameraCapturer:
+    <<: *build-defaults
+    resource_class: xlarge
+    steps:
+      # Setup
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+
+      # Build app
+      - run:
+          name: Build exampleAdvancedCameraCapturer
+          command: ./gradlew -q exampleAdvancedCameraCapturer:assemble
+
+      # Save the builds to workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - exampleAdvancedCameraCapturer/build
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+  build-exampleCustomVideoCapturer:
+    <<: *build-defaults
+    resource_class: xlarge
+    steps:
+      # Setup
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+
+      # Build app
+      - run:
+          name: Build exampleCustomVideoCapturer
+          command: ./gradlew -q exampleCustomVideoCapturer:assemble
+
+      # Save the builds to workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - exampleCustomVideoCapturer/build
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+
+  build-exampleCustomVideoRenderer:
+    <<: *build-defaults
+    resource_class: xlarge
+    steps:
+      # Setup
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+
+      # Build app
+      - run:
+          name: Build exampleCustomVideoRenderer
+          command: ./gradlew -q exampleCustomVideoRenderer:assemble
+
+      # Save the builds to workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - exampleCustomVideoRenderer/build
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+  build-exampleDataTrack:
+    <<: *build-defaults
+    resource_class: xlarge
+    steps:
+      # Setup
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+
+      # Build app
+      - run:
+          name: Build exampleDataTrack
+          command: ./gradlew -q exampleDataTrack:assemble
+
+      # Save the builds to workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - exampleDataTrack/build
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+
+  build-exampleScreenCapturer:
+    <<: *build-defaults
+    resource_class: xlarge
+    steps:
+      # Setup
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+
+      # Build app
+      - run:
+          name: Build exampleScreenCapturer
+          command: ./gradlew -q exampleScreenCapturer:assemble
+
+      # Save the builds to workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - exampleScreenCapturer/build
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+  build-exampleVideoInvite:
+    <<: *build-defaults
+    resource_class: xlarge
+    steps:
+      # Setup
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+
+      # Build app
+      - run:
+          name: Build exampleVideoInvite
+          command: ./gradlew -q exampleVideoInvite:assemble
+
+      # Save the builds to workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - exampleVideoInvite/build
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+  build-quickstart:
+    <<: *build-defaults
+    resource_class: xlarge
+    steps:
+      # Setup
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+
+      # Build app
+      - run:
+          name: Build quickstart
+          command: ./gradlew -q quickstart:assemble
+
+      # Save the builds to workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - quickstart/build
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+
+  build-quickstartKotlin:
+    <<: *build-defaults
+    resource_class: xlarge
+    steps:
+      # Setup
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+
+      # Build app
+      - run:
+          name: Build quickstartKotlin
+          command: ./gradlew -q quickstartKotlin:assemble
+
+      # Save the builds to workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - quickstartKotlin/build
+
+      # Save cache
+      - save-cache: *save-cache-gradle
+
+workflows:
+  version: 2
+
+  build-test-publish:
+    jobs:
+      # Setup
+      - setup-workspace
+
+      # Build
+      - build-exampleAdvancedCameraCapturer:
+          requires:
+              - setup-workspace
+      - build-exampleCustomVideoCapturer:
+          requires:
+              - setup-workspace
+      - build-exampleCustomVideoRenderer:
+          requires:
+              - setup-workspace
+      - build-exampleDataTrack:
+          requires:
+              - setup-workspace
+      - build-exampleScreenCapturer:
+          requires:
+              - setup-workspace
+      - build-exampleVideoInvite:
+          requires:
+              - setup-workspace
+      - build-quickstart:
+          requires:
+              - setup-workspace
+      - build-quickstartKotlin:
+          requires:
+              - setup-workspace
