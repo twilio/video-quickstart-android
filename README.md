@@ -1,6 +1,10 @@
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/latest/)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/1.3.9/)
 
-> NOTE: These sample applications use the Twilio Video 1.x APIs. For examples using our 2.x APIs, please see the [master](https://github.com/twilio/video-quickstart-android) branch.
+> NOTE: These sample applications use the Twilio Video 1.x APIs. For
+examples using our 2.x APIs, please see the
+[2.x](https://github.com/twilio/video-quickstart-android/tree/2.x)
+branch. For examples using our 3.x APIs, please see the
+[master](https://github.com/twilio/video-quickstart-android/) branch
 
 # Twilio Video Quickstart for Android
 
