@@ -52,12 +52,6 @@ jobs:
           name: Build exampleAdvancedCameraCapturer
           command: ./gradlew -q exampleAdvancedCameraCapturer:assemble
 
-      # Save the builds to workspace
-      - persist_to_workspace:
-          root: .
-          paths:
-            - exampleAdvancedCameraCapturer/build
-
       # Save cache
       - save-cache: *save-cache-gradle
 
@@ -75,12 +69,6 @@ jobs:
       - run:
           name: Build exampleCustomVideoCapturer
           command: ./gradlew -q exampleCustomVideoCapturer:assemble
-
-      # Save the builds to workspace
-      - persist_to_workspace:
-          root: .
-          paths:
-            - exampleCustomVideoCapturer/build
 
       # Save cache
       - save-cache: *save-cache-gradle
@@ -101,12 +89,6 @@ jobs:
           name: Build exampleCustomVideoRenderer
           command: ./gradlew -q exampleCustomVideoRenderer:assemble
 
-      # Save the builds to workspace
-      - persist_to_workspace:
-          root: .
-          paths:
-            - exampleCustomVideoRenderer/build
-
       # Save cache
       - save-cache: *save-cache-gradle
 
@@ -124,12 +106,6 @@ jobs:
       - run:
           name: Build exampleDataTrack
           command: ./gradlew -q exampleDataTrack:assemble
-
-      # Save the builds to workspace
-      - persist_to_workspace:
-          root: .
-          paths:
-            - exampleDataTrack/build
 
       # Save cache
       - save-cache: *save-cache-gradle
@@ -150,12 +126,6 @@ jobs:
           name: Build exampleScreenCapturer
           command: ./gradlew -q exampleScreenCapturer:assemble
 
-      # Save the builds to workspace
-      - persist_to_workspace:
-          root: .
-          paths:
-            - exampleScreenCapturer/build
-
       # Save cache
       - save-cache: *save-cache-gradle
 
@@ -174,12 +144,6 @@ jobs:
           name: Build exampleVideoInvite
           command: ./gradlew -q exampleVideoInvite:assemble
 
-      # Save the builds to workspace
-      - persist_to_workspace:
-          root: .
-          paths:
-            - exampleVideoInvite/build
-
       # Save cache
       - save-cache: *save-cache-gradle
 
@@ -197,12 +161,6 @@ jobs:
       - run:
           name: Build quickstart
           command: ./gradlew -q quickstart:assemble
-
-      # Save the builds to workspace
-      - persist_to_workspace:
-          root: .
-          paths:
-            - quickstart/build
 
       # Save cache
       - save-cache: *save-cache-gradle
@@ -223,19 +181,13 @@ jobs:
           name: Build quickstartKotlin
           command: ./gradlew -q quickstartKotlin:assemble
 
-      # Save the builds to workspace
-      - persist_to_workspace:
-          root: .
-          paths:
-            - quickstartKotlin/build
-
       # Save cache
       - save-cache: *save-cache-gradle
 
 workflows:
   version: 2
 
-  build-test-publish:
+  build-test:
     jobs:
       # Setup
       - setup-workspace
