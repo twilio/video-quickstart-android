@@ -17,19 +17,6 @@ aliases:
       - ~/.gradle/caches
       - ~/.gradle/wrapper
 
-  # Configure git user
-  - &configure-git-user
-    name: Configure git user
-    command: |
-      git config --global user.email "twilio-sdk-build@twilio.com"
-      git config --global user.name "twilio-sdk-build"
-
-  # Filters
-  - &filter-snapshot
-    branches:
-      only:
-        - master
-
   # Containers
   - &build-defaults
     working_directory: *workspace
@@ -50,25 +37,9 @@ jobs:
       # Save cache
       - save-cache: *save-cache-gradle
 
-  check-format:
-    <<: *build-defaults
-    resource_class: medium+
-    steps:
-      # Setup
-      - checkout
-      - restore-cache: *restore-cache-gradle
-
-      # Run spotless check
-      - run:
-          name: Spotless Check
-          command: ./gradlew -q spotlessCheck
-
-      # Save cache
-      - save-cache: *save-cache-gradle
-
   build-exampleAdvancedCameraCapturer:
     <<: *build-defaults
-    resource_class: xlarge
+    resource_class: large
     steps:
       # Setup
       - checkout
@@ -92,7 +63,7 @@ jobs:
 
   build-exampleCustomVideoCapturer:
     <<: *build-defaults
-    resource_class: xlarge
+    resource_class: large
     steps:
       # Setup
       - checkout
@@ -117,7 +88,7 @@ jobs:
 
   build-exampleCustomVideoRenderer:
     <<: *build-defaults
-    resource_class: xlarge
+    resource_class: large
     steps:
       # Setup
       - checkout
@@ -141,7 +112,7 @@ jobs:
 
   build-exampleDataTrack:
     <<: *build-defaults
-    resource_class: xlarge
+    resource_class: large
     steps:
       # Setup
       - checkout
@@ -166,7 +137,7 @@ jobs:
 
   build-exampleScreenCapturer:
     <<: *build-defaults
-    resource_class: xlarge
+    resource_class: large
     steps:
       # Setup
       - checkout
@@ -190,7 +161,7 @@ jobs:
 
   build-exampleVideoInvite:
     <<: *build-defaults
-    resource_class: xlarge
+    resource_class: large
     steps:
       # Setup
       - checkout
@@ -214,7 +185,7 @@ jobs:
 
   build-quickstart:
     <<: *build-defaults
-    resource_class: xlarge
+    resource_class: large
     steps:
       # Setup
       - checkout
@@ -239,7 +210,7 @@ jobs:
 
   build-quickstartKotlin:
     <<: *build-defaults
-    resource_class: xlarge
+    resource_class: large
     steps:
       # Setup
       - checkout
