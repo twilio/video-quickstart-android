@@ -187,7 +187,7 @@ jobs:
 workflows:
   version: 2
 
-  build-test:
+  build:
     jobs:
       # Setup
       - setup-workspace
