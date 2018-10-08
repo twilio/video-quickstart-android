@@ -25,6 +25,11 @@ android {
                 "${getSecretProperty("USE_TOKEN_SERVER", false)}")
     }
 
+    compileOptions {
+        sourceCompatibility versions.java
+        targetCompatibility versions.java
+    }
+
     buildTypes {
         release {
             minifyEnabled false

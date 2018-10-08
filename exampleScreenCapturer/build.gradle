@@ -15,6 +15,10 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
+    compileOptions {
+        sourceCompatibility versions.java
+        targetCompatibility versions.java
+    }
     buildTypes {
         release {
             minifyEnabled false

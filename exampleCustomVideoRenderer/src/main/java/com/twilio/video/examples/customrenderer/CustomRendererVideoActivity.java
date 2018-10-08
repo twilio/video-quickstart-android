@@ -85,12 +85,9 @@ public class CustomRendererVideoActivity extends Activity {
         snapshotVideoRenderer = new SnapshotVideoRenderer(snapshotImageView);
         localVideoTrack.addRenderer(localVideoView);
         localVideoTrack.addRenderer(snapshotVideoRenderer);
-        localVideoView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tapForSnapshotTextView.setVisibility(View.GONE);
-                snapshotVideoRenderer.takeSnapshot();
-            }
+        localVideoView.setOnClickListener(v -> {
+            tapForSnapshotTextView.setVisibility(View.GONE);
+            snapshotVideoRenderer.takeSnapshot();
         });
     }
 

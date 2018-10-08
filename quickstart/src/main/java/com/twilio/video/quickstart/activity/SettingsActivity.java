@@ -150,12 +150,9 @@ public class SettingsActivity extends AppCompatActivity {
             preference.setEntryValues(codecStrings);
             preference.setValue(value);
             preference.setSummary(value);
-            preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    preference.setSummary(newValue.toString());
-                    return true;
-                }
+            preference.setOnPreferenceChangeListener((preference1, newValue) -> {
+                preference1.setSummary(newValue.toString());
+                return true;
             });
         }
 
@@ -167,12 +164,9 @@ public class SettingsActivity extends AppCompatActivity {
             // Set layout with input type number for edit text
             editTextPreference.setDialogLayoutResource(R.layout.preference_dialog_number_edittext);
             editTextPreference.setSummary(value);
-            editTextPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    preference.setSummary(newValue.toString());
-                    return true;
-                }
+            editTextPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                preference.setSummary(newValue.toString());
+                return true;
             });
         }
     }

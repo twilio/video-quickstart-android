@@ -99,12 +99,7 @@ public class CollaborativeDrawingView extends View {
         }
 
         // Invalidate the view to draw the new remote track event
-        post(new Runnable() {
-            @Override
-            public void run() {
-                invalidate();
-            }
-        });
+        post(this::invalidate);
     }
 
     /**
@@ -115,12 +110,7 @@ public class CollaborativeDrawingView extends View {
         path.reset();
 
         // Invalidate the view
-        post(new Runnable() {
-            @Override
-            public void run() {
-                invalidate();
-            }
-        });
+        post(this::invalidate);
     }
 
     /**
@@ -133,12 +123,7 @@ public class CollaborativeDrawingView extends View {
         remoteParticipantPalettes.remove(remoteParticipant);
 
         // Invalidate the view
-        post(new Runnable() {
-            @Override
-            public void run() {
-                invalidate();
-            }
-        });
+        post(this::invalidate);
     }
 
     @Override

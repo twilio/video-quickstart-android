@@ -3,7 +3,8 @@
 buildscript {
     ext.kotlin_version = '1.2.31'
     ext.versions = [
-            'compileSdk': 28,
+            'java': JavaVersion.VERSION_1_8,
+            'compileSdk': 27,
             'buildTools': '27.0.3',
             'minSdk': 16,
             'targetSdk': 28,
@@ -12,7 +13,7 @@ buildscript {
             'retrofit': '2.0.0-beta4',
             'okhttp': '3.6.0',
             'ion': '2.1.7',
-            'videoAndroid': '2.2.1'
+            'videoAndroid': '3.0.0'
     ]
 
     ext.getSecretProperty = { key, defaultValue ->
