@@ -1,11 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.2.61'
     ext.versions = [
             'java': JavaVersion.VERSION_1_8,
+            'androidGradlePlugin': '3.2.1',
+            'googleServices': '3.2.1',
             'compileSdk': 28,
-            'buildTools': '27.0.3',
+            'buildTools': '28.0.3',
             'minSdk': 16,
             'targetSdk': 28,
             'supportLibrary': '26.1.0',
@@ -39,8 +41,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
-        classpath 'com.google.gms:google-services:3.1.0'
+        classpath "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
+        classpath "com.google.gms:google-services:${versions.googleServices}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
