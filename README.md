@@ -346,7 +346,7 @@ USE_TOKEN_SERVER=true
 
 You can find more documentation on getting started as well as our latest Javadoc below:
 
-* [Getting Started](https://www.twilio.com/docs/api/video/getting-started)
+* [Getting Started](https://www.twilio.com/docs/video/getting-started)
 * [Javadoc](https://twilio.github.io/twilio-video-android/docs/latest/)
 
 ## Issues and Support
