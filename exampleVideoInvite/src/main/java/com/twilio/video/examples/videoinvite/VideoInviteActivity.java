@@ -30,8 +30,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
@@ -503,15 +501,7 @@ public class VideoInviteActivity extends AppCompatActivity {
 
     void notify(final String roomName) {
         String inviteJsonString;
-        try {
-            Invite invite = new Invite(identity, roomName);
-            inviteJsonString = new ObjectMapper().writeValueAsString(invite);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            Log.e(TAG, e.getMessage());
-            statusTextView.setText(e.getMessage());
-            return;
-        }
+        Invite invite = new Invite(identity, roomName);
 
         /*
          * Use Twilio Notify to let others know you are connecting to a Room
@@ -519,7 +509,7 @@ public class VideoInviteActivity extends AppCompatActivity {
         Notification notification = new Notification(
                 "Join " + identity + " in room " + roomName,
                 identity + " has invited you to join video room " + roomName,
-                inviteJsonString,
+                invite.getMap(),
                 NOTIFY_TAGS);
         TwilioSDKStarterAPI.notify(notification).enqueue(new Callback<Void>() {
             @Override
