@@ -320,6 +320,23 @@ public class DataTrackActivity extends AppCompatActivity {
             public void onRecordingStopped(Room room) {
 
             }
+
+            @Override
+            public void onReconnecting(Room room, TwilioException exception) {
+                Toast.makeText(DataTrackActivity.this,
+                        String.format("Reconnecting to room %s, exception = %s", room.getName(),
+                                exception.getMessage()),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onReconnected(Room room) {
+                Toast.makeText(DataTrackActivity.this,
+                        String.format("Reconnected to room %s", room.getName()),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
         };
     }
 

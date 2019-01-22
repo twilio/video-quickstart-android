@@ -15,7 +15,7 @@ buildscript {
             'retrofit': '2.0.0-beta4',
             'okhttp': '3.6.0',
             'ion': '2.1.7',
-            'videoAndroid': '3.2.2'
+            'videoAndroid': '4.0.0'
     ]
 
     ext.getSecretProperty = { key, defaultValue ->

@@ -744,6 +744,16 @@ public class VideoInviteActivity extends AppCompatActivity {
                  * recording is only available in our Group Rooms developer preview.
                  */
             }
+
+            @Override
+            public void onReconnecting(Room room, TwilioException exception) {
+                statusTextView.setText("Reconnecting");
+            }
+
+            @Override
+            public void onReconnected(Room room) {
+                statusTextView.setText("Reconnected");
+            }
         };
     }
 

@@ -26,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -143,6 +144,7 @@ public class VideoActivity extends AppCompatActivity {
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
+    private ProgressBar progressBar;
     private AlertDialog connectDialog;
     private AudioManager audioManager;
     private String remoteParticipantIdentity;
@@ -160,6 +162,7 @@ public class VideoActivity extends AppCompatActivity {
         primaryVideoView = findViewById(R.id.primary_video_view);
         thumbnailVideoView = findViewById(R.id.thumbnail_video_view);
         videoStatusTextView = findViewById(R.id.video_status_textview);
+        progressBar = findViewById(R.id.progressBar);
 
         connectActionFab = findViewById(R.id.connect_action_fab);
         switchCameraActionFab = findViewById(R.id.switch_camera_action_fab);
@@ -293,6 +296,11 @@ public class VideoActivity extends AppCompatActivity {
          * Update encoding parameters
          */
         encodingParameters = newEncodingParameters;
+
+        if(room != null){
+            Room.State state = room.getState();
+            progressBar.setVisibility((state != Room.State.RECONNECTING) ? View.GONE : View.VISIBLE);
+        }
     }
 
     @Override
@@ -653,6 +661,18 @@ public class VideoActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onReconnecting(@NonNull Room room, @NonNull TwilioException twilioException) {
+                videoStatusTextView.setText("Reconnecting to " + room.getName());
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onReconnected(@NonNull Room room) {
+                videoStatusTextView.setText("Connected to " + room.getName());
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
             public void onConnectFailure(Room room, TwilioException e) {
                 videoStatusTextView.setText("Failed to connect");
                 configureAudio(false);
@@ -663,6 +683,7 @@ public class VideoActivity extends AppCompatActivity {
             public void onDisconnected(Room room, TwilioException e) {
                 localParticipant = null;
                 videoStatusTextView.setText("Disconnected from " + room.getName());
+                progressBar.setVisibility(View.GONE);
                 VideoActivity.this.room = null;
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
                 if (!disconnectedFromOnDestroy) {
