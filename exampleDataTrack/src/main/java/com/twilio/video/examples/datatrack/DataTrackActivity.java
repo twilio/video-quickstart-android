@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.koushikdutta.async.future.FutureCallback;
@@ -90,6 +91,7 @@ public class DataTrackActivity extends AppCompatActivity {
     private Snackbar snackbar;
     private EditText roomEditText;
     private Button connectButton;
+    private ProgressBar reconnectingProgressBar;
     private CollaborativeDrawingView collaborativeDrawingView;
 
     @Override
@@ -111,12 +113,23 @@ public class DataTrackActivity extends AppCompatActivity {
         snackbar = Snackbar.make(containerLayout,
                 R.string.connect_to_share,
                 Snackbar.LENGTH_INDEFINITE);
+        reconnectingProgressBar = findViewById(R.id.reconnecting_progress_bar);
         setSupportActionBar(toolbar);
         snackbar.show();
         initializeUi();
 
         // Set access token
         setAccessToken();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (room != null) {
+            Room.State state = room.getState();
+            reconnectingProgressBar.setVisibility((state != Room.State.RECONNECTING) ? View.GONE : View.VISIBLE);
+        }
     }
 
     @Override
@@ -291,6 +304,7 @@ public class DataTrackActivity extends AppCompatActivity {
 
                     initializeUi();
                 }
+                reconnectingProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -323,19 +337,14 @@ public class DataTrackActivity extends AppCompatActivity {
 
             @Override
             public void onReconnecting(Room room, TwilioException exception) {
-                Toast.makeText(DataTrackActivity.this,
-                        String.format("Reconnecting to room %s, exception = %s", room.getName(),
-                                exception.getMessage()),
-                        Toast.LENGTH_SHORT)
-                        .show();
+                reconnectingProgressBar.setVisibility(View.VISIBLE);
+                snackbar.setText("Reconnecting to " + room.getName());
             }
 
             @Override
             public void onReconnected(Room room) {
-                Toast.makeText(DataTrackActivity.this,
-                        String.format("Reconnected to room %s", room.getName()),
-                        Toast.LENGTH_SHORT)
-                        .show();
+                reconnectingProgressBar.setVisibility(View.GONE);
+                snackbar.setText("Connected to " + room.getName());
             }
         };
     }
