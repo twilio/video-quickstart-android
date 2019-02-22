@@ -297,7 +297,7 @@ public class VideoActivity extends AppCompatActivity {
          */
         encodingParameters = newEncodingParameters;
 
-        if(room != null){
+        if (room != null) {
             Room.State state = room.getState();
             progressBar.setVisibility((state != Room.State.RECONNECTING) ? View.GONE : View.VISIBLE);
         }
