@@ -25,6 +25,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
+    <ProgressBar
+        android:id="@+id/reconnecting_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        style="?android:attr/progressBarStyleLarge"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/identity_textview"
         android:layout_width="wrap_content"

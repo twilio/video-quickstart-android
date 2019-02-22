@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -150,6 +151,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
+    private ProgressBar reconnectingProgressBar;
     private android.support.v7.app.AlertDialog alertDialog;
     private AudioManager audioManager;
     private String remoteParticipantIdentity;
@@ -164,15 +166,16 @@ public class VideoInviteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
-        primaryVideoView = (VideoView) findViewById(R.id.primary_video_view);
-        thumbnailVideoView = (VideoView) findViewById(R.id.thumbnail_video_view);
-        statusTextView = (TextView) findViewById(R.id.status_textview);
-        identityTextView = (TextView) findViewById(R.id.identity_textview);
+        primaryVideoView = findViewById(R.id.primary_video_view);
+        thumbnailVideoView = findViewById(R.id.thumbnail_video_view);
+        statusTextView = findViewById(R.id.status_textview);
+        identityTextView = findViewById(R.id.identity_textview);
 
-        connectActionFab = (FloatingActionButton) findViewById(R.id.connect_action_fab);
-        switchCameraActionFab = (FloatingActionButton) findViewById(R.id.switch_camera_action_fab);
-        localVideoActionFab = (FloatingActionButton) findViewById(R.id.local_video_action_fab);
-        muteActionFab = (FloatingActionButton) findViewById(R.id.mute_action_fab);
+        connectActionFab = findViewById(R.id.connect_action_fab);
+        switchCameraActionFab = findViewById(R.id.switch_camera_action_fab);
+        localVideoActionFab = findViewById(R.id.local_video_action_fab);
+        muteActionFab = findViewById(R.id.mute_action_fab);
+        reconnectingProgressBar = findViewById(R.id.reconnecting_progress_bar);
 
         /*
          * Hide the connect button until we successfully register with Twilio Notify
@@ -187,7 +190,7 @@ public class VideoInviteActivity extends AppCompatActivity {
         /*
          * Needed for setting/abandoning audio focus during call
          */
-        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.setSpeakerphoneOn(true);
 
         /*
@@ -357,6 +360,12 @@ public class VideoInviteActivity extends AppCompatActivity {
             if (localParticipant != null) {
                 localParticipant.publishTrack(localVideoTrack);
             }
+        }
+
+        if (room != null) {
+            reconnectingProgressBar.setVisibility((room.getState() != Room.State.RECONNECTING) ?
+                    View.GONE :
+                    View.VISIBLE);
         }
     }
 
@@ -708,6 +717,7 @@ public class VideoInviteActivity extends AppCompatActivity {
             public void onDisconnected(Room room, TwilioException e) {
                 localParticipant = null;
                 statusTextView.setText("Disconnected from " + room.getName());
+                reconnectingProgressBar.setVisibility(View.GONE);
                 VideoInviteActivity.this.room = null;
                 enableAudioFocus(false);
                 enableVolumeControl(false);
@@ -747,12 +757,14 @@ public class VideoInviteActivity extends AppCompatActivity {
 
             @Override
             public void onReconnecting(Room room, TwilioException exception) {
-                statusTextView.setText("Reconnecting");
+                statusTextView.setText("Reconnecting to " + room.getName());
+                reconnectingProgressBar.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onReconnected(Room room) {
-                statusTextView.setText("Reconnected");
+                statusTextView.setText("Connected to " + room.getName());
+                reconnectingProgressBar.setVisibility(View.GONE);
             }
         };
     }
