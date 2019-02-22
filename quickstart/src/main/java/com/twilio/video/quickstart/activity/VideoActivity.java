@@ -12,7 +12,6 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,8 +29,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
-import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.twilio.video.AudioCodec;
 import com.twilio.video.EncodingParameters;
@@ -70,9 +67,6 @@ import com.twilio.video.quickstart.util.CameraCapturerCompat;
 
 import java.util.Collections;
 import java.util.UUID;
-
-import static com.twilio.video.quickstart.R.drawable.ic_phonelink_ring_white_24dp;
-import static com.twilio.video.quickstart.R.drawable.ic_volume_up_white_24dp;
 
 import static com.twilio.video.quickstart.R.drawable.ic_phonelink_ring_white_24dp;
 import static com.twilio.video.quickstart.R.drawable.ic_volume_up_white_24dp;
@@ -162,7 +156,7 @@ public class VideoActivity extends AppCompatActivity {
         primaryVideoView = findViewById(R.id.primary_video_view);
         thumbnailVideoView = findViewById(R.id.thumbnail_video_view);
         videoStatusTextView = findViewById(R.id.video_status_textview);
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.reconnecting_progress_bar);
 
         connectActionFab = findViewById(R.id.connect_action_fab);
         switchCameraActionFab = findViewById(R.id.switch_camera_action_fab);

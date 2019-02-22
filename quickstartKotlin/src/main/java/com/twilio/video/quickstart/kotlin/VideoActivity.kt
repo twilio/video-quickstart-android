@@ -118,12 +118,12 @@ class VideoActivity : AppCompatActivity() {
 
         override fun onReconnected(room: Room) {
             videoStatusTextView.text = "Connected to ${room.name}"
-            progressBar.visibility = View.GONE;
+            reconnecting_progress_bar.visibility = View.GONE;
         }
 
         override fun onReconnecting(room: Room, twilioException: TwilioException) {
             videoStatusTextView.text = "Reconnecting to ${room.name}"
-            progressBar.visibility = View.VISIBLE;
+            reconnecting_progress_bar.visibility = View.VISIBLE;
         }
 
         override fun onConnectFailure(room: Room, e: TwilioException) {
@@ -135,7 +135,7 @@ class VideoActivity : AppCompatActivity() {
         override fun onDisconnected(room: Room, e: TwilioException?) {
             localParticipant = null
             videoStatusTextView.text = "Disconnected from ${room.name}"
-            progressBar.visibility = View.GONE;
+            reconnecting_progress_bar.visibility = View.GONE;
             this@VideoActivity.room = null
             // Only reinitialize the UI if disconnect was not called from onDestroy()
             if (!disconnectedFromOnDestroy) {
@@ -463,7 +463,7 @@ class VideoActivity : AppCompatActivity() {
 
         if (room != null) {
             val state = room!!.state
-            progressBar.visibility = if (state != Room.State.RECONNECTING) View.GONE else View.VISIBLE
+            reconnecting_progress_bar.visibility = if (state != Room.State.RECONNECTING) View.GONE else View.VISIBLE
         }
     }
 
