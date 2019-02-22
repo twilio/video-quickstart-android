@@ -362,10 +362,14 @@ public class VideoInviteActivity extends AppCompatActivity {
             }
         }
 
+        /*
+         * Update reconnecting UI
+         */
         if (room != null) {
             reconnectingProgressBar.setVisibility((room.getState() != Room.State.RECONNECTING) ?
                     View.GONE :
                     View.VISIBLE);
+            statusTextView.setText("Connected to " + room.getName());
         }
     }
 

@@ -461,9 +461,14 @@ class VideoActivity : AppCompatActivity() {
          */
         localParticipant?.setEncodingParameters(encodingParameters)
 
-        if (room != null) {
-            val state = room!!.state
-            reconnectingProgressBar.visibility = if (state != Room.State.RECONNECTING) View.GONE else View.VISIBLE
+        /*
+         * Update reconnecting UI
+         */
+        room?.let {
+            reconnectingProgressBar.visibility = if (it.state != Room.State.RECONNECTING)
+                View.GONE else
+                View.VISIBLE
+            videoStatusTextView.text = "Connected to ${it.name}"
         }
     }
 

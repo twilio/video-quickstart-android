@@ -126,9 +126,14 @@ public class DataTrackActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        /*
+         * Update reconnecting UI
+         */
         if (room != null) {
-            Room.State state = room.getState();
-            reconnectingProgressBar.setVisibility((state != Room.State.RECONNECTING) ? View.GONE : View.VISIBLE);
+            reconnectingProgressBar.setVisibility((room.getState() != Room.State.RECONNECTING) ?
+                    View.GONE :
+                    View.VISIBLE);
+            snackbar.setText("Connected to " + room.getName());
         }
     }
 

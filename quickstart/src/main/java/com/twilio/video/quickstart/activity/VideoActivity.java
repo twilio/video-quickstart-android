@@ -291,9 +291,14 @@ public class VideoActivity extends AppCompatActivity {
          */
         encodingParameters = newEncodingParameters;
 
+        /*
+         * Update reconnecting UI
+         */
         if (room != null) {
-            Room.State state = room.getState();
-            reconnectingProgressBar.setVisibility((state != Room.State.RECONNECTING) ? View.GONE : View.VISIBLE);
+            reconnectingProgressBar.setVisibility((room.getState() != Room.State.RECONNECTING) ?
+                    View.GONE :
+                    View.VISIBLE);
+            videoStatusTextView.setText("Connected to " + room.getName());
         }
     }
 
