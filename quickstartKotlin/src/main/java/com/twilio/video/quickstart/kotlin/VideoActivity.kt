@@ -378,6 +378,7 @@ class VideoActivity : AppCompatActivity() {
 
     private var previousAudioMode = 0
     private var previousMicrophoneMute = false
+    private var previousFocusRequest: AudioFocusRequest? = null
     private lateinit var localVideoView: VideoRenderer
     private var disconnectedFromOnDestroy = false
     private var isSpeakerPhoneEnabled = true
@@ -872,7 +873,7 @@ class VideoActivity : AppCompatActivity() {
                 isMicrophoneMute = false
             } else {
                 mode = previousAudioMode
-                abandonAudioFocus(null)
+                abandonAudioFocus()
                 isMicrophoneMute = previousMicrophoneMute
             }
         }
@@ -884,15 +885,28 @@ class VideoActivity : AppCompatActivity() {
                     .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .build()
-            val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+            previousFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                     .setAudioAttributes(playbackAttributes)
                     .setAcceptsDelayedFocusGain(true)
                     .setOnAudioFocusChangeListener { }
                     .build()
-            audioManager.requestAudioFocus(focusRequest)
+            audioManager.requestAudioFocus(previousFocusRequest!!)
         } else {
             audioManager.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
                     AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+        }
+    }
+
+    private fun abandonAudioFocus() {
+        with(audioManager) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                previousFocusRequest?.let {
+                    audioManager.abandonAudioFocusRequest(it)
+                    previousFocusRequest = null
+                }
+            } else {
+                abandonAudioFocus(null)
+            }
         }
     }
 

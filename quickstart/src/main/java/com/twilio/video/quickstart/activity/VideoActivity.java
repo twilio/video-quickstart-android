@@ -145,6 +145,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private int previousAudioMode;
     private boolean previousMicrophoneMute;
+    private AudioFocusRequest previousFocusRequest;
     private VideoRenderer localVideoView;
     private boolean disconnectedFromOnDestroy;
     private boolean isSpeakerPhoneEnabled = true;
@@ -1105,7 +1106,7 @@ public class VideoActivity extends AppCompatActivity {
             audioManager.setMicrophoneMute(false);
         } else {
             audioManager.setMode(previousAudioMode);
-            audioManager.abandonAudioFocus(null);
+            abandonAudioFocus();
             audioManager.setMicrophoneMute(previousMicrophoneMute);
         }
     }
@@ -1116,17 +1117,28 @@ public class VideoActivity extends AppCompatActivity {
                     .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .build();
-            AudioFocusRequest focusRequest =
+            previousFocusRequest =
                     new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                             .setAudioAttributes(playbackAttributes)
                             .setAcceptsDelayedFocusGain(true)
                             .setOnAudioFocusChangeListener(
                                     i -> { })
                             .build();
-            audioManager.requestAudioFocus(focusRequest);
+            audioManager.requestAudioFocus(previousFocusRequest);
         } else {
             audioManager.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
                     AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+        }
+    }
+
+    private void abandonAudioFocus() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (previousFocusRequest != null) {
+                audioManager.abandonAudioFocusRequest(previousFocusRequest);
+                previousFocusRequest = null;
+}
+        } else {
+            audioManager.abandonAudioFocus(null);
         }
     }
 }
