@@ -31,12 +31,16 @@ import android.widget.Toast;
 
 import com.koushikdutta.ion.Ion;
 import com.twilio.video.AudioCodec;
-import com.twilio.video.EncodingParameters;
 import com.twilio.video.CameraCapturer;
+import com.twilio.video.CameraCapturer.CameraSource;
+import com.twilio.video.ConnectOptions;
+import com.twilio.video.EncodingParameters;
 import com.twilio.video.G722Codec;
 import com.twilio.video.H264Codec;
 import com.twilio.video.IsacCodec;
+import com.twilio.video.LocalAudioTrack;
 import com.twilio.video.LocalParticipant;
+import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.OpusCodec;
 import com.twilio.video.PcmaCodec;
 import com.twilio.video.PcmuCodec;
@@ -47,22 +51,18 @@ import com.twilio.video.RemoteDataTrackPublication;
 import com.twilio.video.RemoteParticipant;
 import com.twilio.video.RemoteVideoTrack;
 import com.twilio.video.RemoteVideoTrackPublication;
+import com.twilio.video.Room;
+import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
 import com.twilio.video.VideoCodec;
 import com.twilio.video.VideoRenderer;
-import com.twilio.video.TwilioException;
+import com.twilio.video.VideoTrack;
+import com.twilio.video.VideoView;
 import com.twilio.video.Vp8Codec;
 import com.twilio.video.Vp9Codec;
 import com.twilio.video.quickstart.BuildConfig;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
-import com.twilio.video.CameraCapturer.CameraSource;
-import com.twilio.video.ConnectOptions;
-import com.twilio.video.LocalAudioTrack;
-import com.twilio.video.LocalVideoTrack;
-import com.twilio.video.Room;
-import com.twilio.video.VideoTrack;
-import com.twilio.video.VideoView;
 import com.twilio.video.quickstart.util.CameraCapturerCompat;
 
 import java.util.Collections;
@@ -178,7 +178,7 @@ public class VideoActivity extends AppCompatActivity {
         /*
          * Needed for setting/abandoning audio focus during call
          */
-        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.setSpeakerphoneOn(isSpeakerPhoneEnabled);
 
         /*
@@ -210,7 +210,7 @@ public class VideoActivity extends AppCompatActivity {
             case R.id.menu_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-             case R.id.speaker_menu_item:
+            case R.id.speaker_menu_item:
                 if (audioManager.isSpeakerphoneOn()) {
                     audioManager.setSpeakerphoneOn(false);
                     item.setIcon(ic_phonelink_ring_white_24dp);
@@ -249,7 +249,7 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     @Override
-    protected  void onResume() {
+    protected void onResume() {
         super.onResume();
 
         /*
@@ -298,7 +298,7 @@ public class VideoActivity extends AppCompatActivity {
         /*
          * Route audio through cached value.
          */
-         audioManager.setSpeakerphoneOn(isSpeakerPhoneEnabled);
+        audioManager.setSpeakerphoneOn(isSpeakerPhoneEnabled);
 
         /*
          * Update reconnecting UI
@@ -360,14 +360,14 @@ public class VideoActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private boolean checkPermissionForCameraAndMicrophone(){
+    private boolean checkPermissionForCameraAndMicrophone() {
         int resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         int resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
         return resultCamera == PackageManager.PERMISSION_GRANTED &&
-               resultMic == PackageManager.PERMISSION_GRANTED;
+                resultMic == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestPermissionForCameraAndMicrophone(){
+    private void requestPermissionForCameraAndMicrophone() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.RECORD_AUDIO)) {
@@ -564,7 +564,7 @@ public class VideoActivity extends AppCompatActivity {
             return;
         }
         remoteParticipantIdentity = remoteParticipant.getIdentity();
-        videoStatusTextView.setText("RemoteParticipant "+ remoteParticipantIdentity + " joined");
+        videoStatusTextView.setText("RemoteParticipant " + remoteParticipantIdentity + " joined");
 
         /*
          * Add remote participant renderer
@@ -1122,7 +1122,8 @@ public class VideoActivity extends AppCompatActivity {
                             .setAudioAttributes(playbackAttributes)
                             .setAcceptsDelayedFocusGain(true)
                             .setOnAudioFocusChangeListener(
-                                    i -> { })
+                                    i -> {
+                                    })
                             .build();
             audioManager.requestAudioFocus(previousFocusRequest);
         } else {
@@ -1136,7 +1137,7 @@ public class VideoActivity extends AppCompatActivity {
             if (previousFocusRequest != null) {
                 audioManager.abandonAudioFocusRequest(previousFocusRequest);
                 previousFocusRequest = null;
-}
+            }
         } else {
             audioManager.abandonAudioFocus(null);
         }

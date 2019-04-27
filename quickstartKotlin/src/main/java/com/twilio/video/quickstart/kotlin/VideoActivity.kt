@@ -10,13 +10,13 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -295,8 +295,8 @@ class VideoActivity : AppCompatActivity() {
         }
 
         override fun onDataTrackSubscriptionFailed(remoteParticipant: RemoteParticipant,
-                                                    remoteDataTrackPublication: RemoteDataTrackPublication,
-                                                    twilioException: TwilioException) {
+                                                   remoteDataTrackPublication: RemoteDataTrackPublication,
+                                                   twilioException: TwilioException) {
             Log.i(TAG, "onDataTrackSubscriptionFailed: " +
                     "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
                     "[RemoteDataTrackPublication: sid=${remoteDataTrackPublication.trackSid}, " +
