@@ -24,7 +24,7 @@ class VideoActivity : AppCompatActivity() {
     private val CAMERA_MIC_PERMISSION_REQUEST_CODE = 1
     private val TWILIO_ACCESS_TOKEN = BuildConfig.TWILIO_ACCESS_TOKEN
 
-    private var service: CallService? = null
+    private var service: CallServiceAPI? = null
     private var bound = false
 
     private var alertDialog: AlertDialog? = null
@@ -136,6 +136,10 @@ class VideoActivity : AppCompatActivity() {
         audioManager.isSpeakerphoneOn = isSpeakerPhoneEnabled
     }
 
+    private fun initializeLocalCameraFeed() {
+        service?.initializeLocalVideoTrack(localVideoView)
+    }
+
 
     private fun isCallInProgress(): Boolean {
         return service != null && service!!.isCallInProgress()
@@ -184,6 +188,7 @@ class VideoActivity : AppCompatActivity() {
             // Only reinitialize the UI if disconnect was not called from onDestroy()
             if (!disconnectedFromOnDestroy) {
                 initializeUI()
+                initializeLocalCameraFeed()
                 moveLocalVideoToPrimaryView(cameraCapturer.isFrontCamera())
             }
         }
@@ -377,11 +382,11 @@ class VideoActivity : AppCompatActivity() {
         val alertDialogBuilder = AlertDialog.Builder(this).apply {
             //            setIcon(R.drawable.ic_video_call_white_24dp)
             setTitle("Minimize Call?")
-                    .setMessage("You're currently in a Telemedicine call.\n" +
+                    .setMessage("You're currently in a Video call.\n" +
                             "Do you want to minimize the call?")
-            setPositiveButton("Yes, Minimize", { _, _ ->
+            setPositiveButton("Yes, Minimize") { _, _ ->
                 minimizeOngoingCall()
-            })
+            }
             setNegativeButton("No, Cancel", null)
             setCancelable(false)
         }
@@ -448,7 +453,7 @@ class VideoActivity : AppCompatActivity() {
         }
     }
 
-    private fun ensureServiceStartedDuringCall(service: CallService): Boolean {
+    private fun ensureServiceStartedDuringCall(service: CallServiceAPI): Boolean {
         if (service.isCallInProgress()) {
             //ensure service stays on
             startService(Intent(this@VideoActivity, CallService::class.java))

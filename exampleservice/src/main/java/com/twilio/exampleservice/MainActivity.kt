@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    private var service: CallService? = null
+    private var service: CallServiceAPI? = null
     private var bound = false
 
     override fun onCreate(savedInstanceState: Bundle?) {

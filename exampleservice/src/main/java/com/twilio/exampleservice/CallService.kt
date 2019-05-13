@@ -19,7 +19,7 @@ import com.twilio.video.*
  * Android Service to maintain a Twilio Room connection outside of an Activity.
  * See [VideoActivity] for more info on how to use this service.
  */
-class CallService : Service() {
+class CallService : Service(), CallServiceAPI {
 
     //region WebRTC / Twilio dependencies
     private var room: Room? = null
@@ -41,7 +41,7 @@ class CallService : Service() {
     private val binder = LocalBinder()
 
     inner class LocalBinder : Binder() {
-        fun getService(): CallService {
+        fun getService(): CallServiceAPI {
             return this@CallService
         }
     }
@@ -114,20 +114,20 @@ class CallService : Service() {
     }
     //endregion
 
-    //region Public API via Service Binding
-    val cameraCapturer by lazy {
+    //region Public API via Service Binding (CallServiceAPI)
+    override val cameraCapturer by lazy {
         CameraCapturerWrapper(cameraCapturerCompat)
     }
 
-    fun getLocalAudioTrack(): LocalAudioTrack? {
+    override fun getLocalAudioTrack(): LocalAudioTrack? {
         return localAudioTrack
     }
 
-    fun getLocalVideoTrack(): LocalVideoTrack? {
+    override fun getLocalVideoTrack(): LocalVideoTrack? {
         return localVideoTrack
     }
 
-    fun disconnectFromRoom() {
+    override fun disconnectFromRoom() {
         localVideoTrack?.let { localParticipant?.unpublishTrack(it) }
         localVideoTrack?.release()
         localVideoTrack = null
@@ -138,10 +138,19 @@ class CallService : Service() {
         room = null
     }
 
-    fun restoreCallAfterBinding(localVideoView: VideoRenderer, callListener: CallListener) {
+    override fun initializeLocalVideoTrack(localVideoView: VideoRenderer) {
+        Log.d("call-service", "Initialize Local Video Track")
+        ensureAudioAndVideoTracks()
+        localVideoTrack?.addRenderer(localVideoView)
+        localVideoTrack?.let { localParticipant?.publishTrack(it) }
+        localParticipant?.setEncodingParameters(encodingParameters)
+    }
+
+    override fun restoreCallAfterBinding(localVideoView: VideoRenderer, callListener: CallListener) {
+
         Log.d("call-service", "Restore Call After Binding")
         this.callListener = callListener
-        createAudioAndVideoTracks()
+        ensureAudioAndVideoTracks()
         localVideoTrack?.addRenderer(localVideoView)
         localVideoTrack?.let { localParticipant?.publishTrack(it) }
         localParticipant?.setEncodingParameters(encodingParameters)
@@ -154,12 +163,12 @@ class CallService : Service() {
         sendServiceToBackgroundAndRemoveNotification()
     }
 
-    fun isCallInProgress(): Boolean {
+    override fun isCallInProgress(): Boolean {
         return room != null && room?.state != Room.State.DISCONNECTED
     }
 
     // The containing activity is being closed, but we want the call to continue
-    fun minimize() {
+    override fun minimize() {
         Log.d("call-service", "Minimize")
         // If there's no room/call in progress, there's nothing to do.
         if (room == null) {
@@ -177,15 +186,15 @@ class CallService : Service() {
         sendCallServiceToForeground()
     }
 
-    fun recordingAndCameraPermissionsGranted() {
+    override fun recordingAndCameraPermissionsGranted() {
         if (ensurePermissionsGranted()) {
-            createAudioAndVideoTracks()
+            ensureAudioAndVideoTracks()
         }
     }
 
-    fun connectToRoom(accessToken: String,
-                      roomName: String,
-                      callListener: CallListener
+    override fun connectToRoom(accessToken: String,
+                               roomName: String,
+                               callListener: CallListener
 
     ) {
 
@@ -195,7 +204,7 @@ class CallService : Service() {
 
         this.callListener = callListener
 
-        createAudioAndVideoTracks()
+        ensureAudioAndVideoTracks()
         configureAudio(true)
 
         val connectOptionsBuilder = ConnectOptions.Builder(accessToken)
@@ -217,7 +226,7 @@ class CallService : Service() {
         room = Video.connect(this, connectOptionsBuilder.build(), this.roomListener)
     }
 
-    fun onActivityIsStopping() {
+    override fun onActivityIsStopping() {
         // If this local video track is being shared in a Room, remove from local
         // participant before releasing the video track. Participants will be notified that
         // the track has been removed.
@@ -352,7 +361,7 @@ class CallService : Service() {
         }
     }
 
-    private fun createAudioAndVideoTracks() {
+    private fun ensureAudioAndVideoTracks() {
         Log.d("call-service", "createAudioAndVideoTracks")
         if (localAudioTrack == null) {
             // Share your microphone
