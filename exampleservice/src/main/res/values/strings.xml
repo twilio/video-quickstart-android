@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Example Service Kotlin</string>
+    <string name="room_status">status</string>
+    <string name="permissions_needed">Camera and Microphone permissions needed. Please allow in App Settings for additional functionality.</string>
+    <string name="call_in_progress">Call In Progress</string>
+    <string name="video_call">Video Call</string>
+    <string name="return_to_call">Return to Ongoing Call</string>
+    <string name="start_call">Start Call</string>
+    <string name="title_activity_video">Video Activity</string>
+</resources>
