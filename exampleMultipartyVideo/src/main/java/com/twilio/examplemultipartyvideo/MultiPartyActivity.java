@@ -102,10 +102,6 @@ public class MultiPartyActivity extends AppCompatActivity {
     private VideoCodec videoCodec;
 
     /*
-     * Encoding parameters represent the sender side bandwidth constraints.
-     */
-    private EncodingParameters encodingParameters;
-    /*
      * Android shared preferences used for settings
      */
     private SharedPreferences preferences;
@@ -388,11 +384,6 @@ public class MultiPartyActivity extends AppCompatActivity {
          */
         connectOptionsBuilder.preferAudioCodecs(Collections.singletonList(audioCodec));
         connectOptionsBuilder.preferVideoCodecs(Collections.singletonList(videoCodec));
-
-        /*
-         * Set the sender side encoding parameters.
-         */
-        connectOptionsBuilder.encodingParameters(encodingParameters);
 
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener());
         setDisconnectAction();
