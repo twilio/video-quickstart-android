@@ -136,22 +136,6 @@ public class CameraCapturerCompat {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private boolean isPrivateImageFormatSupportedForCameraId(String cameraId) {
-        boolean isPrivateImageFormatSupported;
-        CameraCharacteristics cameraCharacteristics;
-        try {
-            cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-            return false;
-        }
-        final StreamConfigurationMap streamMap =
-                cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-        isPrivateImageFormatSupported = streamMap.isOutputSupportedFor(ImageFormat.PRIVATE);
-        return isPrivateImageFormatSupported;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private boolean isCameraIdSupported(String cameraId) {
         boolean isMonoChromeSupported;
         boolean isPrivateImageFormatSupported;
