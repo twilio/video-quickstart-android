@@ -127,7 +127,7 @@ class CameraCapturerCompat(context: Context, cameraSource: CameraCapturer.Camera
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private fun isCameraIdSupported(cameraId: String): Boolean {
-        var isMonoChromeSupported: Boolean ? = false
+        var isMonoChromeSupported = false
         val isPrivateImageFormatSupported: Boolean
         val cameraCharacteristics: CameraCharacteristics
         try {
