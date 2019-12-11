@@ -6,7 +6,7 @@ buildscript {
             'java': JavaVersion.VERSION_1_8,
             'androidGradlePlugin': '3.5.1',
             'googleServices': '3.2.1',
-            'compileSdk': 28,
+            'compileSdk': 29,
             'buildTools': '28.0.3',
             'minSdk': 16,
             'targetSdk': 28,
