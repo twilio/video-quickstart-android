@@ -5,6 +5,7 @@ import android.graphics.ImageFormat
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import android.hardware.camera2.CameraMetadata
 import android.hardware.camera2.params.StreamConfigurationMap
 import android.os.Build
 import android.support.annotation.RequiresApi
@@ -127,7 +128,7 @@ class CameraCapturerCompat(context: Context, cameraSource: CameraCapturer.Camera
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private fun isCameraIdSupported(cameraId: String): Boolean {
-        val isMonoChromeSupported: Boolean
+        var isMonoChromeSupported: Boolean ? = false
         val isPrivateImageFormatSupported: Boolean
         val cameraCharacteristics: CameraCharacteristics
         try {
@@ -152,8 +153,9 @@ class CameraCapturerCompat(context: Context, cameraSource: CameraCapturer.Camera
          */
         val colorFilterArrangement = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT)!!
 
-        isMonoChromeSupported = if (colorFilterArrangement == 5 || colorFilterArrangement == 6) true else false
-
-        return isPrivateImageFormatSupported && !isMonoChromeSupported
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isMonoChromeSupported = if (colorFilterArrangement == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO || colorFilterArrangement == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR) true else false
+        }
+        return isPrivateImageFormatSupported && !isMonoChromeSupported!!
     }
 }

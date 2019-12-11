@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion versions.compileSdk
+    compileSdkVersion 29
     buildToolsVersion "${versions.buildTools}"
 
     defaultConfig {
         applicationId "com.twilio.video.quickstart"
         minSdkVersion versions.minSdk
-        targetSdkVersion versions.targetSdk
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
