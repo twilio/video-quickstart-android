@@ -112,11 +112,13 @@ public class CameraCapturerCompat {
                  */
                 continue;
             }
-            if (camera2Enumerator.isFrontFacing(cameraId)) {
-                frontCameraPair = new Pair<>(CameraCapturer.CameraSource.FRONT_CAMERA, cameraId);
-            }
-            if (camera2Enumerator.isBackFacing(cameraId)) {
-                backCameraPair = new Pair<>(CameraCapturer.CameraSource.BACK_CAMERA, cameraId);
+            if (!isMonoChromeSupported(cameraId)) {
+                if (camera2Enumerator.isFrontFacing(cameraId)) {
+                    frontCameraPair = new Pair<>(CameraCapturer.CameraSource.FRONT_CAMERA, cameraId);
+                }
+                if (camera2Enumerator.isBackFacing(cameraId)) {
+                    backCameraPair = new Pair<>(CameraCapturer.CameraSource.BACK_CAMERA, cameraId);
+                }
             }
         }
     }
@@ -155,5 +157,27 @@ public class CameraCapturerCompat {
                 cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
         isPrivateImageFormatSupported = streamMap.isOutputSupportedFor(ImageFormat.PRIVATE);
         return isPrivateImageFormatSupported;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private boolean isMonoChromeSupported(String cameraId) {
+        boolean isMonoChromeSupported;
+        CameraCharacteristics cameraCharacteristics;
+        try {
+            cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+        /*
+         * Read the color filter arrangements of the camera to filter out the ones that support
+         * SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO or SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR.
+         * Visit this link for details on supported values - https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics#SENSOR_INFO_COLOR_FILTER_ARRANGEMENT
+         */
+        final int colorFilterArrangement = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT);
+
+        isMonoChromeSupported = (colorFilterArrangement == 5 || colorFilterArrangement == 6) ? true : false;
+
+        return isMonoChromeSupported;
     }
 }
