@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.twilio.video.quickstart"
         minSdkVersion versions.minSdk
-        targetSdkVersion 29
+        targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
 

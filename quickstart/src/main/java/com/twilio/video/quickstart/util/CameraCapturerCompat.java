@@ -164,7 +164,8 @@ public class CameraCapturerCompat {
         final int colorFilterArrangement = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            isMonoChromeSupported = (colorFilterArrangement == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO || colorFilterArrangement == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR) ? true : false;
+            isMonoChromeSupported = (colorFilterArrangement == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO
+                    || colorFilterArrangement == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR) ? true : false;
         }
         return isPrivateImageFormatSupported && !isMonoChromeSupported;
     }
