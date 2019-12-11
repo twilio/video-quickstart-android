@@ -104,15 +104,7 @@ public class CameraCapturerCompat {
     private void setCameraPairs(Context context) {
         Camera2Enumerator camera2Enumerator = new Camera2Enumerator(context);
         for (String cameraId : camera2Enumerator.getDeviceNames()) {
-            if (!isPrivateImageFormatSupportedForCameraId(cameraId)) {
-                /*
-                 * This is a temporary work around for a RuntimeException that occurs on devices which contain cameras
-                 * that do not support ImageFormat.PRIVATE output formats. A long term fix is currently in development.
-                 * https://github.com/twilio/video-quickstart-android/issues/431
-                 */
-                continue;
-            }
-            if (!isMonoChromeSupported(cameraId)) {
+            if (isCameraSupported(cameraId)) {
                 if (camera2Enumerator.isFrontFacing(cameraId)) {
                     frontCameraPair = new Pair<>(CameraCapturer.CameraSource.FRONT_CAMERA, cameraId);
                 }
@@ -160,8 +152,9 @@ public class CameraCapturerCompat {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private boolean isMonoChromeSupported(String cameraId) {
+    private boolean isCameraSupported(String cameraId) {
         boolean isMonoChromeSupported;
+        boolean isPrivateImageFormatSupported;
         CameraCharacteristics cameraCharacteristics;
         try {
             cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
@@ -169,6 +162,15 @@ public class CameraCapturerCompat {
             e.printStackTrace();
             return false;
         }
+        /*
+         * This is a temporary work around for a RuntimeException that occurs on devices which contain cameras
+         * that do not support ImageFormat.PRIVATE output formats. A long term fix is currently in development.
+         * https://github.com/twilio/video-quickstart-android/issues/431
+         */
+        final StreamConfigurationMap streamMap =
+                cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        isPrivateImageFormatSupported = streamMap.isOutputSupportedFor(ImageFormat.PRIVATE);
+
         /*
          * Read the color filter arrangements of the camera to filter out the ones that support
          * SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO or SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR.
@@ -178,6 +180,6 @@ public class CameraCapturerCompat {
 
         isMonoChromeSupported = (colorFilterArrangement == 5 || colorFilterArrangement == 6) ? true : false;
 
-        return isMonoChromeSupported;
+        return isPrivateImageFormatSupported && !isMonoChromeSupported;
     }
 }
