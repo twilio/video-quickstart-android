@@ -104,7 +104,7 @@ public class CameraCapturerCompat {
     private void setCameraPairs(Context context) {
         Camera2Enumerator camera2Enumerator = new Camera2Enumerator(context);
         for (String cameraId : camera2Enumerator.getDeviceNames()) {
-            if (isCameraSupported(cameraId)) {
+            if (isCameraIdSupported(cameraId)) {
                 if (camera2Enumerator.isFrontFacing(cameraId)) {
                     frontCameraPair = new Pair<>(CameraCapturer.CameraSource.FRONT_CAMERA, cameraId);
                 }
@@ -152,7 +152,7 @@ public class CameraCapturerCompat {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private boolean isCameraSupported(String cameraId) {
+    private boolean isCameraIdSupported(String cameraId) {
         boolean isMonoChromeSupported;
         boolean isPrivateImageFormatSupported;
         CameraCharacteristics cameraCharacteristics;
