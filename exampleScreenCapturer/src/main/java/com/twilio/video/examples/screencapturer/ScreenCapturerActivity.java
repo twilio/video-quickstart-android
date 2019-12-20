@@ -1,9 +1,13 @@
 package com.twilio.video.examples.screencapturer;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.projection.MediaProjectionManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -15,6 +19,7 @@ import android.widget.Toast;
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.ScreenCapturer;
 import com.twilio.video.VideoView;
+import com.twilio.video.examples.screencapturer.ScreenCapturerService.LocalBinder;
 
 /**
  * This example demonstrates how to use the screen capturer
@@ -42,11 +47,29 @@ public class ScreenCapturerActivity extends AppCompatActivity {
         }
     };
 
+    ScreenCapturerService mService;
+    boolean mBound = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_capturer);
         localVideoView = (VideoView) findViewById(R.id.local_video);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to ScreenCapturerService
+        Intent intent = new Intent(this, ScreenCapturerService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(connection);
+        mBound = false;
     }
 
     @Override
@@ -70,12 +93,14 @@ public class ScreenCapturerActivity extends AppCompatActivity {
                 String shareScreen = getString(R.string.share_screen);
 
                 if (item.getTitle().equals(shareScreen)) {
+                    mService.startForeground();
                     if (screenCapturer == null) {
                         requestScreenCapturePermission();
                     } else {
                         startScreenCapture();
                     }
                 } else {
+                    mService.endForeground();
                     stopScreenCapture();
                 }
 
@@ -136,5 +161,28 @@ public class ScreenCapturerActivity extends AppCompatActivity {
         }
         super.onDestroy();
     }
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to ScreenCapturerService, cast the IBinder and get ScreenCapturerService instance
+            LocalBinder binder = (LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            if (screenCaptureMenuItem != null) {
+                // Screen sharing only available on lollipop and up
+                screenCaptureMenuItem.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+
+    };
 
 }
