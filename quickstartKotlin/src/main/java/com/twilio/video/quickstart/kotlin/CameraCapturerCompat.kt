@@ -2,14 +2,13 @@ package com.twilio.video.quickstart.kotlin
 
 import android.content.Context
 import android.graphics.ImageFormat
-import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
 import android.os.Build
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.util.Pair
+import androidx.annotation.RequiresApi
 import com.twilio.video.Camera2Capturer
 import com.twilio.video.CameraCapturer
 import com.twilio.video.VideoCapturer

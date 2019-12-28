@@ -2,6 +2,7 @@ package com.twilio.video.quickstart.kotlin
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -11,26 +12,53 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
+import com.google.android.material.snackbar.Snackbar
 import com.koushikdutta.ion.Ion
-import com.twilio.video.*
+import com.twilio.video.AudioCodec
+import com.twilio.video.CameraCapturer
+import com.twilio.video.ConnectOptions
+import com.twilio.video.EncodingParameters
+import com.twilio.video.G722Codec
+import com.twilio.video.H264Codec
+import com.twilio.video.IsacCodec
+import com.twilio.video.LocalAudioTrack
+import com.twilio.video.LocalParticipant
+import com.twilio.video.LocalVideoTrack
+import com.twilio.video.OpusCodec
+import com.twilio.video.PcmaCodec
+import com.twilio.video.PcmuCodec
+import com.twilio.video.RemoteAudioTrack
+import com.twilio.video.RemoteAudioTrackPublication
+import com.twilio.video.RemoteDataTrack
+import com.twilio.video.RemoteDataTrackPublication
+import com.twilio.video.RemoteParticipant
+import com.twilio.video.RemoteVideoTrack
+import com.twilio.video.RemoteVideoTrackPublication
+import com.twilio.video.Room
+import com.twilio.video.TwilioException
+import com.twilio.video.Video
+import com.twilio.video.VideoCodec
+import com.twilio.video.VideoRenderer
+import com.twilio.video.VideoTrack
+import com.twilio.video.Vp8Codec
+import com.twilio.video.Vp9Codec
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.content_video.*
 import java.util.*
 
 
-class VideoActivity : AppCompatActivity() {
+class VideoActivity: Activity() {
     private val CAMERA_MIC_PERMISSION_REQUEST_CODE = 1
     private val TAG = "VideoActivity"
 
@@ -347,7 +375,7 @@ class VideoActivity : AppCompatActivity() {
                     "[TwilioException: code=${twilioException.code}, " +
                     "message=${twilioException.message}]")
             videoStatusTextView.text = "onVideoTrackSubscriptionFailed"
-            Snackbar.make(connectActionFab,
+            Snackbar.make(connect_action_fab,
                     "Failed to subscribe to ${remoteParticipant.identity}",
                     Snackbar.LENGTH_LONG)
                     .show()
@@ -372,7 +400,7 @@ class VideoActivity : AppCompatActivity() {
 
     private var localAudioTrack: LocalAudioTrack? = null
     private var localVideoTrack: LocalVideoTrack? = null
-    private var alertDialog: android.support.v7.app.AlertDialog? = null
+    private var alertDialog: AlertDialog? = null
     private val cameraCapturerCompat by lazy {
         CameraCapturerCompat(this, getAvailableCameraSource())
     }
@@ -483,7 +511,12 @@ class VideoActivity : AppCompatActivity() {
             reconnectingProgressBar.visibility = if (it.state != Room.State.RECONNECTING)
                 View.GONE else
                 View.VISIBLE
-            videoStatusTextView.text = "Connected to ${it.name}"
+            videoStatusTextView.text = when (it.state) {
+                Room.State.CONNECTING -> "Connecting to ${it.name}"
+                Room.State.CONNECTED -> "Connected to ${it.name}"
+                Room.State.RECONNECTING -> "Reconnecting to ${it.name}"
+                Room.State.DISCONNECTED -> "Disconnected from ${it.name}"
+            }
         }
     }
 
@@ -534,10 +567,12 @@ class VideoActivity : AppCompatActivity() {
             R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             R.id.speaker_menu_item -> if (audioManager.isSpeakerphoneOn) {
                 audioManager.isSpeakerphoneOn = false
+                item.title = getString(R.string.turn_speaker_off)
                 item.setIcon(R.drawable.ic_phonelink_ring_white_24dp)
                 isSpeakerPhoneEnabled = false
             } else {
                 audioManager.isSpeakerphoneOn = true
+                item.title = getString(R.string.turn_speaker_on)
                 item.setIcon(R.drawable.ic_volume_up_white_24dp)
                 isSpeakerPhoneEnabled = true
             }
@@ -648,26 +683,26 @@ class VideoActivity : AppCompatActivity() {
      * The initial state when there is no active room.
      */
     private fun initializeUI() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
+        connect_action_fab.setImageDrawable(ContextCompat.getDrawable(this,
                 R.drawable.ic_video_call_white_24dp))
-        connectActionFab.show()
-        connectActionFab.setOnClickListener(connectActionClickListener())
-        switchCameraActionFab.show()
-        switchCameraActionFab.setOnClickListener(switchCameraClickListener())
-        localVideoActionFab.show()
-        localVideoActionFab.setOnClickListener(localVideoClickListener())
-        muteActionFab.show()
-        muteActionFab.setOnClickListener(muteClickListener())
+        connect_action_fab.show()
+        connect_action_fab.setOnClickListener(connectActionClickListener())
+        switch_camera_action_fab.show()
+        switch_camera_action_fab.setOnClickListener(switchCameraClickListener())
+        local_video_action_fab.show()
+        local_video_action_fab.setOnClickListener(localVideoClickListener())
+        mute_action_fab.show()
+        mute_action_fab.setOnClickListener(muteClickListener())
     }
 
     /*
      * The actions performed during disconnect.
      */
     private fun setDisconnectAction() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
+        connect_action_fab.setImageDrawable(ContextCompat.getDrawable(this,
                 R.drawable.ic_call_end_white_24px))
-        connectActionFab.show()
-        connectActionFab.setOnClickListener(disconnectClickListener())
+        connect_action_fab.show()
+        connect_action_fab.setOnClickListener(disconnectClickListener())
     }
 
     /*
@@ -688,7 +723,7 @@ class VideoActivity : AppCompatActivity() {
          * This app only displays video for one additional participant per Room
          */
         if (thumbnailVideoView.visibility == View.VISIBLE) {
-            Snackbar.make(connectActionFab,
+            Snackbar.make(connect_action_fab,
                     "Multiple participants are not currently support in this UI",
                     Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
@@ -824,12 +859,12 @@ class VideoActivity : AppCompatActivity() {
                 val icon: Int
                 if (enable) {
                     icon = R.drawable.ic_videocam_white_24dp
-                    switchCameraActionFab.show()
+                    switch_camera_action_fab.show()
                 } else {
                     icon = R.drawable.ic_videocam_off_black_24dp
-                    switchCameraActionFab.hide()
+                    switch_camera_action_fab.hide()
                 }
-                localVideoActionFab.setImageDrawable(
+                local_video_action_fab.setImageDrawable(
                         ContextCompat.getDrawable(this@VideoActivity, icon))
             }
         }
@@ -849,7 +884,8 @@ class VideoActivity : AppCompatActivity() {
                     R.drawable.ic_mic_white_24dp
                 else
                     R.drawable.ic_mic_off_black_24dp
-                muteActionFab.setImageDrawable(ContextCompat.getDrawable(
+
+                mute_action_fab.setImageDrawable(ContextCompat.getDrawable(
                         this@VideoActivity, icon))
             }
         }
@@ -918,7 +954,8 @@ class VideoActivity : AppCompatActivity() {
                                     callParticipantsClickListener: DialogInterface.OnClickListener,
                                     cancelClickListener: DialogInterface.OnClickListener,
                                     context: Context): AlertDialog {
-        val alertDialogBuilder = AlertDialog.Builder(context).apply {
+        val alertDialogBuilder = AlertDialog.Builder(ContextThemeWrapper(this, R.style.connectDialog))
+                .apply {
             setIcon(R.drawable.ic_video_call_white_24dp)
             setTitle("Connect to a room")
             setPositiveButton("Connect", callParticipantsClickListener)

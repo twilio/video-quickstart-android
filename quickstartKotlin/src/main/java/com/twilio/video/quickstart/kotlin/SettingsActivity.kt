@@ -2,14 +2,23 @@ package com.twilio.video.quickstart.kotlin
 
 import android.content.Intent
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.preference.EditTextPreference
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.MenuItem
-import com.twilio.video.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
+import com.twilio.video.AudioCodec
+import com.twilio.video.G722Codec
+import com.twilio.video.H264Codec
+import com.twilio.video.IsacCodec
+import com.twilio.video.OpusCodec
+import com.twilio.video.PcmaCodec
+import com.twilio.video.PcmuCodec
+import com.twilio.video.VideoCodec
+import com.twilio.video.Vp8Codec
+import com.twilio.video.Vp9Codec
 import tvi.webrtc.MediaCodecVideoDecoder
 import tvi.webrtc.MediaCodecVideoEncoder
 
@@ -65,17 +74,17 @@ class SettingsActivity : AppCompatActivity() {
             setupCodecListPreference(AudioCodec::class.java,
                     PREF_AUDIO_CODEC,
                     PREF_AUDIO_CODEC_DEFAULT,
-                    findPreference(PREF_AUDIO_CODEC) as ListPreference)
+                    findPreference<ListPreference>(PREF_AUDIO_CODEC) as ListPreference)
             setupCodecListPreference(VideoCodec::class.java,
                     PREF_VIDEO_CODEC,
                     PREF_VIDEO_CODEC_DEFAULT,
-                    findPreference(PREF_VIDEO_CODEC) as ListPreference)
+                    findPreference<ListPreference>(PREF_VIDEO_CODEC) as ListPreference)
             setupSenderBandwidthPreferences(PREF_SENDER_MAX_AUDIO_BITRATE,
                     PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT,
-                    findPreference(PREF_SENDER_MAX_AUDIO_BITRATE) as EditTextPreference)
+                    findPreference<ListPreference>(PREF_SENDER_MAX_AUDIO_BITRATE) as EditTextPreference)
             setupSenderBandwidthPreferences(PREF_SENDER_MAX_VIDEO_BITRATE,
                     PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT,
-                    findPreference(PREF_SENDER_MAX_VIDEO_BITRATE) as EditTextPreference)
+                    findPreference<ListPreference>(PREF_SENDER_MAX_VIDEO_BITRATE) as EditTextPreference)
         }
 
 

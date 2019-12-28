@@ -1,38 +1,38 @@
-<android.support.v7.preference.PreferenceScreen
+<androidx.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <android.support.v7.preference.PreferenceCategory
+    <androidx.preference.PreferenceCategory
         android:title="General">
-        <android.support.v7.preference.CheckBoxPreference
+        <androidx.preference.CheckBoxPreference
             android:key="enable_automatic_subscription"
             android:title="Enable Automatic Track Subscription"
             android:defaultValue="true"/>
-    </android.support.v7.preference.PreferenceCategory>
-    <android.support.v7.preference.PreferenceCategory
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory
         android:title="@string/codec_title">
-        <android.support.v7.preference.ListPreference
+        <androidx.preference.ListPreference
             android:key="audio_codec"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:title="@string/pref_title_audio_codec" />
-        <android.support.v7.preference.ListPreference
+        <androidx.preference.ListPreference
             android:key="video_codec"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:title="@string/pref_title_video_codec" />
-        <android.support.v7.preference.CheckBoxPreference
+        <androidx.preference.CheckBoxPreference
             android:key="vp8_simulcast"
             android:title="@string/vp8_simulcast"
             android:defaultValue="false"/>
-    </android.support.v7.preference.PreferenceCategory>
-    <android.support.v7.preference.PreferenceCategory
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory
         android:title="@string/sender_bandwidth_constraints">
-        <android.support.v7.preference.EditTextPreference
+        <androidx.preference.EditTextPreference
             android:key="sender_max_audio_bitrate"
             android:title="@string/max_audio_bitrate"
             android:defaultValue="0"/>
-        <android.support.v7.preference.EditTextPreference
+        <androidx.preference.EditTextPreference
             android:key="sender_max_video_bitrate"
             android:title="@string/max_video_bitrate"
             android:defaultValue="0" />
-    </android.support.v7.preference.PreferenceCategory>
-</android.support.v7.preference.PreferenceScreen>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

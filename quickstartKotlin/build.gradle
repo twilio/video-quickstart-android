@@ -65,8 +65,11 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:${versions.constraintLayout}"
     implementation "com.twilio:video-android:${versions.videoAndroid}"
     implementation "com.koushikdutta.ion:ion:${versions.ion}"
-    implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
-    implementation "com.android.support:preference-v14:${versions.supportLibrary}"
-    implementation "com.android.support:design:${versions.supportLibrary}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation "androidx.legacy:legacy-support-v4:${versions.legacy}"
+    implementation "androidx.appcompat:appcompat:${versions.appcompat}"
+    implementation "androidx.preference:preference-ktx:${versions.preference}"
+    implementation "androidx.annotation:annotation:${versions.annotation}"
+    implementation "com.google.android.material:material:${versions.material}"
 }
