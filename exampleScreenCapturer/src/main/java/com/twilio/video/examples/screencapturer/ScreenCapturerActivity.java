@@ -3,6 +3,7 @@ package com.twilio.video.examples.screencapturer;
 import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -48,18 +49,19 @@ public class ScreenCapturerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_capturer);
         localVideoView = (VideoView) findViewById(R.id.local_video);
+        if (Build.VERSION.SDK_INT >= 29) {
+            screenCapturerManager = new ScreenCapturerManager(this);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        screenCapturerManager = new ScreenCapturerManager(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        screenCapturerManager.unbindService();
     }
 
     @Override
@@ -81,14 +83,19 @@ public class ScreenCapturerActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.share_screen_menu_item:
                 String shareScreen = getString(R.string.share_screen);
-                screenCapturerManager.nextState();
                 if (item.getTitle().equals(shareScreen)) {
+                    if (Build.VERSION.SDK_INT >= 29) {
+                        screenCapturerManager.startForeground();
+                    }
                     if (screenCapturer == null) {
                         requestScreenCapturePermission();
                     } else {
                         startScreenCapture();
                     }
                 } else {
+                    if (Build.VERSION.SDK_INT >= 29) {
+                        screenCapturerManager.endForeground();
+                    }
                     stopScreenCapture();
                 }
 
@@ -146,6 +153,9 @@ public class ScreenCapturerActivity extends AppCompatActivity {
         if (screenVideoTrack != null) {
             screenVideoTrack.release();
             screenVideoTrack = null;
+        }
+        if (Build.VERSION.SDK_INT >= 29) {
+            screenCapturerManager.unbindService();
         }
         super.onDestroy();
     }
