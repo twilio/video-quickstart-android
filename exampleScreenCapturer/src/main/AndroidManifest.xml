@@ -21,7 +21,8 @@
         <service
             android:enabled="true"
             android:name=".ScreenCapturerService"
-            android:foregroundServiceType="mediaProjection" >
+            android:foregroundServiceType="mediaProjection"
+            tools:targetApi="q">
         </service>
     </application>
 
