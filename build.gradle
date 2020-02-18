@@ -9,7 +9,7 @@ buildscript {
             'compileSdk': 29,
             'buildTools': '28.0.3',
             'minSdk': 16,
-            'targetSdk': 28,
+            'targetSdk': 29,
             'supportLibrary': '26.1.0',
             'constraintLayout': '1.1.3',
             'firebase': '10.0.1',

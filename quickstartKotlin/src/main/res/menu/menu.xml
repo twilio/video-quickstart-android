@@ -3,9 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/speaker_menu_item"
-        android:title="@string/turn_speaker_on"
+    <item android:id="@+id/menu_turn_speaker_off"
+        android:title="@string/turn_speaker_off"
         android:icon="@drawable/ic_volume_up_white_24dp"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/menu_turn_speaker_on"
+        android:title="@string/turn_speaker_on"
+        android:icon="@drawable/ic_phonelink_ring_white_24dp"
+        android:visible="false"
         app:showAsAction="ifRoom"/>
 
     <item

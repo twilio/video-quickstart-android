@@ -418,6 +418,8 @@ class VideoActivity: Activity() {
     private lateinit var localVideoView: VideoRenderer
     private var disconnectedFromOnDestroy = false
     private var isSpeakerPhoneEnabled = true
+    private lateinit var turnSpeakerOnMenuItem: MenuItem
+    private lateinit var turnSpeakerOffMenuItem: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -559,6 +561,8 @@ class VideoActivity: Activity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
+        turnSpeakerOnMenuItem = menu.findItem(R.id.menu_turn_speaker_on)
+        turnSpeakerOffMenuItem = menu.findItem(R.id.menu_turn_speaker_off)
         return true
     }
 
@@ -574,7 +578,15 @@ class VideoActivity: Activity() {
                 audioManager.isSpeakerphoneOn = true
                 item.title = getString(R.string.turn_speaker_on)
                 item.setIcon(R.drawable.ic_volume_up_white_24dp)
+
                 isSpeakerPhoneEnabled = true
+            }
+
+            R.id.menu_turn_speaker_off -> {
+                audioManager.isSpeakerphoneOn = false
+                turnSpeakerOffMenuItem.isVisible = false
+                turnSpeakerOnMenuItem.isVisible = true
+                isSpeakerPhoneEnabled = false
             }
         }
         return true
