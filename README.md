@@ -262,7 +262,7 @@ seen in the screenshot below.
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
             
-    </FrameLayout >
+    </FrameLayout>
 
 
 #### Adding VideoView Programmatically
