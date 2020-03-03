@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"/>
-    <FrameLayout
+    <merge
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
@@ -26,5 +26,5 @@
             android:layout_gravity="center"
             style="@style/TextAppearance.AppCompat.Large"
             android:text="@string/tap_video_snapshot"/>
-    </FrameLayout>
+    </merge>
 </LinearLayout>

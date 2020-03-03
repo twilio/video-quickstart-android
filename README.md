@@ -241,12 +241,12 @@ seen in the screenshot below.
 #### VideoView in a Layout File 
 
     <?xml version="1.0" encoding="utf-8"?>
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                 android:id="@+id/video_container"
-                 android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 android:keepScreenOn="true">
+    <merge xmlns:android="http://schemas.android.com/apk/res/android"
+           xmlns:app="http://schemas.android.com/apk/res-auto"
+           android:id="@+id/video_container"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:keepScreenOn="true">
 
         <com.twilio.video.VideoView
             android:id="@+id/thumbnail_video_view"
@@ -262,7 +262,7 @@ seen in the screenshot below.
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
             
-    </FrameLayout>
+    </merge>
 
 
 #### Adding VideoView Programmatically

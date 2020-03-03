@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 3.6.1" client="gradle" variant="all" version="3.6.1">
+
+    <issue
+        id="MissingFirebaseInstanceTokenRefresh"
+        message="Apps that use Firebase Cloud Messaging should implement `onNewToken()` in order to observe token changes."
+        errorLine1="public class NotifyFirebaseMessagingService extends FirebaseMessagingService {"
+        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/twilio/video/examples/videoinvite/notify/fcm/NotifyFirebaseMessagingService.java"
+            line="21"
+            column="14"/>
+    </issue>
+
+</issues>
