@@ -241,7 +241,7 @@ seen in the screenshot below.
 #### VideoView in a Layout File 
 
     <?xml version="1.0" encoding="utf-8"?>
-    <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
            xmlns:app="http://schemas.android.com/apk/res-auto"
            android:id="@+id/video_container"
            android:layout_width="match_parent"
@@ -366,4 +366,3 @@ Please ensure that you are not sharing any
 or sensitive account information (API keys, credentials, etc.) when reporting an issue.
 
 For general inquiries related to the Video SDK you can file a [support ticket](https://support.twilio.com/hc/en-us/requests/new)
-
