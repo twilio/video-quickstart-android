@@ -242,11 +242,11 @@ seen in the screenshot below.
 
     <?xml version="1.0" encoding="utf-8"?>
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-           xmlns:app="http://schemas.android.com/apk/res-auto"
-           android:id="@+id/video_container"
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
-           android:keepScreenOn="true">
+                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                 android:id="@+id/video_container"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:keepScreenOn="true">
 
         <com.twilio.video.VideoView
             android:id="@+id/thumbnail_video_view"
