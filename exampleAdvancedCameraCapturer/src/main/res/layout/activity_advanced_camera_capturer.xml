@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -25,4 +25,4 @@
             android:text="@string/take_picture"
             android:layout_margin="16dp"/>
     </LinearLayout>
-</FrameLayout>
+</merge>

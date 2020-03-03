@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 3.6">
+
+    <issue
+        id="InflateParams"
+        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)">
+        <location
+            file="src/main/java/com/twilio/video/examples/advancedcameracapturer/AdvancedCameraCapturerActivity.java"
+            line="101"/>
+    </issue>
+
+</issues>

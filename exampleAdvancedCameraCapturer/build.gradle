@@ -7,6 +7,7 @@ android {
     lintOptions {
         warningsAsErrors true
         disable "MissingApplicationIcon", "ButtonStyle", "GradleDependency"
+        baseline file("lint-baseline.xml")
     }
 
     defaultConfig {
