@@ -732,8 +732,8 @@ public class MultiPartyActivity extends AppCompatActivity {
     private RemoteParticipant.Listener remoteParticipantListener() {
         return new RemoteParticipant.Listener() {
             @Override
-            public void onAudioTrackPublished(RemoteParticipant remoteParticipant,
-                                              RemoteAudioTrackPublication remoteAudioTrackPublication) {
+            public void onAudioTrackPublished(@NonNull RemoteParticipant remoteParticipant,
+                                              @NonNull RemoteAudioTrackPublication remoteAudioTrackPublication) {
                 Log.i(TAG, String.format("onAudioTrackPublished: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteAudioTrackPublication: sid=%s, enabled=%b, " +
@@ -747,8 +747,8 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAudioTrackUnpublished(RemoteParticipant remoteParticipant,
-                                                RemoteAudioTrackPublication remoteAudioTrackPublication) {
+            public void onAudioTrackUnpublished(@NonNull RemoteParticipant remoteParticipant,
+                                                @NonNull RemoteAudioTrackPublication remoteAudioTrackPublication) {
                 Log.i(TAG, String.format("onAudioTrackUnpublished: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteAudioTrackPublication: sid=%s, enabled=%b, " +
@@ -762,8 +762,8 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDataTrackPublished(RemoteParticipant remoteParticipant,
-                                             RemoteDataTrackPublication remoteDataTrackPublication) {
+            public void onDataTrackPublished(@NonNull RemoteParticipant remoteParticipant,
+                                             @NonNull RemoteDataTrackPublication remoteDataTrackPublication) {
                 Log.i(TAG, String.format("onDataTrackPublished: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteDataTrackPublication: sid=%s, enabled=%b, " +
@@ -777,8 +777,8 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDataTrackUnpublished(RemoteParticipant remoteParticipant,
-                                               RemoteDataTrackPublication remoteDataTrackPublication) {
+            public void onDataTrackUnpublished(@NonNull RemoteParticipant remoteParticipant,
+                                               @NonNull RemoteDataTrackPublication remoteDataTrackPublication) {
                 Log.i(TAG, String.format("onDataTrackUnpublished: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteDataTrackPublication: sid=%s, enabled=%b, " +
@@ -792,8 +792,8 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVideoTrackPublished(RemoteParticipant remoteParticipant,
-                                              RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackPublished(@NonNull RemoteParticipant remoteParticipant,
+                                              @NonNull RemoteVideoTrackPublication remoteVideoTrackPublication) {
                 Log.i(TAG, String.format("onVideoTrackPublished: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteVideoTrackPublication: sid=%s, enabled=%b, " +
@@ -807,8 +807,8 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVideoTrackUnpublished(RemoteParticipant remoteParticipant,
-                                                RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackUnpublished(@NonNull RemoteParticipant remoteParticipant,
+                                                @NonNull RemoteVideoTrackPublication remoteVideoTrackPublication) {
                 Log.i(TAG, String.format("onVideoTrackUnpublished: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteVideoTrackPublication: sid=%s, enabled=%b, " +
@@ -822,9 +822,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAudioTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                               RemoteAudioTrack remoteAudioTrack) {
+            public void onAudioTrackSubscribed(@NonNull RemoteParticipant remoteParticipant,
+                                               @NonNull RemoteAudioTrackPublication remoteAudioTrackPublication,
+                                               @NonNull RemoteAudioTrack remoteAudioTrack) {
                 Log.i(TAG, String.format("onAudioTrackSubscribed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteAudioTrack: enabled=%b, playbackEnabled=%b, name=%s]",
@@ -836,9 +836,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAudioTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                                 RemoteAudioTrack remoteAudioTrack) {
+            public void onAudioTrackUnsubscribed(@NonNull RemoteParticipant remoteParticipant,
+                                                 @NonNull RemoteAudioTrackPublication remoteAudioTrackPublication,
+                                                 @NonNull RemoteAudioTrack remoteAudioTrack) {
                 Log.i(TAG, String.format("onAudioTrackUnsubscribed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteAudioTrack: enabled=%b, playbackEnabled=%b, name=%s]",
@@ -850,9 +850,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAudioTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                       RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                                       TwilioException twilioException) {
+            public void onAudioTrackSubscriptionFailed(@NonNull RemoteParticipant remoteParticipant,
+                                                       @NonNull RemoteAudioTrackPublication remoteAudioTrackPublication,
+                                                       @NonNull TwilioException twilioException) {
                 Log.i(TAG, String.format("onAudioTrackSubscriptionFailed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteAudioTrackPublication: sid=%b, name=%s]" +
@@ -866,9 +866,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDataTrackSubscribed(RemoteParticipant remoteParticipant,
-                                              RemoteDataTrackPublication remoteDataTrackPublication,
-                                              RemoteDataTrack remoteDataTrack) {
+            public void onDataTrackSubscribed(@NonNull RemoteParticipant remoteParticipant,
+                                              @NonNull RemoteDataTrackPublication remoteDataTrackPublication,
+                                              @NonNull RemoteDataTrack remoteDataTrack) {
                 Log.i(TAG, String.format("onDataTrackSubscribed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteDataTrack: enabled=%b, name=%s]",
@@ -879,9 +879,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDataTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                RemoteDataTrackPublication remoteDataTrackPublication,
-                                                RemoteDataTrack remoteDataTrack) {
+            public void onDataTrackUnsubscribed(@NonNull RemoteParticipant remoteParticipant,
+                                                @NonNull RemoteDataTrackPublication remoteDataTrackPublication,
+                                                @NonNull RemoteDataTrack remoteDataTrack) {
                 Log.i(TAG, String.format("onDataTrackUnsubscribed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteDataTrack: enabled=%b, name=%s]",
@@ -892,9 +892,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDataTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                      RemoteDataTrackPublication remoteDataTrackPublication,
-                                                      TwilioException twilioException) {
+            public void onDataTrackSubscriptionFailed(@NonNull RemoteParticipant remoteParticipant,
+                                                      @NonNull RemoteDataTrackPublication remoteDataTrackPublication,
+                                                      @NonNull TwilioException twilioException) {
                 Log.i(TAG, String.format("onDataTrackSubscriptionFailed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteDataTrackPublication: sid=%b, name=%s]" +
@@ -908,9 +908,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                               RemoteVideoTrack remoteVideoTrack) {
+            public void onVideoTrackSubscribed(@NonNull RemoteParticipant remoteParticipant,
+                                               @NonNull RemoteVideoTrackPublication remoteVideoTrackPublication,
+                                               @NonNull RemoteVideoTrack remoteVideoTrack) {
                 Log.i(TAG, String.format("onVideoTrackSubscribed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteVideoTrack: enabled=%b, name=%s]",
@@ -922,9 +922,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVideoTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                                 RemoteVideoTrack remoteVideoTrack) {
+            public void onVideoTrackUnsubscribed(@NonNull RemoteParticipant remoteParticipant,
+                                                 @NonNull RemoteVideoTrackPublication remoteVideoTrackPublication,
+                                                 @NonNull RemoteVideoTrack remoteVideoTrack) {
                 Log.i(TAG, String.format("onVideoTrackUnsubscribed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteVideoTrack: enabled=%b, name=%s]",
@@ -936,9 +936,9 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVideoTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                       RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                                       TwilioException twilioException) {
+            public void onVideoTrackSubscriptionFailed(@NonNull RemoteParticipant remoteParticipant,
+                                                       @NonNull RemoteVideoTrackPublication remoteVideoTrackPublication,
+                                                       @NonNull TwilioException twilioException) {
                 Log.i(TAG, String.format("onVideoTrackSubscriptionFailed: " +
                                 "[RemoteParticipant: identity=%s], " +
                                 "[RemoteVideoTrackPublication: sid=%b, name=%s]" +
@@ -957,26 +957,26 @@ public class MultiPartyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAudioTrackEnabled(RemoteParticipant remoteParticipant,
-                                            RemoteAudioTrackPublication remoteAudioTrackPublication) {
+            public void onAudioTrackEnabled(@NonNull RemoteParticipant remoteParticipant,
+                                            @NonNull RemoteAudioTrackPublication remoteAudioTrackPublication) {
 
             }
 
             @Override
-            public void onAudioTrackDisabled(RemoteParticipant remoteParticipant,
-                                             RemoteAudioTrackPublication remoteAudioTrackPublication) {
+            public void onAudioTrackDisabled(@NonNull RemoteParticipant remoteParticipant,
+                                             @NonNull RemoteAudioTrackPublication remoteAudioTrackPublication) {
 
             }
 
             @Override
-            public void onVideoTrackEnabled(RemoteParticipant remoteParticipant,
-                                            RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackEnabled(@NonNull RemoteParticipant remoteParticipant,
+                                            @NonNull RemoteVideoTrackPublication remoteVideoTrackPublication) {
 
             }
 
             @Override
-            public void onVideoTrackDisabled(RemoteParticipant remoteParticipant,
-                                             RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackDisabled(@NonNull RemoteParticipant remoteParticipant,
+                                             @NonNull RemoteVideoTrackPublication remoteVideoTrackPublication) {
 
             }
         };
