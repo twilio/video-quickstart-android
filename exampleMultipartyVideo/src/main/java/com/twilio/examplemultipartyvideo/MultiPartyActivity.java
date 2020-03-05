@@ -117,7 +117,6 @@ public class MultiPartyActivity extends AppCompatActivity {
     /*
      * Android application UI elements
      */
-    private TextView videoStatusTextView;
     private CameraCapturer cameraCapturerCompat;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
@@ -146,7 +145,6 @@ public class MultiPartyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
-        videoStatusTextView = findViewById(R.id.videoStatusText);
         reconnectingProgressBar = findViewById(R.id.reconnecting_progress_bar);
 
         connectActionFab = findViewById(R.id.connect_action_fab);
@@ -255,7 +253,6 @@ public class MultiPartyActivity extends AppCompatActivity {
             reconnectingProgressBar.setVisibility((room.getState() != Room.State.RECONNECTING) ?
                     GONE :
                     VISIBLE);
-            videoStatusTextView.setText("Connected to " + room.getName());
 
             if (room.getDominantSpeaker() != null) {
                 currentDominantSpeakerImg.setVisibility(VISIBLE);
@@ -483,7 +480,6 @@ public class MultiPartyActivity extends AppCompatActivity {
      */
     private void addRemoteParticipant(RemoteParticipant remoteParticipant) {
         remoteParticipantIdentity = remoteParticipant.getIdentity();
-        videoStatusTextView.setText(String.format("RemoteParticipant %s joined", remoteParticipantIdentity));
 
         /*
          * Add remote participant renderer
@@ -526,7 +522,6 @@ public class MultiPartyActivity extends AppCompatActivity {
      * Called when remote participant leaves the room
      */
     private void removeRemoteParticipant(RemoteParticipant remoteParticipant) {
-        videoStatusTextView.setText(String.format("RemoteParticipant %s left", remoteParticipant.getIdentity()));
         if (!remoteParticipant.getIdentity().equals(remoteParticipantIdentity)) {
             return;
         }
@@ -637,7 +632,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         updateLocalParticipantNetworkQuality(networkQualityLevel);
                     }
                 });
-                videoStatusTextView.setText(String.format("Connected to %s", room.getName()));
                 setTitle(room.getName());
 
                 for (RemoteParticipant remoteParticipant : room.getRemoteParticipants()) {
@@ -647,19 +641,16 @@ public class MultiPartyActivity extends AppCompatActivity {
 
             @Override
             public void onReconnecting(@NonNull Room room, @NonNull TwilioException twilioException) {
-                videoStatusTextView.setText(String.format("Reconnecting to %s", room.getName()));
                 reconnectingProgressBar.setVisibility(VISIBLE);
             }
 
             @Override
             public void onReconnected(@NonNull Room room) {
-                videoStatusTextView.setText(String.format("Connected to %s", room.getName()));
                 reconnectingProgressBar.setVisibility(GONE);
             }
 
             @Override
             public void onConnectFailure(@NonNull Room room, @NonNull TwilioException e) {
-                videoStatusTextView.setText(R.string.connect_failed);
                 configureAudio(false);
                 intializeUI();
             }
@@ -668,7 +659,6 @@ public class MultiPartyActivity extends AppCompatActivity {
             public void onDisconnected(Room room, TwilioException e) {
                 localParticipantNetworkQualityLevelImageView.setVisibility(GONE);
                 localParticipant = null;
-                videoStatusTextView.setText(String.format("Disconnected from %s", room.getName()));
                 reconnectingProgressBar.setVisibility(GONE);
                 MultiPartyActivity.this.room = null;
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
@@ -743,7 +733,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteAudioTrackPublication.isTrackEnabled(),
                         remoteAudioTrackPublication.isTrackSubscribed(),
                         remoteAudioTrackPublication.getTrackName()));
-                videoStatusTextView.setText("onAudioTrackPublished");
             }
 
             @Override
@@ -758,7 +747,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteAudioTrackPublication.isTrackEnabled(),
                         remoteAudioTrackPublication.isTrackSubscribed(),
                         remoteAudioTrackPublication.getTrackName()));
-                videoStatusTextView.setText("onAudioTrackUnpublished");
             }
 
             @Override
@@ -773,7 +761,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteDataTrackPublication.isTrackEnabled(),
                         remoteDataTrackPublication.isTrackSubscribed(),
                         remoteDataTrackPublication.getTrackName()));
-                videoStatusTextView.setText("onDataTrackPublished");
             }
 
             @Override
@@ -788,7 +775,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteDataTrackPublication.isTrackEnabled(),
                         remoteDataTrackPublication.isTrackSubscribed(),
                         remoteDataTrackPublication.getTrackName()));
-                videoStatusTextView.setText("onDataTrackUnpublished");
             }
 
             @Override
@@ -803,7 +789,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteVideoTrackPublication.isTrackEnabled(),
                         remoteVideoTrackPublication.isTrackSubscribed(),
                         remoteVideoTrackPublication.getTrackName()));
-                videoStatusTextView.setText("onVideoTrackPublished");
             }
 
             @Override
@@ -818,7 +803,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteVideoTrackPublication.isTrackEnabled(),
                         remoteVideoTrackPublication.isTrackSubscribed(),
                         remoteVideoTrackPublication.getTrackName()));
-                videoStatusTextView.setText("onVideoTrackUnpublished");
             }
 
             @Override
@@ -832,7 +816,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteAudioTrack.isEnabled(),
                         remoteAudioTrack.isPlaybackEnabled(),
                         remoteAudioTrack.getName()));
-                videoStatusTextView.setText("onAudioTrackSubscribed");
             }
 
             @Override
@@ -846,7 +829,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteAudioTrack.isEnabled(),
                         remoteAudioTrack.isPlaybackEnabled(),
                         remoteAudioTrack.getName()));
-                videoStatusTextView.setText("onAudioTrackUnsubscribed");
             }
 
             @Override
@@ -862,7 +844,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteAudioTrackPublication.getTrackName(),
                         twilioException.getCode(),
                         twilioException.getMessage()));
-                videoStatusTextView.setText("onAudioTrackSubscriptionFailed");
             }
 
             @Override
@@ -875,7 +856,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteParticipant.getIdentity(),
                         remoteDataTrack.isEnabled(),
                         remoteDataTrack.getName()));
-                videoStatusTextView.setText("onDataTrackSubscribed");
             }
 
             @Override
@@ -888,7 +868,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteParticipant.getIdentity(),
                         remoteDataTrack.isEnabled(),
                         remoteDataTrack.getName()));
-                videoStatusTextView.setText("onDataTrackUnsubscribed");
             }
 
             @Override
@@ -904,7 +883,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteDataTrackPublication.getTrackName(),
                         twilioException.getCode(),
                         twilioException.getMessage()));
-                videoStatusTextView.setText("onDataTrackSubscriptionFailed");
             }
 
             @Override
@@ -917,7 +895,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteParticipant.getIdentity(),
                         remoteVideoTrack.isEnabled(),
                         remoteVideoTrack.getName()));
-                videoStatusTextView.setText("onVideoTrackSubscribed");
                 addRemoteParticipantVideo(remoteParticipant, remoteVideoTrack);
             }
 
@@ -931,7 +908,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteParticipant.getIdentity(),
                         remoteVideoTrack.isEnabled(),
                         remoteVideoTrack.getName()));
-                videoStatusTextView.setText("onVideoTrackUnsubscribed");
                 removeParticipantVideo(remoteParticipant);
             }
 
@@ -948,7 +924,6 @@ public class MultiPartyActivity extends AppCompatActivity {
                         remoteVideoTrackPublication.getTrackName(),
                         twilioException.getCode(),
                         twilioException.getMessage()));
-                videoStatusTextView.setText("onVideoTrackSubscriptionFailed");
                 Snackbar.make(connectActionFab,
                         String.format("Failed to subscribe to %s video track",
                                 remoteParticipant.getIdentity()),

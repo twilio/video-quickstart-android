@@ -54,16 +54,6 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/videoStatusText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:text="@string/room_status"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
     <ImageView
         android:id="@+id/local_network_quality_level"
         android:layout_width="wrap_content"
