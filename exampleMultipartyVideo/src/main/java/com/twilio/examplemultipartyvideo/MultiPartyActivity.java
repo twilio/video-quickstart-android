@@ -562,6 +562,31 @@ public class MultiPartyActivity extends AppCompatActivity {
         dominantSpeakerImg.setVisibility(GONE);
     }
 
+    private void updateLocalParticipantNetworkQuality(NetworkQualityLevel networkQualityLevel) {
+        if (networkQualityLevelImage.getVisibility() != VISIBLE) {
+            networkQualityLevelImage.setVisibility(VISIBLE);
+        }
+
+        networkQualityLevelImage.setImageResource(getNetworkQualityLevelImage(networkQualityLevel));
+    }
+    private int getNetworkQualityLevelImage(NetworkQualityLevel networkQualityLevel) {
+        int networkQualityLevelImage = R.drawable.network_quality_level_0;
+
+        if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_ONE) {
+            networkQualityLevelImage = R.drawable.network_quality_level_1;
+        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_TWO) {
+            networkQualityLevelImage = R.drawable.network_quality_level_2;
+        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_THREE) {
+            networkQualityLevelImage = R.drawable.network_quality_level_3;
+        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_FOUR) {
+            networkQualityLevelImage = R.drawable.network_quality_level_4;
+        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_FIVE) {
+            networkQualityLevelImage = R.drawable.network_quality_level_5;
+        }
+
+        return networkQualityLevelImage;
+    }
+
     /*
      * Room events listener
      */
@@ -569,7 +594,7 @@ public class MultiPartyActivity extends AppCompatActivity {
         return new Room.Listener() {
             @Override
             public void onConnected(Room room) {
-                networkQualityLevelImage.setVisibility(VISIBLE);
+                networkQualityLevelImage.setVisibility(GONE);
                 localParticipant = room.getLocalParticipant();
                 localParticipant.setListener(new LocalParticipant.Listener() {
                     @Override
@@ -604,20 +629,12 @@ public class MultiPartyActivity extends AppCompatActivity {
 
                     @Override
                     public void onNetworkQualityLevelChanged(@NonNull LocalParticipant localParticipant, @NonNull NetworkQualityLevel networkQualityLevel) {
-                        if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_UNKNOWN ||
-                                networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_ZERO) {
-                            networkQualityLevelImage.setImageResource(R.drawable.network_quality_level_0);
-                        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_ONE) {
-                            networkQualityLevelImage.setImageResource(R.drawable.network_quality_level_1);
-                        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_TWO) {
-                            networkQualityLevelImage.setImageResource(R.drawable.network_quality_level_2);
-                        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_THREE) {
-                            networkQualityLevelImage.setImageResource(R.drawable.network_quality_level_3);
-                        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_FOUR) {
-                            networkQualityLevelImage.setImageResource(R.drawable.network_quality_level_4);
-                        } else if (networkQualityLevel == NetworkQualityLevel.NETWORK_QUALITY_LEVEL_FIVE) {
-                            networkQualityLevelImage.setImageResource(R.drawable.network_quality_level_5);
-                        }
+                        Log.i(TAG, String.format("onNetworkQualityLevelChanged: " +
+                                        "[LocalParticipant: identity=%s], " +
+                                        "[NetworkQualityLevel: %s]",
+                                        localParticipant.getIdentity(),
+                                        networkQualityLevel));
+                        updateLocalParticipantNetworkQuality(networkQualityLevel);
                     }
                 });
                 videoStatusTextView.setText(String.format("Connected to %s", room.getName()));
