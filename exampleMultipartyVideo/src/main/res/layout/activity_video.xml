@@ -54,14 +54,4 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/local_network_quality_level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/network_quality_level_0"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        android:contentDescription="@string/network_quality_level"
-        app:layout_constraintTop_toBottomOf="@id/videoStatusText"/>
-
 </android.support.constraint.ConstraintLayout>

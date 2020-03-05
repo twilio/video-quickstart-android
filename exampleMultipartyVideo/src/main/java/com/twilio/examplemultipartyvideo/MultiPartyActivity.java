@@ -34,7 +34,6 @@ import com.twilio.video.AudioCodec;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
-import com.twilio.video.EncodingParameters;
 import com.twilio.video.LocalAudioTrack;
 import com.twilio.video.LocalAudioTrackPublication;
 import com.twilio.video.LocalDataTrack;
@@ -42,7 +41,9 @@ import com.twilio.video.LocalDataTrackPublication;
 import com.twilio.video.LocalParticipant;
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.LocalVideoTrackPublication;
+import com.twilio.video.NetworkQualityConfiguration;
 import com.twilio.video.NetworkQualityLevel;
+import com.twilio.video.NetworkQualityVerbosity;
 import com.twilio.video.OpusCodec;
 import com.twilio.video.RemoteAudioTrack;
 import com.twilio.video.RemoteAudioTrackPublication;
@@ -128,7 +129,6 @@ public class MultiPartyActivity extends AppCompatActivity {
     private AlertDialog connectDialog;
     private AudioManager audioManager;
     private String remoteParticipantIdentity;
-    private ImageView localParticipantNetworkQualityLevelImageView;
 
     private int previousAudioMode;
     private boolean previousMicrophoneMute;
@@ -138,6 +138,7 @@ public class MultiPartyActivity extends AppCompatActivity {
     private Stack<ParticipantView> availableParticipantContainers = new Stack<>();
     private Map<String, ParticipantView> participantViewGroupMap = new HashMap<>();
     private ImageView currentDominantSpeakerImg;
+    private ImageView localParticipantNetworkQualityLevelImageView;
     private VideoTextureView localVideoTextureView;
 
     @Override
@@ -151,7 +152,6 @@ public class MultiPartyActivity extends AppCompatActivity {
         switchCameraActionFab = findViewById(R.id.switch_camera_action_fab);
         localVideoActionFab = findViewById(R.id.local_video_action_fab);
         muteActionFab = findViewById(R.id.mute_action_fab);
-        localParticipantNetworkQualityLevelImageView = findViewById(R.id.local_network_quality_level);
 
         initializeParticipantContainers();
         /*
@@ -380,6 +380,14 @@ public class MultiPartyActivity extends AppCompatActivity {
                 .roomName(roomName);
 
         /*
+         * Enable the Network Quality API for both local and remote participants
+         */
+        NetworkQualityConfiguration networkQualityConfiguration =
+                new NetworkQualityConfiguration(NetworkQualityVerbosity.NETWORK_QUALITY_VERBOSITY_MINIMAL,
+                        NetworkQualityVerbosity.NETWORK_QUALITY_VERBOSITY_MINIMAL);
+        connectOptionsBuilder.networkQualityConfiguration(networkQualityConfiguration);
+
+        /*
          * Add local audio track to connect options to share with participants.
          */
         if (localAudioTrack != null) {
@@ -444,6 +452,7 @@ public class MultiPartyActivity extends AppCompatActivity {
 
     private void initializeParticipantContainers() {
         ParticipantView localParticipantContainer = findViewById(R.id.local_participant_container);
+        localParticipantNetworkQualityLevelImageView = localParticipantContainer.getNetworkQualityLevelImageView();
         localVideoTextureView = localParticipantContainer.getVideoView();
         localVideoTextureView.setMirror(true);
 
@@ -555,6 +564,9 @@ public class MultiPartyActivity extends AppCompatActivity {
 
         ImageView dominantSpeakerImg = participantContainer.getDominantSpeakerImg();
         dominantSpeakerImg.setVisibility(GONE);
+
+        ImageView networkQualityLevelImageView = participantContainer.getNetworkQualityLevelImageView();
+        networkQualityLevelImageView.setVisibility(GONE);
     }
 
     private void updateLocalParticipantNetworkQuality(NetworkQualityLevel networkQualityLevel) {
@@ -564,6 +576,20 @@ public class MultiPartyActivity extends AppCompatActivity {
 
         localParticipantNetworkQualityLevelImageView.setImageResource(getNetworkQualityLevelImage(networkQualityLevel));
     }
+
+    private void updateRemoteParticipantNetworkQuality(RemoteParticipant remoteParticipant, NetworkQualityLevel networkQualityLevel) {
+        ParticipantView participantContainer = participantViewGroupMap.get(remoteParticipant.getSid());
+        if (participantContainer != null) {
+            ImageView networkQualityLevelImageView = participantContainer.getNetworkQualityLevelImageView();
+
+            if (networkQualityLevelImageView.getVisibility() != VISIBLE) {
+                networkQualityLevelImageView.setVisibility(VISIBLE);
+            }
+
+            networkQualityLevelImageView.setImageResource(getNetworkQualityLevelImage(networkQualityLevel));
+        }
+    }
+
     private int getNetworkQualityLevelImage(NetworkQualityLevel networkQualityLevel) {
         int networkQualityLevelImage = R.drawable.network_quality_level_0;
 
@@ -953,6 +979,17 @@ public class MultiPartyActivity extends AppCompatActivity {
             public void onVideoTrackDisabled(@NonNull RemoteParticipant remoteParticipant,
                                              @NonNull RemoteVideoTrackPublication remoteVideoTrackPublication) {
 
+            }
+
+            @Override
+            public void onNetworkQualityLevelChanged(@NonNull RemoteParticipant remoteParticipant,
+                                                     @NonNull NetworkQualityLevel networkQualityLevel) {
+                Log.i(TAG, String.format("onNetworkQualityLevelChanged: " +
+                                "[RemoteParticipant: identity=%s], " +
+                                "[NetworkQualityLevel: %s]",
+                                remoteParticipant.getIdentity(),
+                                networkQualityLevel));
+                updateRemoteParticipantNetworkQuality(remoteParticipant, networkQualityLevel);
             }
         };
     }
