@@ -5,5 +5,4 @@
     <string name="switch_camera">Switch Camera</string>
     <string name="network_quality_level">Network Quality Level</string>
     <string name="dominant_speaker">Dominant Speaker</string>
-    <string name="connect_failed">Failed to connect</string>
 </resources>
