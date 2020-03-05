@@ -129,7 +129,7 @@ public class MultiPartyActivity extends AppCompatActivity {
     private AlertDialog connectDialog;
     private AudioManager audioManager;
     private String remoteParticipantIdentity;
-    private ImageView networkQualityLevelImage;
+    private ImageView localParticipantNetworkQualityLevelImageView;
 
     private int previousAudioMode;
     private boolean previousMicrophoneMute;
@@ -153,7 +153,7 @@ public class MultiPartyActivity extends AppCompatActivity {
         switchCameraActionFab = findViewById(R.id.switch_camera_action_fab);
         localVideoActionFab = findViewById(R.id.local_video_action_fab);
         muteActionFab = findViewById(R.id.mute_action_fab);
-        networkQualityLevelImage = findViewById(R.id.network_quality_level);
+        localParticipantNetworkQualityLevelImageView = findViewById(R.id.local_network_quality_level);
 
         initializeParticipantContainers();
         /*
@@ -563,11 +563,11 @@ public class MultiPartyActivity extends AppCompatActivity {
     }
 
     private void updateLocalParticipantNetworkQuality(NetworkQualityLevel networkQualityLevel) {
-        if (networkQualityLevelImage.getVisibility() != VISIBLE) {
-            networkQualityLevelImage.setVisibility(VISIBLE);
+        if (localParticipantNetworkQualityLevelImageView.getVisibility() != VISIBLE) {
+            localParticipantNetworkQualityLevelImageView.setVisibility(VISIBLE);
         }
 
-        networkQualityLevelImage.setImageResource(getNetworkQualityLevelImage(networkQualityLevel));
+        localParticipantNetworkQualityLevelImageView.setImageResource(getNetworkQualityLevelImage(networkQualityLevel));
     }
     private int getNetworkQualityLevelImage(NetworkQualityLevel networkQualityLevel) {
         int networkQualityLevelImage = R.drawable.network_quality_level_0;
@@ -594,7 +594,7 @@ public class MultiPartyActivity extends AppCompatActivity {
         return new Room.Listener() {
             @Override
             public void onConnected(Room room) {
-                networkQualityLevelImage.setVisibility(GONE);
+                localParticipantNetworkQualityLevelImageView.setVisibility(GONE);
                 localParticipant = room.getLocalParticipant();
                 localParticipant.setListener(new LocalParticipant.Listener() {
                     @Override
@@ -666,7 +666,7 @@ public class MultiPartyActivity extends AppCompatActivity {
 
             @Override
             public void onDisconnected(Room room, TwilioException e) {
-                networkQualityLevelImage.setVisibility(GONE);
+                localParticipantNetworkQualityLevelImageView.setVisibility(GONE);
                 localParticipant = null;
                 videoStatusTextView.setText(String.format("Disconnected from %s", room.getName()));
                 reconnectingProgressBar.setVisibility(GONE);
