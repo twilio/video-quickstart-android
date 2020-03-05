@@ -20,4 +20,17 @@
                 android:visibility="gone"
                 android:contentDescription="@string/dominant_speaker"
                 android:src="@drawable/ic_dominant_speaker_img" />
+
+            <ImageView
+                android:id="@+id/network_quality_level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                android:contentDescription="@string/network_quality_level"
+                android:src="@drawable/network_quality_level_0" />
+
 </com.twilio.examplemultipartyvideo.ParticipantView>
