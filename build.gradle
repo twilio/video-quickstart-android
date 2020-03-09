@@ -16,7 +16,7 @@ buildscript {
             'retrofit': '2.0.0-beta4',
             'okhttp': '3.6.0',
             'ion': '2.1.8',
-            'videoAndroid': '5.2.0-rc1'
+            'videoAndroid': '5.2.0'
     ]
 
     ext.getSecretProperty = { key, defaultValue ->
@@ -53,12 +53,5 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven {
-            url  "https://twilio.bintray.com/internal-releases"
-            credentials {
-                username "${getSecretProperty("BINTRAY_USERNAME", null)}"
-                password "${getSecretProperty("BINTRAY_PASSWORD", null)}"
-            }
-        }
     }
 }
