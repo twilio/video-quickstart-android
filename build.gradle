@@ -4,7 +4,7 @@ buildscript {
     ext.kotlin_version = '1.3.61'
     ext.versions = [
             'java'               : JavaVersion.VERSION_1_8,
-            'androidGradlePlugin': '3.6.3',
+            'androidGradlePlugin': '4.0.0',
             'googleServices'     : '3.2.1',
             'compileSdk'         : 29,
             'buildTools'         : '28.0.3',
