@@ -57,9 +57,9 @@ the Notify Service make sure you select the FCM credential that you created in t
 
 ### <a name="bullet4"></a>4. Start the SDK Starter project
 
-Type `source .env; node .`
+Type `source .env; java -jar target/sdk-starter-1.0-SNAPSHOT.jar`
 
-Using ngrok type `ngrok http 3000`
+Using ngrok type `ngrok http 4567`
 
 ### <a name="bullet5"></a>5. Run the application
 
