@@ -25,6 +25,11 @@ aliases:
     environment:
       - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport"
 
+  - &configure-gradle
+    name: Configure Gradle
+    command: |
+      echo "org.gradle.jvmargs=-Xmx4608m" >> ~/.gradle/gradle.properties
+
 jobs:
   setup-workspace:
     <<: *build-defaults
@@ -86,36 +91,28 @@ jobs:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build exampleAdvancedCameraCapturer
           command: ./gradlew -q exampleAdvancedCameraCapturer:assemble
-
-      # Save cache
       - save-cache: *save-cache-gradle
 
   build-exampleCustomVideoCapturer:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build exampleCustomVideoCapturer
           command: ./gradlew -q exampleCustomVideoCapturer:assemble
-
-      # Save cache
       - save-cache: *save-cache-gradle
 
 
@@ -123,13 +120,11 @@ jobs:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build exampleCustomVideoRenderer
           command: ./gradlew -q exampleCustomVideoRenderer:assemble
@@ -141,67 +136,53 @@ jobs:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build exampleDataTrack
           command: ./gradlew -q exampleDataTrack:assemble
-
-      # Save cache
       - save-cache: *save-cache-gradle
 
   build-exampleAudioSink:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build exampleDataTrack
           command: ./gradlew -q exampleAudioSink:assemble
-
-      # Save cache
       - save-cache: *save-cache-gradle
 
   build-exampleScreenCapturer:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build exampleScreenCapturer
           command: ./gradlew -q exampleScreenCapturer:assemble
-
-      # Save cache
       - save-cache: *save-cache-gradle
 
   build-exampleVideoInvite:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build exampleVideoInvite
           command: ./gradlew -q exampleVideoInvite:assemble
@@ -213,18 +194,14 @@ jobs:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build quickstart
           command: ./gradlew -q quickstart:assemble
-
-      # Save cache
       - save-cache: *save-cache-gradle
 
 
@@ -232,13 +209,11 @@ jobs:
     <<: *build-defaults
     resource_class: large
     steps:
-      # Setup
       - checkout
       - attach_workspace:
           at: *workspace
       - restore-cache: *restore-cache-gradle
-
-      # Build app
+      - run: *configure-gradle
       - run:
           name: Build quickstartKotlin
           command: ./gradlew -q quickstartKotlin:assemble
