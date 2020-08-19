@@ -28,6 +28,7 @@ aliases:
   - &configure-gradle
     name: Configure Gradle
     command: |
+      mkdir -p ~/.gradle
       echo "org.gradle.jvmargs=-Xmx4608m" >> ~/.gradle/gradle.properties
 
 jobs:
