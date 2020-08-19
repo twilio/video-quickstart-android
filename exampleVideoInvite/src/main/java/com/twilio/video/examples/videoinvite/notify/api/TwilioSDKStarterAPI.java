@@ -12,6 +12,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 import static com.twilio.video.examples.videoinvite.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
@@ -27,12 +28,15 @@ public class TwilioSDKStarterAPI {
         @GET("/token")
         Call<Token> fetchToken();
         // Fetch an access token with a specific identity
+        @Headers("Content-Type: application/json")
         @POST("/token")
         Call<Token> fetchToken(@Body Identity identity);
         // Register this binding with Twilio Notify
+        @Headers("Content-Type: application/json")
         @POST("/register")
         Call<Void> register(@Body Binding binding);
         // Send notifications to Twilio Notify registrants
+        @Headers("Content-Type: application/json")
         @POST("/send-notification")
         Call<Void> sendNotification(@Body Notification notification);
     }
