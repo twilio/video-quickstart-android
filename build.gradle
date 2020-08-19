@@ -1,10 +1,8 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
-    ext.kotlin_version = '1.3.61'
+    ext.kotlin_version = '1.4.0'
     ext.versions = [
             'java'               : JavaVersion.VERSION_1_8,
-            'androidGradlePlugin': '4.0.0',
+            'androidGradlePlugin': '4.0.1',
             'googleServices'     : '3.2.1',
             'compileSdk'         : 29,
             'buildTools'         : '28.0.3',
@@ -16,7 +14,7 @@ buildscript {
             'retrofit'           : '2.0.0-beta4',
             'okhttp'             : '3.6.0',
             'ion'                : '2.1.8',
-            'videoAndroid'       : '5.10.1',
+            'videoAndroid'       : '5.10.2',
             'audioSwitch'        : '1.0.0'
     ]
 
