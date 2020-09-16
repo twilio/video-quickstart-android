@@ -14,7 +14,7 @@ buildscript {
             'retrofit'           : '2.0.0-beta4',
             'okhttp'             : '3.6.0',
             'ion'                : '2.1.8',
-            'videoAndroid'       : '5.10.2',
+            'videoAndroid'       : '5.11.0',
             'audioSwitch'        : '1.0.0'
     ]
 
