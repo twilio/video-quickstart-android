@@ -170,7 +170,7 @@ effects, reference the following snippet for enabling OpenSL ES:
     tvi.webrtc.voiceengine.WebRtcAudioUtils.deviceIsBlacklistedForOpenSLESUsage();
 
 ### Managing Device Specific Configurations
-The Video Android SDK does not maintain a list of devices for which hardware effects or OpenSL ES are disabled. We recommend maintaining a list in your own application and disabling these effects as needed. The [Signal App provides a great example](https://github.com/signalapp/Signal-Android/blob/master/src/org/thoughtcrime/securesms/ApplicationContext.java#L250) of how to maintain a list and disable the effects as needed.
+The Video Android SDK does not maintain a list of devices for which hardware effects or OpenSL ES are disabled. We recommend maintaining a list in your own application and disabling these effects as needed. The [Signal App provides a great example](https://github.com/signalapp/Signal-Android/blob/master/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java#L308) of how to maintain a list and disable the effects as needed.
 
 ### Known Issues
 - Using the following WebRTC based acoustic echo canceler on the Pixel 3 XL will disable the microphone system wide. <br>
