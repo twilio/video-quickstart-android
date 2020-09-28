@@ -21,9 +21,9 @@ aliases:
   - &build-defaults
     working_directory: *workspace
     docker:
-      - image: circleci/android:api-28-node
+      - image: circleci/android:api-30-node@sha256:a8d15723766a8f32f1a4ead42c5441bb0ded2e832329291cb4bbd9f1d1557721
     environment:
-      - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport"
+      - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -Xmx3g"
 
   - &configure-gradle
     name: Configure Gradle
