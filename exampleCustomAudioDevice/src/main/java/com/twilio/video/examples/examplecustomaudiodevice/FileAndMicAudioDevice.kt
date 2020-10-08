@@ -1,4 +1,4 @@
-package com.twilio.examplecustomaudiodevice
+package com.twilio.video.examples.examplecustomaudiodevice
 
 import android.content.Context
 import android.media.AudioManager

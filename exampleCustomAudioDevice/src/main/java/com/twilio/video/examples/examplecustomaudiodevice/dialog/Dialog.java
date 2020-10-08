@@ -1,4 +1,4 @@
-package com.twilio.examplecustomaudiodevice.dialog;
+package com.twilio.video.examples.examplecustomaudiodevice.dialog;
 
 import android.content.Context;
 import android.content.DialogInterface;

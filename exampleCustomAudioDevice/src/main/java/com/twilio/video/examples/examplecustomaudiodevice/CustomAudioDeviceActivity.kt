@@ -1,4 +1,4 @@
-package com.twilio.examplecustomaudiodevice
+package com.twilio.video.examples.examplecustomaudiodevice
 
 import android.Manifest
 import android.content.Context
@@ -20,15 +20,15 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.koushikdutta.ion.Ion
-import com.twilio.examplecustomaudiodevice.dialog.Dialog
+import com.twilio.video.examples.examplecustomaudiodevice.dialog.Dialog
 import com.twilio.video.*
 import java.util.*
 
 class CustomAudioDeviceActivity : AppCompatActivity() {
     /*
-     * Access token used to connect. This field will be set either from the console generated token
-     * or the request to the token server.
-     */
+         * Access token used to connect. This field will be set either from the console generated token
+         * or the request to the token server.
+         */
     private var accessToken: String? = null
 
     /*
@@ -101,7 +101,6 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
          */
         if (room?.state != Room.State.DISCONNECTED) {
              room?.disconnect()
-            disconnectFromOnDestroy = true
         }
 
         /*
