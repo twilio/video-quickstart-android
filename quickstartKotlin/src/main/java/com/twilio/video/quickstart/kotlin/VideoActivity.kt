@@ -23,6 +23,7 @@ import android.widget.Toast
 import com.koushikdutta.ion.Ion
 import com.twilio.audioswitch.AudioDevice
 import com.twilio.audioswitch.AudioDevice.BluetoothHeadset
+import com.twilio.audioswitch.AudioDevice.Earpiece
 import com.twilio.audioswitch.AudioDevice.Speakerphone
 import com.twilio.audioswitch.AudioDevice.WiredHeadset
 import com.twilio.audioswitch.AudioSwitch
@@ -414,7 +415,8 @@ class VideoActivity : AppCompatActivity() {
      * Audio management
      */
     private val audioSwitch by lazy {
-        AudioSwitch(applicationContext)
+        AudioSwitch(applicationContext, preferredDeviceList = listOf(BluetoothHeadset::class.java,
+                WiredHeadset::class.java, Speakerphone::class.java, Earpiece::class.java))
     }
     private var savedVolumeControlStream by Delegates.notNull<Int>()
     private lateinit var audioDeviceMenuItem: MenuItem
