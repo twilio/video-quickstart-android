@@ -99,9 +99,9 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
          * Always disconnect from the room before leaving the Activity to
          * ensure any memory allocated to the Room resource is freed.
          */
-        if (room != null && room!!.state != Room.State.DISCONNECTED) {
-            room!!.disconnect()
-            disconnectedFromOnDestroy = true
+        if (room?.state != Room.State.DISCONNECTED) {
+             room?.disconnect()
+            disconnectFromOnDestroy = true
         }
 
         /*
