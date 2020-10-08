@@ -37,19 +37,3 @@ You can switch to microphone by clicking the pause button.
 <kbd><img width="400px" src="../images/exampleAudioDevice/audio_device_microphone.jpg"/></kbd>
 
 Note: The switch between audio file and microphone always starts the music from the beginning of the file.
-
-## Troubleshooting Audio
-The following sections provide guidance on how to ensure optimal audio quality in your applications using default audio device.
-
-### Configuring AudioManager
-
-Follow the [README](https://github.com/twilio/voice-quickstart-android#configuring-audiomanager) to configure audio manager.
-
-### Configuring Hardware Audio Effects Using Custom Audio Device
-Follow the [README](https://github.com/twilio/video-quickstart-android#configuring-hardware-audio-effects) to configure Hardware Audio Effects using Custom Audio Device.
-
-### Configuring OpenSL ES
-Follow the [README](https://github.com/twilio/video-quickstart-android#configuring-opensl-es) to configure OpenSL ES.
-
-### Managing Device Specific Configurations
-Follow the [README](https://github.com/twilio/video-quickstart-android#managing-device-specific-configurations) to manage device specific configurations.
