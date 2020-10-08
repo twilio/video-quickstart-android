@@ -79,10 +79,10 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
      */
     private val microphoneCapturerRunnable = Runnable {
         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
-        audioRecord!!.startRecording()
+        audioRecord?.startRecording()
         while (true) {
-            val bytesRead = audioRecord!!.read(micWriteBuffer!!, micWriteBuffer!!.capacity())
-            if (bytesRead == micWriteBuffer!!.capacity()) {
+            val bytesRead = audioRecord?.read(micWriteBuffer!!, micWriteBuffer!!.capacity())
+            if (bytesRead == micWriteBuffer?.capacity()) {
                 AudioDevice.audioDeviceWriteCaptureData(capturingAudioDeviceContext!!, micWriteBuffer!!)
             } else {
                 val errorMessage = "AudioRecord.read failed: $bytesRead"
@@ -103,11 +103,10 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
     private val speakerRendererRunnable = label@ Runnable {
         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
         try {
-            audioTrack!!.play()
+            audioTrack?.play()
         } catch (e: IllegalStateException) {
             Log.e(TAG, "AudioTrack.play failed: " + e.message)
             releaseAudioResources()
-            //return@label
         }
         while (keepAliveRendererRunnable) {
             // Get 10ms of PCM data from the SDK. Audio data is written into the ByteBuffer provided.
@@ -118,7 +117,7 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
             } else {
                 writePreLollipop(audioTrack, readByteBuffer, readByteBuffer!!.capacity())
             }
-            if (bytesWritten != readByteBuffer!!.capacity()) {
+            if (bytesWritten != readByteBuffer?.capacity()) {
                 Log.e(TAG, "AudioTrack.write failed: $bytesWritten")
                 if (bytesWritten == AudioTrack.ERROR_INVALID_OPERATION) {
                     keepAliveRendererRunnable = false
@@ -127,7 +126,7 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
             }
             // The byte buffer must be rewinded since byteBuffer.position() is increased at each
             // call to AudioTrack.write(). If we don't do this, will fail the next  AudioTrack.write().
-            readByteBuffer!!.rewind()
+            readByteBuffer?.rewind()
         }
     }
 
@@ -139,12 +138,12 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
         isMusicPlaying = playMusic
         if (playMusic) {
             initializeStreams()
-            capturerHandler!!.removeCallbacks(microphoneCapturerRunnable)
+            capturerHandler?.removeCallbacks(microphoneCapturerRunnable)
             stopRecording()
-            capturerHandler!!.post(fileCapturerRunnable)
+            capturerHandler?.post(fileCapturerRunnable)
         } else {
-            capturerHandler!!.removeCallbacks(fileCapturerRunnable)
-            capturerHandler!!.post(microphoneCapturerRunnable)
+            capturerHandler?.removeCallbacks(fileCapturerRunnable)
+            capturerHandler?.post(microphoneCapturerRunnable)
         }
     }
 
@@ -205,7 +204,8 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
          * When onStopCapturing is called, the AudioDevice API expects that at the completion
          * of the callback the capturer has completely stopped. As a result, quit the capturer
          * thread and explicitly wait for the thread to complete.
-         */capturerThread!!.quit()
+         */
+        capturerThread?.quit()
         if (!ThreadUtils.joinUninterruptibly(capturerThread, THREAD_JOIN_TIMEOUT_MS)) {
             Log.e(TAG, "Join of capturerThread timed out")
             return false
@@ -252,7 +252,8 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
          * When onStopRendering is called, the AudioDevice API expects that at the completion
          * of the callback the renderer has completely stopped. As a result, quit the renderer
          * thread and explicitly wait for the thread to complete.
-         */if (!ThreadUtils.joinUninterruptibly(rendererThread, THREAD_JOIN_TIMEOUT_MS)) {
+         */
+        if (!ThreadUtils.joinUninterruptibly(rendererThread, THREAD_JOIN_TIMEOUT_MS)) {
             Log.e(TAG, "Join of rendererThread timed out")
             return false
         }
@@ -276,10 +277,10 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
 
     private fun closeStreams() {
         Log.d(TAG, "Remove any pending posts of fileCapturerRunnable that are in the message queue ")
-        capturerHandler!!.removeCallbacks(fileCapturerRunnable)
+        capturerHandler?.removeCallbacks(fileCapturerRunnable)
         try {
-            dataInputStream!!.close()
-            inputStream!!.close()
+            dataInputStream?.close()
+            inputStream?.close()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -289,9 +290,7 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
         Log.d(TAG, "Remove any pending posts of microphoneCapturerRunnable that are in the message queue ")
         capturerHandler!!.removeCallbacks(microphoneCapturerRunnable)
         try {
-            if (audioRecord != null) {
-                audioRecord!!.stop()
-            }
+            audioRecord?.stop()
         } catch (e: IllegalStateException) {
             Log.e(TAG, "AudioRecord.stop failed: " + e.message)
         }
@@ -324,9 +323,9 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
     fun stopAudioTrack() {
         keepAliveRendererRunnable = false
         Log.d(TAG, "Remove any pending posts of speakerRendererRunnable that are in the message queue ")
-        rendererHandler!!.removeCallbacks(speakerRendererRunnable)
+        rendererHandler?.removeCallbacks(speakerRendererRunnable)
         try {
-            audioTrack!!.stop()
+            audioTrack?.stop()
         } catch (e: IllegalStateException) {
             Log.e(TAG, "AudioTrack.stop failed: " + e.message)
         }
@@ -358,5 +357,4 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
         private const val BUFFER_SIZE_FACTOR = 2
         private const val WAV_FILE_HEADER_SIZE = 44
     }
-
 }

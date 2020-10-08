@@ -26,9 +26,9 @@ import java.util.*
 
 class CustomAudioDeviceActivity : AppCompatActivity() {
     /*
-         * Access token used to connect. This field will be set either from the console generated token
-         * or the request to the token server.
-         */
+     * Access token used to connect. This field will be set either from the console generated token
+     * or the request to the token server.
+     */
     private var accessToken: String? = null
 
     /*
@@ -56,11 +56,13 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
 
         /*
          * Enable changing the volume using the up/down keys during a conversation
-         */volumeControlStream = AudioManager.STREAM_VOICE_CALL
+         */
+        volumeControlStream = AudioManager.STREAM_VOICE_CALL
 
         /*
          * Needed for setting/abandoning audio focus during call
-         */audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+         */
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager!!.isSpeakerphoneOn = isSpeakerPhoneEnabled
 
         /*
@@ -79,7 +81,8 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
 
         /*
          * Set the initial state of the UI
-         */initializeUI()
+         */
+        initializeUI()
     }
 
     override fun onResume() {
@@ -87,7 +90,8 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
 
         /*
          * Route audio through cached value.
-         */audioManager!!.isSpeakerphoneOn = isSpeakerPhoneEnabled
+         */
+        audioManager?.isSpeakerphoneOn = isSpeakerPhoneEnabled
     }
 
     override fun onPause() {
@@ -100,16 +104,16 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
          * ensure any memory allocated to the Room resource is freed.
          */
         if (room?.state != Room.State.DISCONNECTED) {
-             room?.disconnect()
+            room?.disconnect()
         }
 
         /*
          * Release the local audio track ensuring any memory allocated to audio
          * is freed.
-         */if (localAudioTrack != null) {
-            localAudioTrack!!.release()
-            localAudioTrack = null
-        }
+         */
+        localAudioTrack?.release()
+        localAudioTrack = null
+
         super.onDestroy()
     }
 
@@ -159,7 +163,8 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
 
         /*
          * Add local audio track to connect options to share with participants.
-         */if (localAudioTrack != null) {
+         */
+        if (localAudioTrack != null) {
             connectOptionsBuilder
                     .audioTracks(listOf(localAudioTrack))
         }
@@ -216,15 +221,17 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
              * to be in this mode when playout and/or recording starts for the best
              * possible VoIP performance. Some devices have difficulties with
              * speaker mode if this is not set.
-             */audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
+             */
+            audioManager?.mode = AudioManager.MODE_IN_COMMUNICATION
             /*
              * Always disable microphone mute during a WebRTC call.
-             */previousMicrophoneMute = audioManager!!.isMicrophoneMute
-            audioManager!!.isMicrophoneMute = false
+             */
+            previousMicrophoneMute = audioManager!!.isMicrophoneMute
+            audioManager?.isMicrophoneMute = false
         } else {
-            audioManager!!.mode = previousAudioMode
-            audioManager!!.abandonAudioFocus(null)
-            audioManager!!.isMicrophoneMute = previousMicrophoneMute
+            audioManager?.mode = previousAudioMode
+            audioManager?.abandonAudioFocus(null)
+            audioManager?.isMicrophoneMute = previousMicrophoneMute
         }
     }
 
@@ -239,9 +246,9 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
                     .setAcceptsDelayedFocusGain(true)
                     .setOnAudioFocusChangeListener { i: Int -> }
                     .build()
-            audioManager!!.requestAudioFocus(focusRequest)
+            audioManager?.requestAudioFocus(focusRequest)
         } else {
-            audioManager!!.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
+            audioManager?.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
                     AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
         }
     }
@@ -252,7 +259,7 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     private fun roomListener(): Room.Listener {
         return object : Room.Listener {
             override fun onConnected(room: Room) {
-                customAudioDeviceStatusText!!.text = String.format("Connected to %s", room.name)
+                customAudioDeviceStatusText?.text = String.format("Connected to %s", room.name)
                 title = room.name
                 if (hasNecessaryParticipants(room)) {
                     applyFabState(inputSwitchFab, true)
@@ -262,21 +269,21 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
             }
 
             override fun onReconnecting(room: Room, twilioException: TwilioException) {
-                customAudioDeviceStatusText!!.text = String.format("Reconnecting to %s", room.name)
+                customAudioDeviceStatusText?.text = String.format("Reconnecting to %s", room.name)
             }
 
             override fun onReconnected(room: Room) {
-                customAudioDeviceStatusText!!.text = String.format("Connected to %s", room.name)
+                customAudioDeviceStatusText?.text = String.format("Connected to %s", room.name)
             }
 
             override fun onConnectFailure(room: Room, e: TwilioException) {
-                customAudioDeviceStatusText!!.text = getString(R.string.connect_failed)
+                customAudioDeviceStatusText?.text = getString(R.string.connect_failed)
                 configureAudio(false)
                 initializeUI()
             }
 
             override fun onDisconnected(room: Room, e: TwilioException?) {
-                customAudioDeviceStatusText!!.text = String.format("Disconnected from %s", room.name)
+                customAudioDeviceStatusText?.text = String.format("Disconnected from %s", room.name)
                 this@CustomAudioDeviceActivity.room = null
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
                 if (!disconnectedFromOnDestroy) {
@@ -287,14 +294,14 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
 
             override fun onParticipantConnected(room: Room, remoteParticipant: RemoteParticipant) {
                 if (hasNecessaryParticipants(room)) {
-                    customAudioDeviceStatusText!!.text = getString(R.string.status_capture_ready)
+                    customAudioDeviceStatusText?.text = getString(R.string.status_capture_ready)
                     applyFabState(inputSwitchFab, true)
                 }
             }
 
             override fun onParticipantDisconnected(room: Room, remoteParticipant: RemoteParticipant) {
                 if (!hasNecessaryParticipants(room)) {
-                    customAudioDeviceStatusText!!.text = getString(R.string.status_two_particpants_needed)
+                    customAudioDeviceStatusText?.text = getString(R.string.status_two_particpants_needed)
                     applyFabState(inputSwitchFab, false)
                 }
             }
@@ -327,13 +334,13 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     private fun initializeUI() {
         customAudioDeviceStatusText = findViewById(R.id.status_text)
         connectActionFab = findViewById(R.id.connect_action_fab)
-        connectActionFab!!.setImageDrawable(ContextCompat.getDrawable(this,
+        connectActionFab?.setImageDrawable(ContextCompat.getDrawable(this,
                 android.R.drawable.sym_call_outgoing))
-        connectActionFab!!.show()
-        connectActionFab!!.setOnClickListener(connectActionClickListener())
+        connectActionFab?.show()
+        connectActionFab?.setOnClickListener(connectActionClickListener())
         inputSwitchFab = findViewById(R.id.input_switch_fab)
-        inputSwitchFab!!.setOnClickListener(inputSwitchActionFabClickListener())
-        inputSwitchFab!!.hide()
+        inputSwitchFab?.setOnClickListener(inputSwitchActionFabClickListener())
+        inputSwitchFab?.hide()
     }
 
     /*
@@ -345,25 +352,26 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
                 connectClickListener(roomEditText),
                 cancelConnectDialogClickListener(),
                 this)
-        connectDialog!!.show()
+        connectDialog?.show()
     }
 
     /*
      * The actions performed during disconnect.
      */
     private fun setDisconnectAction() {
-        connectActionFab!!.setImageDrawable(ContextCompat.getDrawable(this,
+        connectActionFab?.setImageDrawable(ContextCompat.getDrawable(this,
                 R.drawable.ic_call_end_white_24px))
-        connectActionFab!!.show()
-        connectActionFab!!.setOnClickListener(disconnectClickListener())
-        inputSwitchFab!!.show()
+        connectActionFab?.show()
+        connectActionFab?.setOnClickListener(disconnectClickListener())
+        inputSwitchFab?.show()
     }
 
     private fun connectClickListener(roomEditText: EditText): DialogInterface.OnClickListener {
         return DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
             /*
              * Connect to room
-             */connectToRoom(roomEditText.text.toString())
+             */
+            connectToRoom(roomEditText.text.toString())
         }
     }
 
@@ -371,9 +379,8 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
         return View.OnClickListener { v: View? ->
             /*
              * Disconnect from room
-             */if (room != null) {
-            room!!.disconnect()
-        }
+             */
+            room?.disconnect()
             initializeUI()
         }
     }
@@ -385,7 +392,7 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     private fun cancelConnectDialogClickListener(): DialogInterface.OnClickListener {
         return DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
             initializeUI()
-            connectDialog!!.dismiss()
+            connectDialog?.dismiss()
         }
     }
 
@@ -410,17 +417,17 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
         private const val UNSUPPORTED_PARTICIPANT_COUNT_MSG = "This example only supports %d participants"
 
         /*
-     * Audio and video tracks can be created with names. This feature is useful for categorizing
-     * tracks of participants. For example, if one participant publishes a video track with
-     * ScreenCapturer and CameraCapturer with the names "screen" and "camera" respectively then
-     * other participants can use RemoteVideoTrack#getName to determine which video track is
-     * produced from the other participant's screen or camera.
-     */
+         * Audio and video tracks can be created with names. This feature is useful for categorizing
+         * tracks of participants. For example, if one participant publishes a video track with
+         * ScreenCapturer and CameraCapturer with the names "screen" and "camera" respectively then
+         * other participants can use RemoteVideoTrack#getName to determine which video track is
+         * produced from the other participant's screen or camera.
+         */
         private const val LOCAL_AUDIO_TRACK_NAME = "mic"
 
         /*
-     * You must provide a Twilio Access Token to connect to the Video service
-     */
+         * You must provide a Twilio Access Token to connect to the Video service
+         */
         private const val TWILIO_ACCESS_TOKEN = BuildConfig.TWILIO_ACCESS_TOKEN
         private const val ACCESS_TOKEN_SERVER = BuildConfig.TWILIO_ACCESS_TOKEN_SERVER
     }
