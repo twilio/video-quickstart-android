@@ -10,7 +10,7 @@ object Dialog {
                             callParticipantsClickListener: DialogInterface.OnClickListener?,
                             cancelClickListener: DialogInterface.OnClickListener?,
                             context: Context?): AlertDialog {
-        val alertDialogBuilder = AlertDialog.Builder(context!!)
+        val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder.setIcon(android.R.drawable.sym_call_outgoing)
         alertDialogBuilder.setTitle("Connect to a room")
         alertDialogBuilder.setPositiveButton("Connect", callParticipantsClickListener)
