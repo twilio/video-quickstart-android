@@ -9,7 +9,7 @@ object Dialog {
     fun createConnectDialog(participantEditText: EditText,
                             callParticipantsClickListener: DialogInterface.OnClickListener?,
                             cancelClickListener: DialogInterface.OnClickListener?,
-                            context: Context?): AlertDialog {
+                            context: Context): AlertDialog {
         val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder.setIcon(android.R.drawable.sym_call_outgoing)
         alertDialogBuilder.setTitle("Connect to a room")
