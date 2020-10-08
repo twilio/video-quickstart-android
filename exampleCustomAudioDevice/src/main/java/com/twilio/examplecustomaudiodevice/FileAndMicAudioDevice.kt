@@ -334,11 +334,11 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
     }
 
     private fun releaseAudioResources() {
-        if (audioTrack != null) {
-            audioTrack!!.flush()
-            audioTrack!!.release()
-            audioTrack = null
+        audioTrack?.apply {
+            flush()
+            release()
         }
+        audioTrack = null
     }
 
     companion object {
