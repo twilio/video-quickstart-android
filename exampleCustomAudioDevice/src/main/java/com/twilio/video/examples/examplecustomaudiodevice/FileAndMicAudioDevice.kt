@@ -25,22 +25,22 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
 
     // Average number of callbacks per second.
     private val BUFFERS_PER_SECOND = 1000 / CALLBACK_BUFFER_SIZE_MS
-    private var fileWriteByteBuffer: ByteBuffer? = null
+    private lateinit var fileWriteByteBuffer: ByteBuffer
     private var writeBufferSize = 0
-    private var inputStream: InputStream? = null
-    private var dataInputStream: DataInputStream? = null
-    private var audioRecord: AudioRecord? = null
-    private var micWriteBuffer: ByteBuffer? = null
-    private var readByteBuffer: ByteBuffer? = null
-    private var audioTrack: AudioTrack? = null
+    private lateinit var inputStream: InputStream
+    private lateinit var dataInputStream: DataInputStream
+    private lateinit var audioRecord: AudioRecord
+    private lateinit var micWriteBuffer: ByteBuffer
+    private lateinit var readByteBuffer: ByteBuffer
+    private lateinit var audioTrack: AudioTrack
 
     // Handlers and Threads
-    private var capturerHandler: Handler? = null
-    private var capturerThread: HandlerThread? = null
-    private var rendererHandler: Handler? = null
-    private var rendererThread: HandlerThread? = null
-    private var renderingAudioDeviceContext: AudioDeviceContext? = null
-    private var capturingAudioDeviceContext: AudioDeviceContext? = null
+    private lateinit var capturerHandler: Handler
+    private lateinit var capturerThread: HandlerThread
+    private lateinit var rendererHandler: Handler
+    private lateinit var rendererThread: HandlerThread
+    private lateinit var renderingAudioDeviceContext: AudioDeviceContext
+    private lateinit var capturingAudioDeviceContext: AudioDeviceContext
 
     // By default music capturer is enabled
     var isMusicPlaying = false
@@ -262,8 +262,6 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
 
     // Capturer helper methods
     private fun initializeStreams() {
-        inputStream = null
-        dataInputStream = null
         inputStream = context.resources.openRawResource(context.resources.getIdentifier("music",
                 "raw", context.packageName))
         dataInputStream = DataInputStream(inputStream)
@@ -337,7 +335,6 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
             flush()
             release()
         }
-        audioTrack = null
     }
 
     companion object {
