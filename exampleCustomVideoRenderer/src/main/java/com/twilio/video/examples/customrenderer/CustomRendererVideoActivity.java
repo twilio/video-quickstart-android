@@ -72,8 +72,8 @@ public class CustomRendererVideoActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        localVideoTrack.removeRenderer(localVideoView);
-        localVideoTrack.removeRenderer(snapshotVideoRenderer);
+        localVideoTrack.removeSink(localVideoView);
+        localVideoTrack.removeSink(snapshotVideoRenderer);
         localVideoTrack.release();
         localVideoTrack = null;
         super.onDestroy();
@@ -83,8 +83,8 @@ public class CustomRendererVideoActivity extends Activity {
         localVideoTrack = LocalVideoTrack.create(this, true, new CameraCapturer(this,
                 CameraCapturer.CameraSource.FRONT_CAMERA, null));
         snapshotVideoRenderer = new SnapshotVideoRenderer(snapshotImageView);
-        localVideoTrack.addRenderer(localVideoView);
-        localVideoTrack.addRenderer(snapshotVideoRenderer);
+        localVideoTrack.addSink(localVideoView);
+        localVideoTrack.addSink(snapshotVideoRenderer);
         localVideoView.setOnClickListener(v -> {
             tapForSnapshotTextView.setVisibility(View.GONE);
             snapshotVideoRenderer.takeSnapshot();

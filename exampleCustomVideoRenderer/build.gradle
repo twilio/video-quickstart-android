@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion versions.compileSdk
@@ -33,7 +34,9 @@ android {
 dependencies {
     testImplementation 'junit:junit:4.12'
 
+    implementation project(':common')
     implementation "com.twilio:video-android:${versions.videoAndroid}"
     implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
     implementation "com.android.support:design:${versions.supportLibrary}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
