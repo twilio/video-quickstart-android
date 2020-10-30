@@ -49,9 +49,9 @@ TWILIO_ACCESS_TOKEN=abcdef0123456789
 In addition to the quickstart we've also added a few examples of use cases that show you how to create and customize your media as follows:
 
 - [Custom Video Capturer](exampleCustomVideoCapturer) - Demonstrates how a custom `VideoCapturer` can be implemented to capture the contents of a `View`. 
-- [Custom Video Renderer](exampleCustomVideoRenderer) - Demonstrates how to implement a custom `VideoRenderer` that captures a `Bitmap` of the last rendered frame.
+- [Custom Video Sink](exampleCustomVideoSink) - Demonstrates how to implement a custom `tvi.webrtc.VideoSink` that captures a `Bitmap` of the last rendered frame.
 - [Screen Capturer](exampleScreenCapturer) - Demonstrates how to use the screen capturer.
-- [Advanced Camera Capturer](exampleAdvancedCameraCapturer) - Demonstrates advanced use cases of `CameraCapturer` like injecting custom camera paremeters.
+- [Advanced Camera Capturer](exampleAdvancedCameraCapturer) - Demonstrates advanced use cases of `CameraCapturer` like injecting custom camera parameters.
 - [Video Invite](exampleVideoInvite) - Demonstrates how to use Twilio Notify to invite other participants to a room.
 - [Data Tracks](exampleDataTrack) - Demonstrates how to use `DataTrack`s to write a simple collaborative drawing app.
 - [Audio Sink](exampleAudioSink) - Demonstrates writing raw PCM audio to a .wav file from a `RemoteAudioTrack` using `AudioSink`.
