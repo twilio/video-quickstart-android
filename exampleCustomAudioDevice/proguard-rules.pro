@@ -23,13 +23,12 @@
     retain(...);
     cropAndScale(...);
     toI420(...);
-            oigningConf
 }
 -keep class tvi.webrtc.ContextUtils {
     public static void initialize(...);
 }
 -keep @tvi.webrtc.CalledByNative class *
--keep class * {
+-keep class !tvi.webrtc.NetworkMonitor, !tvi.webrtc.NetworkMonitorAutoDetect, *{
     @tvi.webrtc.CalledByNative *;
 }
 -keep @tvi.webrtc.CalledByNativeUnchecked class *
@@ -64,4 +63,6 @@
     getStreamMaxVolume(...);
 }
 -keep @tvi.webrtc.JNINamespace class *
--keep class !com.twilio.video.ScreenCapturer, com.twilio.video.** { *; }
+-keep class com.twilio.video.** { *; }
+-whyareyoukeeping class com.twilio.video.ScreenCapturer { *; }
+-whyareyoukeeping class android.net.wifi.WifiInfo { getSSID(...); }
