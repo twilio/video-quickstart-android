@@ -9,11 +9,11 @@ import tvi.webrtc.VideoSink
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * SnapshotVideoRenderer demonstrates how to implement a custom [tvi.webrtc.VideoSink]. Caches the
- * last frame rendered and will update the provided image view any time [.takeSnapshot] is
+ * SnapshotVideoSink demonstrates how to implement a custom [tvi.webrtc.VideoSink]. Caches the
+ * last frame rendered and will update the provided image view any time [takeSnapshot] is
  * invoked.
  */
-class SnapshotVideoRenderer(private val imageView: ImageView) : VideoSink {
+class SnapshotVideoSink(private val imageView: ImageView) : VideoSink {
     private val snapshotRequsted =
         AtomicBoolean(false)
     private val handler = Handler(Looper.getMainLooper())

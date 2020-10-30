@@ -19,12 +19,12 @@ import com.twilio.video.VideoView
  * of our [CameraCapturer] to a video view and to a snapshot renderer which allows user to
  * grab the latest frame rendered. When the camera view is tapped the frame is updated.
  */
-class CustomRendererVideoActivity : Activity() {
+class CustomVideoSinkVideoActivity : Activity() {
     private lateinit var localVideoView: VideoView
     private lateinit var snapshotImageView: ImageView
     private lateinit var tapForSnapshotTextView: TextView
     private val snapshotVideoRenderer by lazy {
-        SnapshotVideoRenderer(snapshotImageView)
+        SnapshotVideoSink(snapshotImageView)
     }
     private val localVideoTrack by lazy {
         LocalVideoTrack.create(
