@@ -64,5 +64,3 @@
 }
 -keep @tvi.webrtc.JNINamespace class *
 -keep class !com.twilio.video.ScreenCapturer, com.twilio.video.** { *; }
--whyareyoukeeping class android.media.projection.MediaProjection
--whyareyoukeeping class android.media.projection.MediaProjectionManager
