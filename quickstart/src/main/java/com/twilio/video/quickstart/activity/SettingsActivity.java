@@ -135,7 +135,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             // Remove H264 if not supported
-            if (CodecUtils.isH264Supported()) {
+            if (!CodecUtils.isH264Supported()) {
                 codecEntries.remove(H264Codec.NAME);
             }
             String[] codecStrings = codecEntries.toArray(new String[codecEntries.size()]);
