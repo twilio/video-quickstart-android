@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
 
     kotlinOptions {
         jvmTarget = '1.8'
@@ -44,7 +43,4 @@ dependencies {
     implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
     implementation "com.android.support:design:${versions.supportLibrary}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-}
-repositories {
-    mavenCentral()
 }

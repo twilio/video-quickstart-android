@@ -78,7 +78,8 @@ class AdvancedCameraCapturerActivity : Activity() {
         takePictureButton = findViewById<View>(R.id.take_picture_button) as Button
         pictureImageView = layoutInflater.inflate(
             R.layout.picture_image_view,
-            null
+            findViewById(android.R.id.content),
+            false
         ) as ImageView
         pictureDialog = AlertDialog.Builder(this)
             .setView(pictureImageView)
