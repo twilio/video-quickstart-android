@@ -1,11 +1,14 @@
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/latest/)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/6.0.0-preview1/)
 
-**NEW:** Please check out the newly open-sourced [video collaboration app](https://github.com/twilio/twilio-video-app-android)
+**NEW:** Please check out the newly open-sourced [video collaboration app](https://github.com/twilio/twilio-video-app-android/tree/6.0.0-preview)
 built with the Android Video SDK.
 
-> NOTE: These sample applications use the Twilio Video 3.x APIs. For examples using our 1.x APIs, please see
-the [1.x](https://github.com/twilio/video-quickstart-android/tree/1.x) branch. For examples using our 2.x APIs, please see
-the [2.x](https://github.com/twilio/video-quickstart-android/tree/2.x) branch.
+> NOTE: These sample applications use the Twilio Video 6.x APIs. For examples using previous releases please see the following branches:
+>  - [1.x](https://github.com/twilio/video-quickstart-android/tree/1.x)
+>  - [2.x](https://github.com/twilio/video-quickstart-android/tree/2.x)
+>  - [3.x](https://github.com/twilio/video-quickstart-android/tree/3.x)
+>  - [4.x](https://github.com/twilio/video-quickstart-android/tree/4.x)
+>  - [5.x](https://github.com/twilio/video-quickstart-android/tree/master)
 
 # Twilio Video Quickstart for Android
 
@@ -51,7 +54,7 @@ In addition to the quickstart we've also added a few examples of use cases that 
 - [Custom Video Capturer](exampleCustomVideoCapturer) - Demonstrates how a custom `VideoCapturer` can be implemented to capture the contents of a `View`. 
 - [Custom Video Sink](exampleCustomVideoSink) - Demonstrates how to implement a custom `tvi.webrtc.VideoSink` that captures a `Bitmap` of the last rendered frame.
 - [Screen Capturer](exampleScreenCapturer) - Demonstrates how to use the screen capturer.
-- [Advanced Camera Capturer](exampleAdvancedCameraCapturer) - Demonstrates advanced use cases of `CameraCapturer` like injecting custom camera parameters.
+- [Advanced Camera Capturer](exampleAdvancedCameraCapturer) - Demonstrates advanced use cases of `CameraCapturer` like injecting custom camera parameters and taking a picture.
 - [Video Invite](exampleVideoInvite) - Demonstrates how to use Twilio Notify to invite other participants to a room.
 - [Data Tracks](exampleDataTrack) - Demonstrates how to use `DataTrack`s to write a simple collaborative drawing app.
 - [Audio Sink](exampleAudioSink) - Demonstrates writing raw PCM audio to a .wav file from a `RemoteAudioTrack` using `AudioSink`.
@@ -119,7 +122,7 @@ The following snippet shows an example `build.gradle` with APK splits enabled.
     }
     
     dependencies {
-        compile "com.twilio:video-android:5.0.1"
+        compile "com.twilio:video-android:6.0.0-preview1"
     }
 
 The adoption of APK splits requires developers to submit multiple APKs to the Play Store. Refer to [Google’s documentation](https://developer.android.com/google/play/publishing/multiple-apks.html) for how to support this in your application.
