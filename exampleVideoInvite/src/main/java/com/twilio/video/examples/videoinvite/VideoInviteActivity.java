@@ -48,7 +48,6 @@ import com.twilio.video.RemoteVideoTrackPublication;
 import com.twilio.video.Room;
 import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
-import com.twilio.video.VideoRenderer;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
@@ -63,6 +62,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import tvi.webrtc.VideoSink;
 
 import static com.twilio.video.examples.videoinvite.R.drawable.ic_phonelink_ring_white_24dp;
 import static com.twilio.video.examples.videoinvite.R.drawable.ic_volume_up_white_24dp;
@@ -158,7 +158,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private MenuItem turnSpeakerOffMenuItem;
 
     private int previousAudioMode;
-    private VideoRenderer localVideoView;
+    private VideoSink localVideoView;
     private boolean disconnectedFromOnDestroy;
     private final static String TAG = "VideoInviteActivity";
 
@@ -353,7 +353,7 @@ public class VideoInviteActivity extends AppCompatActivity {
                 checkPermissionForCameraAndMicrophone() &&
                 cameraCapturer != null) {
             localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
-            localVideoTrack.addRenderer(localVideoView);
+            localVideoTrack.addSink(localVideoView);
 
 
             /*
@@ -482,7 +482,7 @@ public class VideoInviteActivity extends AppCompatActivity {
         cameraCapturer = new CameraCapturer(this, getAvailableCameraSource());
         localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
         primaryVideoView.setMirror(true);
-        localVideoTrack.addRenderer(primaryVideoView);
+        localVideoTrack.addSink(primaryVideoView);
         localVideoView = primaryVideoView;
     }
 
@@ -635,15 +635,15 @@ public class VideoInviteActivity extends AppCompatActivity {
     private void addRemoteParticipantVideo(VideoTrack videoTrack) {
         moveLocalVideoToThumbnailView();
         primaryVideoView.setMirror(false);
-        videoTrack.addRenderer(primaryVideoView);
+        videoTrack.addSink(primaryVideoView);
     }
 
     private void moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.getVisibility() == View.GONE) {
             thumbnailVideoView.setVisibility(View.VISIBLE);
             if (localVideoTrack != null) {
-                localVideoTrack.removeRenderer(primaryVideoView);
-                localVideoTrack.addRenderer(thumbnailVideoView);
+                localVideoTrack.removeSink(primaryVideoView);
+                localVideoTrack.addSink(thumbnailVideoView);
             }
             localVideoView = thumbnailVideoView;
             thumbnailVideoView.setMirror(cameraCapturer.getCameraSource() ==
@@ -679,14 +679,14 @@ public class VideoInviteActivity extends AppCompatActivity {
     }
 
     private void removeParticipantVideo(VideoTrack videoTrack) {
-        videoTrack.removeRenderer(primaryVideoView);
+        videoTrack.removeSink(primaryVideoView);
     }
 
     private void moveLocalVideoToPrimaryView() {
         if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-            localVideoTrack.removeRenderer(thumbnailVideoView);
+            localVideoTrack.removeSink(thumbnailVideoView);
             thumbnailVideoView.setVisibility(View.GONE);
-            localVideoTrack.addRenderer(primaryVideoView);
+            localVideoTrack.removeSink(primaryVideoView);
             localVideoView = primaryVideoView;
             primaryVideoView.setMirror(cameraCapturer.getCameraSource() ==
                     CameraSource.FRONT_CAMERA);
