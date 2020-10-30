@@ -99,7 +99,7 @@ class SettingsActivity : AppCompatActivity() {
                 VIDEO_CODEC_NAMES.toMutableList()
 
             // Remove H264 if not supported
-            if (isH264Supported()) {
+            if (!isH264Supported()) {
                 codecEntries.remove(H264Codec.NAME)
             }
 
