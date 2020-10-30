@@ -31,12 +31,12 @@ public class CustomCapturerVideoActivity extends Activity {
 
         // Once added we should see our linear layout rendered live below
         localVideoTrack = LocalVideoTrack.create(this, true, new ViewCapturer(capturedView));
-        localVideoTrack.addRenderer(videoView);
+        localVideoTrack.addSink(videoView);
     }
 
     @Override
     protected void onDestroy() {
-        localVideoTrack.removeRenderer(videoView);
+        localVideoTrack.removeSink(videoView);
         localVideoTrack.release();
         localVideoTrack = null;
         timerView.stop();

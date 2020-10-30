@@ -1,5 +1,6 @@
 package com.twilio.video.examples.customcapturer;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Handler;
@@ -7,17 +8,17 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.view.View;
 
+import com.twilio.video.Rgba8888Buffer;
 import com.twilio.video.VideoCapturer;
 import com.twilio.video.VideoDimensions;
 import com.twilio.video.VideoFormat;
-import com.twilio.video.VideoFrame;
-import com.twilio.video.VideoPixelFormat;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import tvi.webrtc.CapturerObserver;
+import tvi.webrtc.SurfaceTextureHelper;
 
 /**
  * ViewCapturer demonstrates how to implement a custom {@link VideoCapturer}. This class
@@ -29,7 +30,7 @@ public class ViewCapturer implements VideoCapturer {
 
     private final View view;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private VideoCapturer.Listener videoCapturerListener;
+    private CapturerObserver capturerObserver;
     private AtomicBoolean started = new AtomicBoolean(false);
     private final Runnable viewCapturer = new Runnable() {
         @Override
@@ -55,18 +56,19 @@ public class ViewCapturer implements VideoCapturer {
                 int bytes = viewBitmap.getByteCount();
                 ByteBuffer buffer = ByteBuffer.allocate(bytes);
                 viewBitmap.copyPixelsToBuffer(buffer);
-                byte[] array = buffer.array();
-                final long captureTimeNs =
-                        TimeUnit.MILLISECONDS.toNanos(SystemClock.elapsedRealtime());
 
                 // Create video frame
-                VideoDimensions dimensions = new VideoDimensions(view.getWidth(), view.getHeight());
-                VideoFrame videoFrame = new VideoFrame(array,
-                        dimensions, VideoFrame.RotationAngle.ROTATION_0, captureTimeNs);
+                final long captureTimeNs =
+                        TimeUnit.MILLISECONDS.toNanos(SystemClock.elapsedRealtime());
+                tvi.webrtc.VideoFrame.Buffer videoBuffer =
+                        new Rgba8888Buffer(buffer, view.getWidth(), view.getHeight());
+                tvi.webrtc.VideoFrame videoFrame =
+                        new tvi.webrtc.VideoFrame(videoBuffer, 0, captureTimeNs);
 
                 // Notify the listener
                 if (started.get()) {
-                    videoCapturerListener.onFrameCaptured(videoFrame);
+                    capturerObserver.onFrameCaptured(videoFrame);
+                    videoFrame.release();
                 }
             }
 
@@ -81,21 +83,11 @@ public class ViewCapturer implements VideoCapturer {
         this.view = view;
     }
 
-    /**
-     * Returns the list of supported formats for this view capturer. Currently, only supports
-     * capturing to RGBA_8888 bitmaps.
-     *
-     * @return list of supported formats.
-     */
     @Override
-    public List<VideoFormat> getSupportedFormats() {
-        List<VideoFormat> videoFormats = new ArrayList<>();
+    public VideoFormat getCaptureFormat() {
         VideoDimensions videoDimensions = new VideoDimensions(view.getWidth(), view.getHeight());
-        VideoFormat videoFormat = new VideoFormat(videoDimensions, 30, VideoPixelFormat.RGBA_8888);
 
-        videoFormats.add(videoFormat);
-
-        return videoFormats;
+        return new VideoFormat(videoDimensions, 30);
     }
 
     /**
@@ -106,22 +98,21 @@ public class ViewCapturer implements VideoCapturer {
         return true;
     }
 
-    /**
-     * This will be invoked when it is time to start capturing frames.
-     *
-     * @param videoFormat the video format of the frames to be captured.
-     * @param listener capturer listener.
-     */
     @Override
-    public void startCapture(VideoFormat videoFormat, Listener listener) {
-        // Store the capturer listener
-        this.videoCapturerListener = listener;
+    public void initialize(SurfaceTextureHelper surfaceTextureHelper,
+                           Context context,
+                           CapturerObserver capturerObserver) {
+        this.capturerObserver = capturerObserver;
+    }
+
+    @Override
+    public void startCapture(int width, int height, int framerate) {
         this.started.set(true);
 
         // Notify capturer API that the capturer has started
         boolean capturerStarted = handler.postDelayed(viewCapturer,
                 VIEW_CAPTURER_FRAMERATE_MS);
-        this.videoCapturerListener.onCapturerStarted(capturerStarted);
+        this.capturerObserver.onCapturerStarted(capturerStarted);
     }
 
     /**
