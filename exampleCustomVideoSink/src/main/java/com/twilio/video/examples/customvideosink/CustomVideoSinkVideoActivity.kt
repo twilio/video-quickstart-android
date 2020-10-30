@@ -1,4 +1,4 @@
-package com.twilio.video.examples.customrenderer
+package com.twilio.video.examples.customvideosink
 
 import android.Manifest
 import android.app.Activity
