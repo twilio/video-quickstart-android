@@ -1,30 +1,30 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion versions.compileSdk
 
     lintOptions {
         warningsAsErrors true
-        disable "GradleDependency"
+        disable "MissingApplicationIcon", "GradleDependency"
     }
 
     defaultConfig {
-        applicationId "com.twilio.video.examples.screencapturer"
-        minSdkVersion 21
+        applicationId "com.twilio.video.examples.customrenderer"
+        minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
+
     compileOptions {
         sourceCompatibility versions.java
         targetCompatibility versions.java
     }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -33,7 +33,9 @@ android {
 dependencies {
     testImplementation 'junit:junit:4.12'
 
+    implementation project(':common')
     implementation "com.twilio:video-android:${versions.videoAndroid}"
     implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
     implementation "com.android.support:design:${versions.supportLibrary}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }

@@ -124,12 +124,12 @@ public class ScreenCapturerActivity extends AppCompatActivity {
         screenCaptureMenuItem.setTitle(R.string.stop_screen_share);
 
         localVideoView.setVisibility(View.VISIBLE);
-        screenVideoTrack.addRenderer(localVideoView);
+        screenVideoTrack.addSink(localVideoView);
     }
 
     private void stopScreenCapture() {
         if (screenVideoTrack != null) {
-            screenVideoTrack.removeRenderer(localVideoView);
+            screenVideoTrack.removeSink(localVideoView);
             screenVideoTrack.release();
             screenVideoTrack = null;
             localVideoView.setVisibility(View.INVISIBLE);

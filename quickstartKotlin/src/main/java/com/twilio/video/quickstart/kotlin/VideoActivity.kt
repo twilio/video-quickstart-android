@@ -51,12 +51,12 @@ import com.twilio.video.Room
 import com.twilio.video.TwilioException
 import com.twilio.video.Video
 import com.twilio.video.VideoCodec
-import com.twilio.video.VideoRenderer
 import com.twilio.video.VideoTrack
 import com.twilio.video.Vp8Codec
 import com.twilio.video.Vp9Codec
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.content_video.*
+import tvi.webrtc.VideoSink
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -422,7 +422,7 @@ class VideoActivity : AppCompatActivity() {
     private lateinit var audioDeviceMenuItem: MenuItem
 
     private var participantIdentity: String? = null
-    private lateinit var localVideoView: VideoRenderer
+    private lateinit var localVideoView: VideoSink
     private var disconnectedFromOnDestroy = false
     private var isSpeakerPhoneEnabled = true
 
@@ -490,7 +490,7 @@ class VideoActivity : AppCompatActivity() {
         } else {
             localVideoTrack
         }
-        localVideoTrack?.addRenderer(localVideoView)
+        localVideoTrack?.addSink(localVideoView)
 
         /*
          * If connected to a Room then share the local video track.
@@ -793,15 +793,15 @@ class VideoActivity : AppCompatActivity() {
     private fun addRemoteParticipantVideo(videoTrack: VideoTrack) {
         moveLocalVideoToThumbnailView()
         primaryVideoView.mirror = false
-        videoTrack.addRenderer(primaryVideoView)
+        videoTrack.addSink(primaryVideoView)
     }
 
     private fun moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.visibility == View.GONE) {
             thumbnailVideoView.visibility = View.VISIBLE
             with(localVideoTrack) {
-                this?.removeRenderer(primaryVideoView)
-                this?.addRenderer(thumbnailVideoView)
+                this?.removeSink(primaryVideoView)
+                this?.addSink(thumbnailVideoView)
             }
             localVideoView = thumbnailVideoView
             thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
@@ -830,15 +830,15 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private fun removeParticipantVideo(videoTrack: VideoTrack) {
-        videoTrack.removeRenderer(primaryVideoView)
+        videoTrack.removeSink(primaryVideoView)
     }
 
     private fun moveLocalVideoToPrimaryView() {
         if (thumbnailVideoView.visibility == View.VISIBLE) {
             thumbnailVideoView.visibility = View.GONE
             with(localVideoTrack) {
-                this?.removeRenderer(thumbnailVideoView)
-                this?.addRenderer(primaryVideoView)
+                this?.removeSink(thumbnailVideoView)
+                this?.addSink(primaryVideoView)
             }
             localVideoView = primaryVideoView
             primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==

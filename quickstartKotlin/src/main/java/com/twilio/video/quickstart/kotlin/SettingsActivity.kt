@@ -10,8 +10,7 @@ import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.MenuItem
 import com.twilio.video.*
-import tvi.webrtc.MediaCodecVideoDecoder
-import tvi.webrtc.MediaCodecVideoEncoder
+import com.twilio.video.examples.common.isH264Supported
 
 class SettingsActivity : AppCompatActivity() {
     companion object {
@@ -100,8 +99,7 @@ class SettingsActivity : AppCompatActivity() {
                 VIDEO_CODEC_NAMES.toMutableList()
 
             // Remove H264 if not supported
-            if (!MediaCodecVideoDecoder.isH264HwSupported() ||
-                    !MediaCodecVideoEncoder.isH264HwSupported()) {
+            if (!isH264Supported()) {
                 codecEntries.remove(H264Codec.NAME)
             }
 
