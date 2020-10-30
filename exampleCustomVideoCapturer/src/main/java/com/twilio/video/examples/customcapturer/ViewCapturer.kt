@@ -66,7 +66,7 @@ class ViewCapturer(private val view: View) : VideoCapturer {
 
             // Notify the observer
             if (started.get()) {
-                capturerObserver!!.onFrameCaptured(videoFrame)
+                capturerObserver?.onFrameCaptured(videoFrame)
                 videoFrame.release()
             }
         }

@@ -23,12 +23,10 @@ fun VideoFrame.toBitmap() : Bitmap? {
     return captureBitmap(this)
 }
 
-private fun captureBitmap(frame: VideoFrame) : Bitmap? {
-    return if (frame.buffer is VideoFrame.TextureBuffer) {
-        captureBitmapFromTexture(frame)
-    } else {
-        captureBitmapFromYuvFrame(frame)
-    }
+private fun captureBitmap(frame: VideoFrame) : Bitmap? = if (frame.buffer is VideoFrame.TextureBuffer) {
+    captureBitmapFromTexture(frame)
+} else {
+    captureBitmapFromYuvFrame(frame)
 }
 
 private fun captureBitmapFromYuvFrame(videoFrame: VideoFrame): Bitmap? {
@@ -46,8 +44,7 @@ private fun captureBitmapFromYuvFrame(videoFrame: VideoFrame): Bitmap? {
 
     // Convert jpeg to Bitmap
     val imageBytes = stream.toByteArray()
-    var bitmap: Bitmap?
-    bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    var bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         val buffer = ByteBuffer.wrap(imageBytes)
         val src =
             ImageDecoder.createSource(buffer)
@@ -88,8 +85,7 @@ private fun captureBitmapFromTexture(videoFrame: VideoFrame): Bitmap? {
 
     // Release YUV Converter
     yuvConverter.release()
-    val bitmap: Bitmap?
-    bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         val buffer = ByteBuffer.wrap(imageBytes)
         val src =
             ImageDecoder.createSource(buffer)
