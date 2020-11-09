@@ -84,6 +84,9 @@ jobs:
       - store_artifacts:
           path: quickstartKotlin/build/reports/lint-results.html
           prefix: quickstartKotlin
+      - store_artifacts:
+          path: exampleCustomAudioDevice/app/build/reports/lint-results.html
+          prefix: exampleCustomAudioDevice
 
       # Save cache
       - save-cache: *save-cache-gradle
@@ -222,6 +225,20 @@ jobs:
       # Save cache
       - save-cache: *save-cache-gradle
 
+  build-exampleCustomAudioDevice:
+    <<: *build-defaults
+    resource_class: large
+    steps:
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+      - run: *configure-gradle
+      - run:
+          name: Build exampleDataTrack
+          command: ./gradlew -q exampleCustomAudioDevice:assemble
+      - save-cache: *save-cache-gradle
+
 workflows:
   version: 2
 
@@ -263,3 +280,6 @@ workflows:
       - build-quickstartKotlin:
           requires:
               - setup-workspace
+      - build-exampleCustomAudioDevice:
+          requires:
+            - setup-workspace
