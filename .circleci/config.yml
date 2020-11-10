@@ -235,7 +235,7 @@ jobs:
       - restore-cache: *restore-cache-gradle
       - run: *configure-gradle
       - run:
-          name: Build exampleDataTrack
+          name: Build exampleCustomAudioDevice
           command: ./gradlew -q exampleCustomAudioDevice:assemble
       - save-cache: *save-cache-gradle
 
