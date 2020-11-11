@@ -60,11 +60,11 @@
     public static void initialize(...);
 }
 -keep @tvi.webrtc.CalledByNative class *
--keepclassmembers class * {
+-keep class !tvi.webrtc.NetworkMonitor, !tvi.webrtc.NetworkMonitorAutoDetect, !tvi.webrtc.ScreenCapturerAndroid, tvi.webrtc.** {
     @tvi.webrtc.CalledByNative *;
 }
 -keep @tvi.webrtc.CalledByNativeUnchecked class *
--keepclassmembers class * {
+-keep class !tvi.webrtc.ScreenCapturerAndroid, tvi.webrtc.** {
     @tvi.webrtc.CalledByNativeUnchecked *;
 }
 -keep class tvi.webrtc.voiceengine.** {
@@ -95,6 +95,3 @@
     getStreamMaxVolume(...);
 }
 -keep @tvi.webrtc.JNINamespace class *
-
--whyareyoukeeping class com.twilio.video.ScreenCapturer
--whyareyoukeeping class tvi.webrtc.ScreenCapturerAndroid
