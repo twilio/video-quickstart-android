@@ -28,11 +28,11 @@
     public static void initialize(...);
 }
 -keep @tvi.webrtc.CalledByNative class *
--keepclassmembers class !tvi.webrtc.NetworkMonitor, !tvi.webrtc.NetworkMonitorAutoDetect, * {
+-keep class !tvi.webrtc.NetworkMonitor, !tvi.webrtc.NetworkMonitorAutoDetect, !tvi.webrtc.ScreenCapturerAndroid, tvi.webrtc.** {
     @tvi.webrtc.CalledByNative *;
 }
 -keep @tvi.webrtc.CalledByNativeUnchecked class *
--keepclassmembers class * {
+-keep class !tvi.webrtc.ScreenCapturerAndroid, tvi.webrtc.** {
     @tvi.webrtc.CalledByNativeUnchecked *;
 }
 -keep class tvi.webrtc.voiceengine.** {
@@ -168,17 +168,11 @@
 -keep class com.twilio.video.Video$NetworkChangeEvent { *; }
 -keep class com.twilio.video.VideoBandwidthProfileOptions { *; }
 -keep class com.twilio.video.VideoCapturer { *; }
--keep class com.twilio.video.VideoCapturerDelegate
+-keep class com.twilio.video.VideoCapturerDelegate { * ; }
 -keep class com.twilio.video.VideoCapturerDelegate$NativeObserver { *; }
--keepclassmembernames class com.twilio.video.VideoCapturerDelegate { *; }
 -keep class com.twilio.video.VideoCodec { *; }
 -keep class com.twilio.video.VideoConstraints { *; }
 -keep class com.twilio.video.VideoDimensions { *; }
 -keep class com.twilio.video.VideoFormat { *; }
 -keep class com.twilio.video.VideoPixelFormat { *; }
 -keep class com.twilio.video.Vp8Codec { *; }
-
--whyareyoukeeping class tvi.webrtc.NetworkMonitorAutoDetect
--whyareyoukeeping class tvi.webrtc.NetworkMonitor
--whyareyoukeeping class com.twilio.video.ScreenCapturer
--whyareyoukeeping class tvi.webrtc.ScreenCapturerAndroid
