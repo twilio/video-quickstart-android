@@ -68,8 +68,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     implementation "com.twilio:audioswitch:${versions.audioSwitch}"
-    implementation "com.getkeepsafe.relinker:relinker:1.3.1"
-    implementation files("/Users/aalaniz/development/twilio/twilio-video-android/video/build/outputs/aar/video-release.aar")
+    implementation "com.twilio:video-android:${versions.videoAndroid}"
     implementation "com.koushikdutta.ion:ion:${versions.ion}"
     implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
     implementation "com.android.support:preference-v14:${versions.supportLibrary}"
