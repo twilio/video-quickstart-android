@@ -34,7 +34,6 @@ import com.twilio.audioswitch.AudioDevice.Speakerphone;
 import com.twilio.audioswitch.AudioSwitch;
 import com.twilio.video.AudioCodec;
 import com.twilio.video.CameraCapturer;
-import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.EncodingParameters;
 import com.twilio.video.G722Codec;
@@ -276,7 +275,7 @@ public class VideoActivity extends AppCompatActivity {
         if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
             localVideoTrack = LocalVideoTrack.create(this,
                     true,
-                    cameraCapturerCompat.getVideoCapturer(),
+                    cameraCapturerCompat,
                     LOCAL_VIDEO_TRACK_NAME);
             localVideoTrack.addSink(localVideoView);
 
@@ -392,20 +391,14 @@ public class VideoActivity extends AppCompatActivity {
         localAudioTrack = LocalAudioTrack.create(this, true, LOCAL_AUDIO_TRACK_NAME);
 
         // Share your camera
-        cameraCapturerCompat = new CameraCapturerCompat(this, getAvailableCameraSource());
+        cameraCapturerCompat = new CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA);
         localVideoTrack = LocalVideoTrack.create(this,
                 true,
-                cameraCapturerCompat.getVideoCapturer(),
+                cameraCapturerCompat,
                 LOCAL_VIDEO_TRACK_NAME);
         primaryVideoView.setMirror(true);
         localVideoTrack.addSink(primaryVideoView);
         localVideoView = primaryVideoView;
-    }
-
-    private CameraSource getAvailableCameraSource() {
-        return (CameraCapturer.isSourceAvailable(CameraSource.FRONT_CAMERA)) ?
-                (CameraSource.FRONT_CAMERA) :
-                (CameraSource.BACK_CAMERA);
     }
 
     private void setAccessToken() {
@@ -669,7 +662,7 @@ public class VideoActivity extends AppCompatActivity {
             localVideoTrack.addSink(thumbnailVideoView);
             localVideoView = thumbnailVideoView;
             thumbnailVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
-                    CameraSource.FRONT_CAMERA);
+                    CameraCapturerCompat.Source.FRONT_CAMERA);
         }
     }
 
@@ -712,7 +705,7 @@ public class VideoActivity extends AppCompatActivity {
             }
             localVideoView = primaryVideoView;
             primaryVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
-                    CameraSource.FRONT_CAMERA);
+                    CameraCapturerCompat.Source.FRONT_CAMERA);
         }
     }
 
@@ -1067,12 +1060,12 @@ public class VideoActivity extends AppCompatActivity {
     private View.OnClickListener switchCameraClickListener() {
         return v -> {
             if (cameraCapturerCompat != null) {
-                CameraSource cameraSource = cameraCapturerCompat.getCameraSource();
+                CameraCapturerCompat.Source cameraSource = cameraCapturerCompat.getCameraSource();
                 cameraCapturerCompat.switchCamera();
                 if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-                    thumbnailVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    thumbnailVideoView.setMirror(cameraSource == CameraCapturerCompat.Source.BACK_CAMERA);
                 } else {
-                    primaryVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    primaryVideoView.setMirror(cameraSource == CameraCapturerCompat.Source.BACK_CAMERA);
                 }
             }
         };

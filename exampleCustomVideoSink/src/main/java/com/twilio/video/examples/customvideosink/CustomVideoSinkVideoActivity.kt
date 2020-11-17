@@ -13,6 +13,7 @@ import android.widget.Toast
 import com.twilio.video.CameraCapturer
 import com.twilio.video.LocalVideoTrack
 import com.twilio.video.VideoView
+import tvi.webrtc.Camera1Enumerator
 
 /**
  * This example demonstrates how to implement a custom renderer. Here we render the contents
@@ -26,11 +27,16 @@ class CustomVideoSinkVideoActivity : Activity() {
     private val snapshotVideoRenderer by lazy {
         SnapshotVideoSink(snapshotImageView)
     }
+    private val frontCameraId by lazy {
+        val camera1Enumerator = Camera1Enumerator()
+        val cameraId = camera1Enumerator.deviceNames.find { camera1Enumerator.isFrontFacing(it) }
+        requireNotNull(cameraId)
+    }
     private val localVideoTrack by lazy {
         LocalVideoTrack.create(
             this, true, CameraCapturer(
                 this,
-                CameraCapturer.CameraSource.FRONT_CAMERA, null
+                frontCameraId, null
             )
         )
     }
