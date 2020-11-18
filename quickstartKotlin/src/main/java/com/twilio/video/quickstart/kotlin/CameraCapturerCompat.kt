@@ -1,5 +1,6 @@
 package com.twilio.video.quickstart.kotlin
 
+import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.ImageFormat
 import android.hardware.camera2.CameraCharacteristics
@@ -27,7 +28,6 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
     private val camera1SourceMap: MutableMap<String, Source> = HashMap()
     private val camera2IdMap: MutableMap<Source, String> = EnumMap(Source::class.java)
     private val camera2SourceMap: MutableMap<String, Source> = HashMap()
-    private var cameraManager: CameraManager? = null
 
     enum class Source {
         FRONT_CAMERA, BACK_CAMERA
@@ -87,11 +87,11 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
         return camera1Capturer != null
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setCamera2Maps(context: Context) {
         val camera2Enumerator = Camera2Enumerator(context)
         for (cameraId in camera2Enumerator.deviceNames) {
-            if (isCameraIdSupported(cameraId)) {
+            if (isCameraIdSupported(context, cameraId)) {
                 if (camera2Enumerator.isFrontFacing(cameraId)) {
                     camera2IdMap[Source.FRONT_CAMERA] = cameraId
                     camera2SourceMap[cameraId] = Source.FRONT_CAMERA
@@ -121,13 +121,14 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
     private val isLollipopApiSupported: Boolean
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private fun isCameraIdSupported(cameraId: String): Boolean {
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun isCameraIdSupported(context: Context, cameraId: String): Boolean {
         var isMonoChromeSupported = false
         var isPrivateImageFormatSupported = false
+        val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         val cameraCharacteristics: CameraCharacteristics
         cameraCharacteristics = try {
-            cameraManager!!.getCameraCharacteristics(cameraId)
+            cameraManager.getCameraCharacteristics(cameraId)
         } catch (e: Exception) {
             e.printStackTrace()
             return false
@@ -162,7 +163,6 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
 
     init {
         if (Camera2Capturer.isSupported(context) && isLollipopApiSupported) {
-            cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
             setCamera2Maps(context)
             camera2Capturer = Camera2Capturer(context, camera2IdMap[cameraSource]!!)
             activeCapturer = camera2Capturer
