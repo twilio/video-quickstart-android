@@ -18,6 +18,7 @@ import com.twilio.video.CameraCapturer
 import com.twilio.video.CameraParameterUpdater
 import com.twilio.video.LocalVideoTrack
 import com.twilio.video.VideoView
+import tvi.webrtc.Camera1Enumerator
 
 /**
  * This example demonstrates advanced use cases of [com.twilio.video.CameraCapturer]. Current
@@ -33,8 +34,13 @@ class AdvancedCameraCapturerActivity : Activity() {
     private lateinit var pictureImageView: ImageView
     private lateinit var pictureDialog: AlertDialog
 
+    private val backCameraId by lazy {
+        val camera1Enumerator = Camera1Enumerator()
+        val cameraId = camera1Enumerator.deviceNames.find { camera1Enumerator.isBackFacing(it) }
+        requireNotNull(cameraId)
+    }
     private val cameraCapturer by lazy {
-        CameraCapturer(this, CameraCapturer.CameraSource.BACK_CAMERA)
+        CameraCapturer(this, backCameraId)
     }
     private val localVideoTrack by lazy {
         LocalVideoTrack.create(this, true, cameraCapturer)

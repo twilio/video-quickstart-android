@@ -405,7 +405,7 @@ class VideoActivity : AppCompatActivity() {
     private var localVideoTrack: LocalVideoTrack? = null
     private var alertDialog: android.support.v7.app.AlertDialog? = null
     private val cameraCapturerCompat by lazy {
-        CameraCapturerCompat(this, getAvailableCameraSource())
+        CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA)
     }
     private val sharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this@VideoActivity)
@@ -486,7 +486,7 @@ class VideoActivity : AppCompatActivity() {
         localVideoTrack = if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
             LocalVideoTrack.create(this,
                     true,
-                    cameraCapturerCompat.videoCapturer)
+                    cameraCapturerCompat)
         } else {
             localVideoTrack
         }
@@ -608,14 +608,7 @@ class VideoActivity : AppCompatActivity() {
         // Share your camera
         localVideoTrack = LocalVideoTrack.create(this,
                 true,
-                cameraCapturerCompat.videoCapturer)
-    }
-
-    private fun getAvailableCameraSource(): CameraCapturer.CameraSource {
-        return if (CameraCapturer.isSourceAvailable(CameraCapturer.CameraSource.FRONT_CAMERA))
-            CameraCapturer.CameraSource.FRONT_CAMERA
-        else
-            CameraCapturer.CameraSource.BACK_CAMERA
+                cameraCapturerCompat)
     }
 
     private fun setAccessToken() {
@@ -805,7 +798,7 @@ class VideoActivity : AppCompatActivity() {
             }
             localVideoView = thumbnailVideoView
             thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
-                    CameraCapturer.CameraSource.FRONT_CAMERA
+                   CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
 
@@ -842,7 +835,7 @@ class VideoActivity : AppCompatActivity() {
             }
             localVideoView = primaryVideoView
             primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
-                    CameraCapturer.CameraSource.FRONT_CAMERA
+                   CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
 
@@ -881,9 +874,9 @@ class VideoActivity : AppCompatActivity() {
             val cameraSource = cameraCapturerCompat.cameraSource
             cameraCapturerCompat.switchCamera()
             if (thumbnailVideoView.visibility == View.VISIBLE) {
-                thumbnailVideoView.mirror = cameraSource == CameraCapturer.CameraSource.BACK_CAMERA
+                thumbnailVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
             } else {
-                primaryVideoView.mirror = cameraSource == CameraCapturer.CameraSource.BACK_CAMERA
+                primaryVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
             }
         }
     }
