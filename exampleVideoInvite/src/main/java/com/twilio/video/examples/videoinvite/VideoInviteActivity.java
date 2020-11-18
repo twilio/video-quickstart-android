@@ -490,7 +490,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     }
 
     private String getFrontCameraId() {
-        if (frontCameraId != null) {
+        if (frontCameraId == null) {
             for (String deviceName : camera1Enumerator.getDeviceNames()) {
                 if (camera1Enumerator.isFrontFacing(deviceName)) {
                     frontCameraId = deviceName;
@@ -502,7 +502,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     }
 
     private String getBackCameraId() {
-        if (backCameraId != null) {
+        if (backCameraId == null) {
             for (String deviceName : camera1Enumerator.getDeviceNames()) {
                 if (camera1Enumerator.isBackFacing(deviceName)) {
                     backCameraId = deviceName;
