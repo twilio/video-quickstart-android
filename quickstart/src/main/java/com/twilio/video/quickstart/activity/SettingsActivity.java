@@ -21,10 +21,8 @@ import com.twilio.video.PcmuCodec;
 import com.twilio.video.VideoCodec;
 import com.twilio.video.Vp8Codec;
 import com.twilio.video.Vp9Codec;
+import com.twilio.video.examples.common.CodecUtils;
 import com.twilio.video.quickstart.R;
-
-import tvi.webrtc.MediaCodecVideoDecoder;
-import tvi.webrtc.MediaCodecVideoEncoder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -137,8 +135,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             // Remove H264 if not supported
-            if (!MediaCodecVideoDecoder.isH264HwSupported() ||
-                    !MediaCodecVideoEncoder.isH264HwSupported()) {
+            if (!CodecUtils.isH264Supported()) {
                 codecEntries.remove(H264Codec.NAME);
             }
             String[] codecStrings = codecEntries.toArray(new String[codecEntries.size()]);

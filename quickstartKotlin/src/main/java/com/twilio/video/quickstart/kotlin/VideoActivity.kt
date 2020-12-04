@@ -51,12 +51,12 @@ import com.twilio.video.Room
 import com.twilio.video.TwilioException
 import com.twilio.video.Video
 import com.twilio.video.VideoCodec
-import com.twilio.video.VideoRenderer
 import com.twilio.video.VideoTrack
 import com.twilio.video.Vp8Codec
 import com.twilio.video.Vp9Codec
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.content_video.*
+import tvi.webrtc.VideoSink
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -405,7 +405,7 @@ class VideoActivity : AppCompatActivity() {
     private var localVideoTrack: LocalVideoTrack? = null
     private var alertDialog: android.support.v7.app.AlertDialog? = null
     private val cameraCapturerCompat by lazy {
-        CameraCapturerCompat(this, getAvailableCameraSource())
+        CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA)
     }
     private val sharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this@VideoActivity)
@@ -422,7 +422,7 @@ class VideoActivity : AppCompatActivity() {
     private lateinit var audioDeviceMenuItem: MenuItem
 
     private var participantIdentity: String? = null
-    private lateinit var localVideoView: VideoRenderer
+    private lateinit var localVideoView: VideoSink
     private var disconnectedFromOnDestroy = false
     private var isSpeakerPhoneEnabled = true
 
@@ -486,11 +486,11 @@ class VideoActivity : AppCompatActivity() {
         localVideoTrack = if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
             LocalVideoTrack.create(this,
                     true,
-                    cameraCapturerCompat.videoCapturer)
+                    cameraCapturerCompat)
         } else {
             localVideoTrack
         }
-        localVideoTrack?.addRenderer(localVideoView)
+        localVideoTrack?.addSink(localVideoView)
 
         /*
          * If connected to a Room then share the local video track.
@@ -608,14 +608,7 @@ class VideoActivity : AppCompatActivity() {
         // Share your camera
         localVideoTrack = LocalVideoTrack.create(this,
                 true,
-                cameraCapturerCompat.videoCapturer)
-    }
-
-    private fun getAvailableCameraSource(): CameraCapturer.CameraSource {
-        return if (CameraCapturer.isSourceAvailable(CameraCapturer.CameraSource.FRONT_CAMERA))
-            CameraCapturer.CameraSource.FRONT_CAMERA
-        else
-            CameraCapturer.CameraSource.BACK_CAMERA
+                cameraCapturerCompat)
     }
 
     private fun setAccessToken() {
@@ -793,19 +786,19 @@ class VideoActivity : AppCompatActivity() {
     private fun addRemoteParticipantVideo(videoTrack: VideoTrack) {
         moveLocalVideoToThumbnailView()
         primaryVideoView.mirror = false
-        videoTrack.addRenderer(primaryVideoView)
+        videoTrack.addSink(primaryVideoView)
     }
 
     private fun moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.visibility == View.GONE) {
             thumbnailVideoView.visibility = View.VISIBLE
             with(localVideoTrack) {
-                this?.removeRenderer(primaryVideoView)
-                this?.addRenderer(thumbnailVideoView)
+                this?.removeSink(primaryVideoView)
+                this?.addSink(thumbnailVideoView)
             }
             localVideoView = thumbnailVideoView
             thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
-                    CameraCapturer.CameraSource.FRONT_CAMERA
+                   CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
 
@@ -830,19 +823,19 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private fun removeParticipantVideo(videoTrack: VideoTrack) {
-        videoTrack.removeRenderer(primaryVideoView)
+        videoTrack.removeSink(primaryVideoView)
     }
 
     private fun moveLocalVideoToPrimaryView() {
         if (thumbnailVideoView.visibility == View.VISIBLE) {
             thumbnailVideoView.visibility = View.GONE
             with(localVideoTrack) {
-                this?.removeRenderer(thumbnailVideoView)
-                this?.addRenderer(primaryVideoView)
+                this?.removeSink(thumbnailVideoView)
+                this?.addSink(primaryVideoView)
             }
             localVideoView = primaryVideoView
             primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
-                    CameraCapturer.CameraSource.FRONT_CAMERA
+                   CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
 
@@ -881,9 +874,9 @@ class VideoActivity : AppCompatActivity() {
             val cameraSource = cameraCapturerCompat.cameraSource
             cameraCapturerCompat.switchCamera()
             if (thumbnailVideoView.visibility == View.VISIBLE) {
-                thumbnailVideoView.mirror = cameraSource == CameraCapturer.CameraSource.BACK_CAMERA
+                thumbnailVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
             } else {
-                primaryVideoView.mirror = cameraSource == CameraCapturer.CameraSource.BACK_CAMERA
+                primaryVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
             }
         }
     }

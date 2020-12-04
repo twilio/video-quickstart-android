@@ -33,7 +33,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.twilio.video.CameraCapturer;
-import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
 import com.twilio.video.LocalParticipant;
@@ -48,7 +47,6 @@ import com.twilio.video.RemoteVideoTrackPublication;
 import com.twilio.video.Room;
 import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
-import com.twilio.video.VideoRenderer;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
@@ -63,6 +61,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import tvi.webrtc.Camera1Enumerator;
+import tvi.webrtc.VideoSink;
 
 import static com.twilio.video.examples.videoinvite.R.drawable.ic_phonelink_ring_white_24dp;
 import static com.twilio.video.examples.videoinvite.R.drawable.ic_volume_up_white_24dp;
@@ -144,6 +144,9 @@ public class VideoInviteActivity extends AppCompatActivity {
     private TextView statusTextView;
     private TextView identityTextView;
     private CameraCapturer cameraCapturer;
+    private final Camera1Enumerator camera1Enumerator = new Camera1Enumerator();
+    private String frontCameraId = null;
+    private String backCameraId = null;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
     private FloatingActionButton connectActionFab;
@@ -158,7 +161,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private MenuItem turnSpeakerOffMenuItem;
 
     private int previousAudioMode;
-    private VideoRenderer localVideoView;
+    private VideoSink localVideoView;
     private boolean disconnectedFromOnDestroy;
     private final static String TAG = "VideoInviteActivity";
 
@@ -353,7 +356,7 @@ public class VideoInviteActivity extends AppCompatActivity {
                 checkPermissionForCameraAndMicrophone() &&
                 cameraCapturer != null) {
             localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
-            localVideoTrack.addRenderer(localVideoView);
+            localVideoTrack.addSink(localVideoView);
 
 
             /*
@@ -479,17 +482,35 @@ public class VideoInviteActivity extends AppCompatActivity {
         localAudioTrack = LocalAudioTrack.create(this, true);
 
         // Share your camera
-        cameraCapturer = new CameraCapturer(this, getAvailableCameraSource());
+        cameraCapturer = new CameraCapturer(this, getFrontCameraId());
         localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
         primaryVideoView.setMirror(true);
-        localVideoTrack.addRenderer(primaryVideoView);
+        localVideoTrack.addSink(primaryVideoView);
         localVideoView = primaryVideoView;
     }
 
-    private CameraSource getAvailableCameraSource() {
-        return (CameraCapturer.isSourceAvailable(CameraSource.FRONT_CAMERA)) ?
-                (CameraSource.FRONT_CAMERA) :
-                (CameraSource.BACK_CAMERA);
+    private String getFrontCameraId() {
+        if (frontCameraId == null) {
+            for (String deviceName : camera1Enumerator.getDeviceNames()) {
+                if (camera1Enumerator.isFrontFacing(deviceName)) {
+                    frontCameraId = deviceName;
+                }
+            }
+        }
+
+        return frontCameraId;
+    }
+
+    private String getBackCameraId() {
+        if (backCameraId == null) {
+            for (String deviceName : camera1Enumerator.getDeviceNames()) {
+                if (camera1Enumerator.isBackFacing(deviceName)) {
+                    backCameraId = deviceName;
+                }
+            }
+        }
+
+        return backCameraId;
     }
 
     private void connectToRoom(String roomName) {
@@ -635,19 +656,18 @@ public class VideoInviteActivity extends AppCompatActivity {
     private void addRemoteParticipantVideo(VideoTrack videoTrack) {
         moveLocalVideoToThumbnailView();
         primaryVideoView.setMirror(false);
-        videoTrack.addRenderer(primaryVideoView);
+        videoTrack.addSink(primaryVideoView);
     }
 
     private void moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.getVisibility() == View.GONE) {
             thumbnailVideoView.setVisibility(View.VISIBLE);
             if (localVideoTrack != null) {
-                localVideoTrack.removeRenderer(primaryVideoView);
-                localVideoTrack.addRenderer(thumbnailVideoView);
+                localVideoTrack.removeSink(primaryVideoView);
+                localVideoTrack.addSink(thumbnailVideoView);
             }
             localVideoView = thumbnailVideoView;
-            thumbnailVideoView.setMirror(cameraCapturer.getCameraSource() ==
-                    CameraSource.FRONT_CAMERA);
+            thumbnailVideoView.setMirror(cameraCapturer.getCameraId().equals(getFrontCameraId()));
         }
     }
 
@@ -679,17 +699,16 @@ public class VideoInviteActivity extends AppCompatActivity {
     }
 
     private void removeParticipantVideo(VideoTrack videoTrack) {
-        videoTrack.removeRenderer(primaryVideoView);
+        videoTrack.removeSink(primaryVideoView);
     }
 
     private void moveLocalVideoToPrimaryView() {
         if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-            localVideoTrack.removeRenderer(thumbnailVideoView);
+            localVideoTrack.removeSink(thumbnailVideoView);
             thumbnailVideoView.setVisibility(View.GONE);
-            localVideoTrack.addRenderer(primaryVideoView);
+            localVideoTrack.removeSink(primaryVideoView);
             localVideoView = primaryVideoView;
-            primaryVideoView.setMirror(cameraCapturer.getCameraSource() ==
-                    CameraSource.FRONT_CAMERA);
+            primaryVideoView.setMirror(cameraCapturer.getCameraId().equals(getFrontCameraId()));
         }
     }
 
@@ -956,12 +975,13 @@ public class VideoInviteActivity extends AppCompatActivity {
     private View.OnClickListener switchCameraClickListener() {
         return v -> {
             if (cameraCapturer != null) {
-                CameraSource cameraSource = cameraCapturer.getCameraSource();
-                cameraCapturer.switchCamera();
+                String cameraId = cameraCapturer.getCameraId().equals(getFrontCameraId()) ?
+                        getBackCameraId() : getFrontCameraId();
+                cameraCapturer.switchCamera(cameraId);
                 if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-                    thumbnailVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    thumbnailVideoView.setMirror(cameraId.equals(getBackCameraId()));
                 } else {
-                    primaryVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    primaryVideoView.setMirror(cameraId.equals(getBackCameraId()));
                 }
             }
         };

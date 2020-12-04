@@ -34,7 +34,6 @@ import com.twilio.audioswitch.AudioDevice.Speakerphone;
 import com.twilio.audioswitch.AudioSwitch;
 import com.twilio.video.AudioCodec;
 import com.twilio.video.CameraCapturer;
-import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.EncodingParameters;
 import com.twilio.video.G722Codec;
@@ -57,7 +56,6 @@ import com.twilio.video.Room;
 import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
 import com.twilio.video.VideoCodec;
-import com.twilio.video.VideoRenderer;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 import com.twilio.video.Vp8Codec;
@@ -73,6 +71,7 @@ import java.util.List;
 import java.util.UUID;
 
 import kotlin.Unit;
+import tvi.webrtc.VideoSink;
 
 public class VideoActivity extends AppCompatActivity {
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
@@ -151,7 +150,7 @@ public class VideoActivity extends AppCompatActivity {
     private int savedVolumeControlStream;
     private MenuItem audioDeviceMenuItem;
 
-    private VideoRenderer localVideoView;
+    private VideoSink localVideoView;
     private boolean disconnectedFromOnDestroy;
     private boolean enableAutomaticSubscription;
 
@@ -276,9 +275,9 @@ public class VideoActivity extends AppCompatActivity {
         if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
             localVideoTrack = LocalVideoTrack.create(this,
                     true,
-                    cameraCapturerCompat.getVideoCapturer(),
+                    cameraCapturerCompat,
                     LOCAL_VIDEO_TRACK_NAME);
-            localVideoTrack.addRenderer(localVideoView);
+            localVideoTrack.addSink(localVideoView);
 
             /*
              * If connected to a Room then share the local video track.
@@ -392,20 +391,14 @@ public class VideoActivity extends AppCompatActivity {
         localAudioTrack = LocalAudioTrack.create(this, true, LOCAL_AUDIO_TRACK_NAME);
 
         // Share your camera
-        cameraCapturerCompat = new CameraCapturerCompat(this, getAvailableCameraSource());
+        cameraCapturerCompat = new CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA);
         localVideoTrack = LocalVideoTrack.create(this,
                 true,
-                cameraCapturerCompat.getVideoCapturer(),
+                cameraCapturerCompat,
                 LOCAL_VIDEO_TRACK_NAME);
         primaryVideoView.setMirror(true);
-        localVideoTrack.addRenderer(primaryVideoView);
+        localVideoTrack.addSink(primaryVideoView);
         localVideoView = primaryVideoView;
-    }
-
-    private CameraSource getAvailableCameraSource() {
-        return (CameraCapturer.isSourceAvailable(CameraSource.FRONT_CAMERA)) ?
-                (CameraSource.FRONT_CAMERA) :
-                (CameraSource.BACK_CAMERA);
     }
 
     private void setAccessToken() {
@@ -659,17 +652,17 @@ public class VideoActivity extends AppCompatActivity {
     private void addRemoteParticipantVideo(VideoTrack videoTrack) {
         moveLocalVideoToThumbnailView();
         primaryVideoView.setMirror(false);
-        videoTrack.addRenderer(primaryVideoView);
+        videoTrack.addSink(primaryVideoView);
     }
 
     private void moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.getVisibility() == View.GONE) {
             thumbnailVideoView.setVisibility(View.VISIBLE);
-            localVideoTrack.removeRenderer(primaryVideoView);
-            localVideoTrack.addRenderer(thumbnailVideoView);
+            localVideoTrack.removeSink(primaryVideoView);
+            localVideoTrack.addSink(thumbnailVideoView);
             localVideoView = thumbnailVideoView;
             thumbnailVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
-                    CameraSource.FRONT_CAMERA);
+                    CameraCapturerCompat.Source.FRONT_CAMERA);
         }
     }
 
@@ -700,19 +693,19 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     private void removeParticipantVideo(VideoTrack videoTrack) {
-        videoTrack.removeRenderer(primaryVideoView);
+        videoTrack.removeSink(primaryVideoView);
     }
 
     private void moveLocalVideoToPrimaryView() {
         if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
             thumbnailVideoView.setVisibility(View.GONE);
             if (localVideoTrack != null) {
-                localVideoTrack.removeRenderer(thumbnailVideoView);
-                localVideoTrack.addRenderer(primaryVideoView);
+                localVideoTrack.removeSink(thumbnailVideoView);
+                localVideoTrack.addSink(primaryVideoView);
             }
             localVideoView = primaryVideoView;
             primaryVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
-                    CameraSource.FRONT_CAMERA);
+                    CameraCapturerCompat.Source.FRONT_CAMERA);
         }
     }
 
@@ -1067,12 +1060,12 @@ public class VideoActivity extends AppCompatActivity {
     private View.OnClickListener switchCameraClickListener() {
         return v -> {
             if (cameraCapturerCompat != null) {
-                CameraSource cameraSource = cameraCapturerCompat.getCameraSource();
+                CameraCapturerCompat.Source cameraSource = cameraCapturerCompat.getCameraSource();
                 cameraCapturerCompat.switchCamera();
                 if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-                    thumbnailVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    thumbnailVideoView.setMirror(cameraSource == CameraCapturerCompat.Source.BACK_CAMERA);
                 } else {
-                    primaryVideoView.setMirror(cameraSource == CameraSource.BACK_CAMERA);
+                    primaryVideoView.setMirror(cameraSource == CameraCapturerCompat.Source.BACK_CAMERA);
                 }
             }
         };

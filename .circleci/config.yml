@@ -67,8 +67,8 @@ jobs:
           path: exampleCustomVideoCapturer/build/reports/lint-results.html
           prefix: exampleCustomVideoCapturer
       - store_artifacts:
-          path: exampleCustomVideoRenderer/build/reports/lint-results.html
-          prefix: exampleCustomVideoRenderer
+          path: exampleCustomVideoSink/build/reports/lint-results.html
+          prefix: exampleCustomVideoSink
       - store_artifacts:
           path: exampleDataTrack/build/reports/lint-results.html
           prefix: exampleDataTrack
@@ -120,7 +120,7 @@ jobs:
       - save-cache: *save-cache-gradle
 
 
-  build-exampleCustomVideoRenderer:
+  build-exampleCustomVideoSink:
     <<: *build-defaults
     resource_class: large
     steps:
@@ -130,8 +130,8 @@ jobs:
       - restore-cache: *restore-cache-gradle
       - run: *configure-gradle
       - run:
-          name: Build exampleCustomVideoRenderer
-          command: ./gradlew -q exampleCustomVideoRenderer:assemble
+          name: Build exampleCustomVideoSink
+          command: ./gradlew -q exampleCustomVideoSink:assemble
 
       # Save cache
       - save-cache: *save-cache-gradle
@@ -235,10 +235,9 @@ jobs:
       - restore-cache: *restore-cache-gradle
       - run: *configure-gradle
       - run:
-          name: Build exampleDataTrack
+          name: Build exampleCustomAudioDevice
           command: ./gradlew -q exampleCustomAudioDevice:assemble
       - save-cache: *save-cache-gradle
-
 
 workflows:
   version: 2
@@ -260,7 +259,7 @@ workflows:
       - build-exampleCustomVideoCapturer:
           requires:
               - setup-workspace
-      - build-exampleCustomVideoRenderer:
+      - build-exampleCustomVideoSink:
           requires:
               - setup-workspace
       - build-exampleDataTrack:
@@ -283,4 +282,4 @@ workflows:
               - setup-workspace
       - build-exampleCustomAudioDevice:
           requires:
-              - setup-workspace
+            - setup-workspace

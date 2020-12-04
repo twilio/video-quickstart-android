@@ -79,19 +79,21 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
      */
     private val microphoneCapturerRunnable = Runnable {
         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
-        audioRecord?.startRecording()
-        while (true) {
-            val bytesRead = audioRecord?.read(micWriteBuffer!!, micWriteBuffer!!.capacity())
-            if (bytesRead == micWriteBuffer?.capacity()) {
-                AudioDevice.audioDeviceWriteCaptureData(capturingAudioDeviceContext!!, micWriteBuffer!!)
-            } else {
-                val errorMessage = "AudioRecord.read failed: $bytesRead"
-                Log.e(TAG, errorMessage)
-                if (bytesRead == AudioRecord.ERROR_INVALID_OPERATION) {
-                    stopRecording()
+        if (audioRecord.state != AudioRecord.STATE_UNINITIALIZED) {
+            audioRecord?.startRecording()
+            while (true) {
+                val bytesRead = audioRecord?.read(micWriteBuffer!!, micWriteBuffer!!.capacity())
+                if (bytesRead == micWriteBuffer?.capacity()) {
+                    AudioDevice.audioDeviceWriteCaptureData(capturingAudioDeviceContext!!, micWriteBuffer!!)
+                } else {
+                    val errorMessage = "AudioRecord.read failed: $bytesRead"
                     Log.e(TAG, errorMessage)
+                    if (bytesRead == AudioRecord.ERROR_INVALID_OPERATION) {
+                        stopRecording()
+                        Log.e(TAG, errorMessage)
+                    }
+                    break
                 }
-                break
             }
         }
     }

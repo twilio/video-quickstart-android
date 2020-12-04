@@ -4,7 +4,6 @@
     <string name="toggle_flash">Toggle Flash</string>
     <string name="flash_not_supported">Flash not supported</string>
     <string name="take_picture">Take Picture</string>
-    <string name="take_picture_failed">Failed to decode bitmap</string>
     <string name="close">Close</string>
     <string name="camera_capturer_picture">CameraCapturer picture</string>
 </resources>
