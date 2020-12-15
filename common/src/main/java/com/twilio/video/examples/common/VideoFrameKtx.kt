@@ -20,20 +20,18 @@ import java.nio.ByteBuffer
  * valid EGL context when the frame buffer is a [VideoFrame.TextureBuffer].
  */
 fun VideoFrame.toBitmap() : Bitmap? {
-    return captureBitmap(this)
-}
-
-private fun captureBitmap(frame: VideoFrame) : Bitmap? = if (frame.buffer is VideoFrame.TextureBuffer) {
-    captureBitmapFromTexture(frame)
-} else {
-    captureBitmapFromYuvFrame(frame)
-}
-
-private fun captureBitmapFromYuvFrame(videoFrame: VideoFrame): Bitmap? {
+    val i420Buffer = if (buffer is VideoFrame.TextureBuffer) {
+        val yuvConverter = YuvConverter()
+        val buffer = yuvConverter.convert(buffer as VideoFrame.TextureBuffer)
+        yuvConverter.release()
+        buffer
+    } else {
+        buffer.toI420()
+    }
     val yuvImage = i420ToYuvImage(
-        videoFrame.buffer.toI420(),
-        videoFrame.buffer.width,
-        videoFrame.buffer.height
+        i420Buffer,
+        buffer.width,
+        buffer.height
     )
     val stream = ByteArrayOutputStream()
     val rect =
@@ -60,44 +58,10 @@ private fun captureBitmapFromYuvFrame(videoFrame: VideoFrame): Bitmap? {
     val matrix = Matrix()
 
     // Apply any needed rotation
-    matrix.postRotate(videoFrame.rotation.toFloat())
+    matrix.postRotate(rotation.toFloat())
     bitmap = Bitmap.createBitmap(
         bitmap!!, 0, 0, bitmap.width, bitmap.height, matrix, true
     )
-    return bitmap
-}
-
-private fun captureBitmapFromTexture(videoFrame: VideoFrame): Bitmap? {
-    val width = videoFrame.rotatedWidth
-    val height = videoFrame.rotatedHeight
-    val yuvConverter = YuvConverter()
-    val i420Buffer = yuvConverter.convert(videoFrame.buffer as VideoFrame.TextureBuffer)
-    val yuvImage = i420ToYuvImage(i420Buffer, width, height)
-    val stream = ByteArrayOutputStream()
-    val rect =
-        Rect(0, 0, yuvImage.width, yuvImage.height)
-
-    // Compress YuvImage to jpeg
-    yuvImage.compressToJpeg(rect, 100, stream)
-
-    // Convert jpeg to Bitmap
-    val imageBytes = stream.toByteArray()
-
-    // Release YUV Converter
-    yuvConverter.release()
-    val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        val buffer = ByteBuffer.wrap(imageBytes)
-        val src =
-            ImageDecoder.createSource(buffer)
-        try {
-            ImageDecoder.decodeBitmap(src)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return null
-        }
-    } else {
-        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-    }
     return bitmap
 }
 
