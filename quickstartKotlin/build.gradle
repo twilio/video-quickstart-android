@@ -63,7 +63,7 @@ dependencies {
 
     implementation project(':common')
     implementation "com.twilio:audioswitch:${versions.audioSwitch}"
-    implementation "com.twilio:video-android:${versions.videoAndroid}"
+    implementation "com.twilio:video-android-ktx:${versions.videoAndroid}"
     implementation "com.android.support.constraint:constraint-layout:${versions.constraintLayout}"
     implementation "com.koushikdutta.ion:ion:${versions.ion}"
     implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"

@@ -54,6 +54,10 @@ import com.twilio.video.VideoCodec
 import com.twilio.video.VideoTrack
 import com.twilio.video.Vp8Codec
 import com.twilio.video.Vp9Codec
+import com.twilio.video.ktx.createConnectOptions
+import com.twilio.video.ktx.Video.connect
+import com.twilio.video.ktx.createLocalAudioTrack
+import com.twilio.video.ktx.createLocalVideoTrack
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.content_video.*
 import tvi.webrtc.VideoSink
@@ -484,7 +488,7 @@ class VideoActivity : AppCompatActivity() {
          * If the local video track was released when the app was put in the background, recreate.
          */
         localVideoTrack = if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
-            LocalVideoTrack.create(this,
+            createLocalVideoTrack(this,
                     true,
                     cameraCapturerCompat)
         } else {
@@ -603,10 +607,10 @@ class VideoActivity : AppCompatActivity() {
 
     private fun createAudioAndVideoTracks() {
         // Share your microphone
-        localAudioTrack = LocalAudioTrack.create(this, true)
+        localAudioTrack = createLocalAudioTrack(this, true)
 
         // Share your camera
-        localVideoTrack = LocalVideoTrack.create(this,
+        localVideoTrack = createLocalVideoTrack(this,
                 true,
                 cameraCapturerCompat)
     }
@@ -633,40 +637,41 @@ class VideoActivity : AppCompatActivity() {
 
     private fun connectToRoom(roomName: String) {
         audioSwitch.activate();
-        val connectOptionsBuilder = ConnectOptions.Builder(accessToken)
-                .roomName(roomName)
+        val connectionOptions = createConnectOptions(accessToken) {
+            roomName(roomName)
+            /*
+             * Add local audio track to connect options to share with participants.
+             */
+            audioTracks(listOf(localAudioTrack))
+            /*
+             * Add local video track to connect options to share with participants.
+             */
+            videoTracks(listOf(localVideoTrack))
 
-        /*
-         * Add local audio track to connect options to share with participants.
-         */
-        localAudioTrack?.let { connectOptionsBuilder.audioTracks(listOf(it)) }
+            /*
+             * Set the preferred audio and video codec for media.
+             */
+            preferAudioCodecs(listOf(audioCodec))
+            preferVideoCodecs(listOf(videoCodec))
 
-        /*
-         * Add local video track to connect options to share with participants.
-         */
-        localVideoTrack?.let { connectOptionsBuilder.videoTracks(listOf(it)) }
+            /*
+             * Set the sender side encoding parameters.
+             */
+            encodingParameters(encodingParameters)
 
-        /*
-         * Set the preferred audio and video codec for media.
-         */
-        connectOptionsBuilder.preferAudioCodecs(listOf(audioCodec))
-        connectOptionsBuilder.preferVideoCodecs(listOf(videoCodec))
+            /*
+             * Toggles automatic track subscription. If set to false, the LocalParticipant will receive
+             * notifications of track publish events, but will not automatically subscribe to them. If
+             * set to true, the LocalParticipant will automatically subscribe to tracks as they are
+             * published. If unset, the default is true. Note: This feature is only available for Group
+             * Rooms. Toggling the flag in a P2P room does not modify subscription behavior.
+             */
+            enableAutomaticSubscription(enableAutomaticSubscription)
+        }
 
-        /*
-         * Set the sender side encoding parameters.
-         */
-        connectOptionsBuilder.encodingParameters(encodingParameters)
-
-        /*
-         * Toggles automatic track subscription. If set to false, the LocalParticipant will receive
-         * notifications of track publish events, but will not automatically subscribe to them. If
-         * set to true, the LocalParticipant will automatically subscribe to tracks as they are
-         * published. If unset, the default is true. Note: This feature is only available for Group
-         * Rooms. Toggling the flag in a P2P room does not modify subscription behavior.
-         */
-        connectOptionsBuilder.enableAutomaticSubscription(enableAutomaticSubscription)
-
-        room = Video.connect(this, connectOptionsBuilder.build(), roomListener)
+        room = connect(this, accessToken, roomListener) {
+            connectionOptions
+        }
         setDisconnectAction()
     }
 
