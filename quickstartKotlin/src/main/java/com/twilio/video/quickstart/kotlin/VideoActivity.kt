@@ -637,7 +637,8 @@ class VideoActivity : AppCompatActivity() {
 
     private fun connectToRoom(roomName: String) {
         audioSwitch.activate();
-        val connectionOptions = createConnectOptions(accessToken) {
+
+        room = connect(this, accessToken, roomListener) {
             roomName(roomName)
             /*
              * Add local audio track to connect options to share with participants.
@@ -667,10 +668,6 @@ class VideoActivity : AppCompatActivity() {
              * Rooms. Toggling the flag in a P2P room does not modify subscription behavior.
              */
             enableAutomaticSubscription(enableAutomaticSubscription)
-        }
-
-        room = connect(this, accessToken, roomListener) {
-            connectionOptions
         }
         setDisconnectAction()
     }
