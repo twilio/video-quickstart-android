@@ -50,6 +50,12 @@
             app:fabSize="normal"
             android:src="@drawable/ic_video_call_white_24dp" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/toggle_flash_button"
+            android:text="toggle_flash"
+            android:layout_margin="16dp"/>
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

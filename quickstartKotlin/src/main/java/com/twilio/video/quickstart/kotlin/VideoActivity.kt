@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.Camera
 import android.media.AudioManager
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -18,6 +19,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.koushikdutta.ion.Ion
@@ -29,6 +31,7 @@ import com.twilio.audioswitch.AudioDevice.WiredHeadset
 import com.twilio.audioswitch.AudioSwitch
 import com.twilio.video.AudioCodec
 import com.twilio.video.CameraCapturer
+import com.twilio.video.CameraParameterUpdater
 import com.twilio.video.ConnectOptions
 import com.twilio.video.EncodingParameters
 import com.twilio.video.G722Codec
@@ -80,6 +83,8 @@ class VideoActivity : AppCompatActivity() {
      * or the request to the token server.
      */
     private lateinit var accessToken: String
+    private var flashOn = false
+    private val toggleFlashButtonClickListener = View.OnClickListener { toggleFlash() }
 
     /*
      * A Room represents communication between a local participant and one or more participants.
@@ -409,7 +414,7 @@ class VideoActivity : AppCompatActivity() {
     private var localVideoTrack: LocalVideoTrack? = null
     private var alertDialog: android.support.v7.app.AlertDialog? = null
     private val cameraCapturerCompat by lazy {
-        CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA)
+        CameraCapturerCompat.newInstance(this) ?: throw IllegalStateException()
     }
     private val sharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this@VideoActivity)
@@ -429,6 +434,7 @@ class VideoActivity : AppCompatActivity() {
     private lateinit var localVideoView: VideoSink
     private var disconnectedFromOnDestroy = false
     private var isSpeakerPhoneEnabled = true
+    private lateinit var toggleFlashButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -458,6 +464,7 @@ class VideoActivity : AppCompatActivity() {
         /*
          * Set the initial state of the UI
          */
+        toggleFlashButton = findViewById<View>(R.id.toggle_flash_button) as Button
         initializeUI()
     }
 
@@ -490,7 +497,7 @@ class VideoActivity : AppCompatActivity() {
         localVideoTrack = if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
             createLocalVideoTrack(this,
                     true,
-                    cameraCapturerCompat)
+                    cameraCapturerCompat.videoCapturer)
         } else {
             localVideoTrack
         }
@@ -612,7 +619,7 @@ class VideoActivity : AppCompatActivity() {
         // Share your camera
         localVideoTrack = createLocalVideoTrack(this,
                 true,
-                cameraCapturerCompat)
+                cameraCapturerCompat!!.videoCapturer)
     }
 
     private fun setAccessToken() {
@@ -686,6 +693,7 @@ class VideoActivity : AppCompatActivity() {
         localVideoActionFab.setOnClickListener(localVideoClickListener())
         muteActionFab.show()
         muteActionFab.setOnClickListener(muteClickListener())
+        toggleFlashButton.setOnClickListener(toggleFlashButtonClickListener)
     }
 
     /*
@@ -799,8 +807,7 @@ class VideoActivity : AppCompatActivity() {
                 this?.addSink(thumbnailVideoView)
             }
             localVideoView = thumbnailVideoView
-            thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
-                   CameraCapturerCompat.Source.FRONT_CAMERA
+            thumbnailVideoView.mirror = cameraCapturerCompat.isFrontCamera()
         }
     }
 
@@ -836,8 +843,7 @@ class VideoActivity : AppCompatActivity() {
                 this?.addSink(primaryVideoView)
             }
             localVideoView = primaryVideoView
-            primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
-                   CameraCapturerCompat.Source.FRONT_CAMERA
+            primaryVideoView.mirror = cameraCapturerCompat.isFrontCamera()
         }
     }
 
@@ -873,13 +879,7 @@ class VideoActivity : AppCompatActivity() {
 
     private fun switchCameraClickListener(): View.OnClickListener {
         return View.OnClickListener {
-            val cameraSource = cameraCapturerCompat.cameraSource
             cameraCapturerCompat.switchCamera()
-            if (thumbnailVideoView.visibility == View.VISIBLE) {
-                thumbnailVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
-            } else {
-                primaryVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
-            }
         }
     }
 
@@ -969,5 +969,27 @@ class VideoActivity : AppCompatActivity() {
                 verticalPadding,
                 horizontalPadding,
                 0)
+    }
+
+    @Suppress("DEPRECATION")
+    private val flashToggler =
+            CameraParameterUpdater { parameters: Camera.Parameters ->
+                if (parameters.flashMode != null) {
+                    val flashMode =
+                            if (flashOn) Camera.Parameters.FLASH_MODE_OFF else Camera.Parameters.FLASH_MODE_TORCH
+                    parameters.flashMode = flashMode
+                    flashOn = !flashOn
+                } else {
+                    Toast.makeText(
+                            this,
+                            "R.string.flash_not_supported",
+                            Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+    private fun toggleFlash() {
+        // Request an update to camera parameters with flash toggler
+        cameraCapturerCompat.updateCameraParametersss(flashToggler)
     }
 }
