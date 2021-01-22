@@ -2,11 +2,13 @@ package com.twilio.video.quickstart.kotlin
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
@@ -28,8 +30,7 @@ import com.twilio.audioswitch.AudioDevice.Speakerphone
 import com.twilio.audioswitch.AudioDevice.WiredHeadset
 import com.twilio.audioswitch.AudioSwitch
 import com.twilio.video.AudioCodec
-import com.twilio.video.CameraCapturer
-import com.twilio.video.ConnectOptions
+import com.twilio.video.Camera2Capturer
 import com.twilio.video.EncodingParameters
 import com.twilio.video.G722Codec
 import com.twilio.video.H264Codec
@@ -49,21 +50,23 @@ import com.twilio.video.RemoteVideoTrack
 import com.twilio.video.RemoteVideoTrackPublication
 import com.twilio.video.Room
 import com.twilio.video.TwilioException
-import com.twilio.video.Video
 import com.twilio.video.VideoCodec
 import com.twilio.video.VideoTrack
+import com.twilio.video.VideoView
 import com.twilio.video.Vp8Codec
 import com.twilio.video.Vp9Codec
-import com.twilio.video.ktx.createConnectOptions
 import com.twilio.video.ktx.Video.connect
 import com.twilio.video.ktx.createLocalAudioTrack
 import com.twilio.video.ktx.createLocalVideoTrack
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.content_video.*
+import tvi.webrtc.Camera2Enumerator
 import tvi.webrtc.VideoSink
 import java.util.*
 import kotlin.properties.Delegates
 
+private const val FRONT_CAMERA_TRACK_NAME = "FrontCamera"
+private const val BACK_CAMERA_TRACK_NAME = "BackCamera"
 
 class VideoActivity : AppCompatActivity() {
     private val CAMERA_MIC_PERMISSION_REQUEST_CODE = 1
@@ -406,10 +409,14 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private var localAudioTrack: LocalAudioTrack? = null
-    private var localVideoTrack: LocalVideoTrack? = null
+    private var frontCameraVideoTrack: LocalVideoTrack? = null
+    private var backCameraVideoTrack: LocalVideoTrack? = null
     private var alertDialog: android.support.v7.app.AlertDialog? = null
-    private val cameraCapturerCompat by lazy {
+    private val frontCameraCapturer by lazy {
         CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA)
+    }
+    private val backCameraCapturer by lazy {
+        CameraCapturerCompat(this, CameraCapturerCompat.Source.BACK_CAMERA)
     }
     private val sharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this@VideoActivity)
@@ -426,9 +433,9 @@ class VideoActivity : AppCompatActivity() {
     private lateinit var audioDeviceMenuItem: MenuItem
 
     private var participantIdentity: String? = null
-    private lateinit var localVideoView: VideoSink
+    private lateinit var frontVideoView: VideoView
+    private lateinit var backVideoView: VideoView
     private var disconnectedFromOnDestroy = false
-    private var isSpeakerPhoneEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -437,7 +444,8 @@ class VideoActivity : AppCompatActivity() {
         /*
          * Set local video view to primary view
          */
-        localVideoView = primaryVideoView
+        frontVideoView = frontCameraVideoView
+        backVideoView = backCameraVideoView
 
         /*
          * Enable changing the volume using the up/down keys during a conversation
@@ -487,19 +495,32 @@ class VideoActivity : AppCompatActivity() {
         /*
          * If the local video track was released when the app was put in the background, recreate.
          */
-        localVideoTrack = if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
+        frontCameraVideoTrack = if (frontCameraVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
             createLocalVideoTrack(this,
                     true,
-                    cameraCapturerCompat)
+                    frontCameraCapturer)
         } else {
-            localVideoTrack
+            frontCameraVideoTrack
         }
-        localVideoTrack?.addSink(localVideoView)
+        frontCameraVideoTrack?.addSink(frontVideoView)
 
         /*
          * If connected to a Room then share the local video track.
          */
-        localVideoTrack?.let { localParticipant?.publishTrack(it) }
+        frontCameraVideoTrack?.let { localParticipant?.publishTrack(it) }
+
+        /*
+         * Do the same with the back camera video track
+         */
+        backCameraVideoTrack = if (backCameraVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
+            createLocalVideoTrack(this,
+                    true,
+                    backCameraCapturer)
+        } else {
+            backCameraVideoTrack
+        }
+        backCameraVideoTrack?.addSink(backVideoView)
+        backCameraVideoTrack?.let { localParticipant?.publishTrack(it) }
 
         /*
          * Update encoding parameters if they have changed.
@@ -523,14 +544,22 @@ class VideoActivity : AppCompatActivity() {
          * participant before releasing the video track. Participants will be notified that
          * the track has been removed.
          */
-        localVideoTrack?.let { localParticipant?.unpublishTrack(it) }
+        frontCameraVideoTrack?.let { localParticipant?.unpublishTrack(it) }
 
         /*
          * Release the local video track before going in the background. This ensures that the
          * camera can be used by other applications while this app is in the background.
          */
-        localVideoTrack?.release()
-        localVideoTrack = null
+        frontCameraVideoTrack?.release()
+        frontCameraVideoTrack = null
+
+        /*
+         * Same for back camera video track
+         */
+        backCameraVideoTrack?.let { localParticipant?.unpublishTrack(it) }
+        backCameraVideoTrack?.release()
+        backCameraVideoTrack = null
+
         super.onPause()
     }
 
@@ -553,7 +582,7 @@ class VideoActivity : AppCompatActivity() {
          * or video is freed.
          */
         localAudioTrack?.release()
-        localVideoTrack?.release()
+        frontCameraVideoTrack?.release()
 
         super.onDestroy()
     }
@@ -609,10 +638,13 @@ class VideoActivity : AppCompatActivity() {
         // Share your microphone
         localAudioTrack = createLocalAudioTrack(this, true)
 
-        // Share your camera
-        localVideoTrack = createLocalVideoTrack(this,
+        // Share your cameras
+        frontCameraVideoTrack = createLocalVideoTrack(this,
                 true,
-                cameraCapturerCompat)
+                frontCameraCapturer)
+        backCameraVideoTrack = createLocalVideoTrack(this,
+                true,
+                backCameraCapturer)
     }
 
     private fun setAccessToken() {
@@ -647,7 +679,7 @@ class VideoActivity : AppCompatActivity() {
             /*
              * Add local video track to connect options to share with participants.
              */
-            videoTracks(listOf(localVideoTrack))
+            videoTracks(listOf(frontCameraVideoTrack, backCameraVideoTrack))
 
             /*
              * Set the preferred audio and video codec for media.
@@ -680,10 +712,6 @@ class VideoActivity : AppCompatActivity() {
                 R.drawable.ic_video_call_white_24dp))
         connectActionFab.show()
         connectActionFab.setOnClickListener(connectActionClickListener())
-        switchCameraActionFab.show()
-        switchCameraActionFab.setOnClickListener(switchCameraClickListener())
-        localVideoActionFab.show()
-        localVideoActionFab.setOnClickListener(localVideoClickListener())
         muteActionFab.show()
         muteActionFab.setOnClickListener(muteClickListener())
     }
@@ -757,7 +785,7 @@ class VideoActivity : AppCompatActivity() {
         /*
          * This app only displays video for one additional participant per Room
          */
-        if (thumbnailVideoView.visibility == View.VISIBLE) {
+        if (frontCameraThumbnailVideoView.visibility == View.VISIBLE) {
             Snackbar.make(connectActionFab,
                     "Multiple participants are not currently support in this UI",
                     Snackbar.LENGTH_LONG)
@@ -787,20 +815,28 @@ class VideoActivity : AppCompatActivity() {
      */
     private fun addRemoteParticipantVideo(videoTrack: VideoTrack) {
         moveLocalVideoToThumbnailView()
-        primaryVideoView.mirror = false
-        videoTrack.addSink(primaryVideoView)
+        frontVideoView.mirror = false
+        videoTrack.addSink(frontVideoView)
     }
 
     private fun moveLocalVideoToThumbnailView() {
-        if (thumbnailVideoView.visibility == View.GONE) {
-            thumbnailVideoView.visibility = View.VISIBLE
-            with(localVideoTrack) {
-                this?.removeSink(primaryVideoView)
-                this?.addSink(thumbnailVideoView)
+        if (frontCameraThumbnailVideoView.visibility == View.GONE) {
+            frontCameraThumbnailVideoView.visibility = View.VISIBLE
+            with(frontCameraVideoTrack) {
+                this?.removeSink(frontVideoView)
+                this?.addSink(frontCameraThumbnailVideoView)
             }
-            localVideoView = thumbnailVideoView
-            thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
+            frontVideoView = frontCameraThumbnailVideoView
+            frontCameraThumbnailVideoView.mirror = frontCameraCapturer.cameraSource ==
                    CameraCapturerCompat.Source.FRONT_CAMERA
+        }
+        if (backCameraThumbnailVideoView.visibility == View.GONE) {
+            backCameraThumbnailVideoView.visibility = View.VISIBLE
+            with(backCameraVideoTrack) {
+                this?.removeSink(backCameraVideoView)
+                this?.addSink(backCameraThumbnailVideoView)
+            }
+            backVideoView = backCameraThumbnailVideoView
         }
     }
 
@@ -825,18 +861,18 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private fun removeParticipantVideo(videoTrack: VideoTrack) {
-        videoTrack.removeSink(primaryVideoView)
+        videoTrack.removeSink(frontVideoView)
     }
 
     private fun moveLocalVideoToPrimaryView() {
-        if (thumbnailVideoView.visibility == View.VISIBLE) {
-            thumbnailVideoView.visibility = View.GONE
-            with(localVideoTrack) {
-                this?.removeSink(thumbnailVideoView)
-                this?.addSink(primaryVideoView)
+        if (frontCameraThumbnailVideoView.visibility == View.VISIBLE) {
+            frontCameraThumbnailVideoView.visibility = View.GONE
+            with(frontCameraVideoTrack) {
+                this?.removeSink(frontCameraThumbnailVideoView)
+                this?.addSink(frontVideoView)
             }
-            localVideoView = primaryVideoView
-            primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
+            frontVideoView = frontVideoView
+            frontVideoView.mirror = frontCameraCapturer.cameraSource ==
                    CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
@@ -868,40 +904,6 @@ class VideoActivity : AppCompatActivity() {
         return DialogInterface.OnClickListener { _, _ ->
             initializeUI()
             alertDialog!!.dismiss()
-        }
-    }
-
-    private fun switchCameraClickListener(): View.OnClickListener {
-        return View.OnClickListener {
-            val cameraSource = cameraCapturerCompat.cameraSource
-            cameraCapturerCompat.switchCamera()
-            if (thumbnailVideoView.visibility == View.VISIBLE) {
-                thumbnailVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
-            } else {
-                primaryVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
-            }
-        }
-    }
-
-    private fun localVideoClickListener(): View.OnClickListener {
-        return View.OnClickListener {
-            /*
-             * Enable/disable the local video track
-             */
-            localVideoTrack?.let {
-                val enable = !it.isEnabled
-                it.enable(enable)
-                val icon: Int
-                if (enable) {
-                    icon = R.drawable.ic_videocam_white_24dp
-                    switchCameraActionFab.show()
-                } else {
-                    icon = R.drawable.ic_videocam_off_black_24dp
-                    switchCameraActionFab.hide()
-                }
-                localVideoActionFab.setImageDrawable(
-                        ContextCompat.getDrawable(this@VideoActivity, icon))
-            }
         }
     }
 

@@ -7,7 +7,7 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
 import android.os.Build
-import androidx.annotation.RequiresApi
+import android.util.Log
 import com.twilio.video.Camera2Capturer
 import com.twilio.video.CameraCapturer
 import com.twilio.video.VideoCapturer
@@ -164,7 +164,9 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
     init {
         if (Camera2Capturer.isSupported(context) && isLollipopApiSupported) {
             setCamera2Maps(context)
-            camera2Capturer = Camera2Capturer(context, camera2IdMap[cameraSource]!!)
+            val cameraId = camera2IdMap[cameraSource]!!
+            Log.d("JAQ", "Camera id selected")
+            camera2Capturer = Camera2Capturer(context, cameraId)
             activeCapturer = camera2Capturer
             camera1Capturer = null
         } else {
