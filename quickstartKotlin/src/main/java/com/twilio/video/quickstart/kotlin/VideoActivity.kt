@@ -2,13 +2,11 @@ package com.twilio.video.quickstart.kotlin
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
@@ -30,7 +28,6 @@ import com.twilio.audioswitch.AudioDevice.Speakerphone
 import com.twilio.audioswitch.AudioDevice.WiredHeadset
 import com.twilio.audioswitch.AudioSwitch
 import com.twilio.video.AudioCodec
-import com.twilio.video.Camera2Capturer
 import com.twilio.video.EncodingParameters
 import com.twilio.video.G722Codec
 import com.twilio.video.H264Codec
@@ -60,8 +57,6 @@ import com.twilio.video.ktx.createLocalAudioTrack
 import com.twilio.video.ktx.createLocalVideoTrack
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.content_video.*
-import tvi.webrtc.Camera2Enumerator
-import tvi.webrtc.VideoSink
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -160,7 +155,7 @@ class VideoActivity : AppCompatActivity() {
             title = room.name
 
             // Only one participant is supported
-            room.remoteParticipants?.firstOrNull()?.let { addRemoteParticipant(it) }
+            room.remoteParticipants.firstOrNull()?.let { addRemoteParticipant(it) }
         }
 
         override fun onReconnected(room: Room) {
@@ -180,6 +175,8 @@ class VideoActivity : AppCompatActivity() {
         }
 
         override fun onDisconnected(room: Room, e: TwilioException?) {
+            frontCameraVideoTrack?.let { localParticipant?.unpublishTrack(it) }
+            backCameraVideoTrack?.let { localParticipant?.unpublishTrack(it) }
             localParticipant = null
             videoStatusTextView.text = "Disconnected from ${room.name}"
             reconnectingProgressBar.visibility = View.GONE;
@@ -188,7 +185,7 @@ class VideoActivity : AppCompatActivity() {
             if (!disconnectedFromOnDestroy) {
                 audioSwitch.deactivate()
                 initializeUI()
-                moveLocalVideoToPrimaryView()
+                restoreLocalTracksInPriamryView()
             }
         }
 
@@ -361,7 +358,7 @@ class VideoActivity : AppCompatActivity() {
                     "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
                     "name=${remoteVideoTrack.name}]")
             videoStatusTextView.text = "onVideoTrackSubscribed"
-            addRemoteParticipantVideo(remoteVideoTrack)
+            addRemoteParticipantVideoTrack(remoteVideoTrackPublication)
         }
 
         override fun onVideoTrackUnsubscribed(remoteParticipant: RemoteParticipant,
@@ -372,7 +369,11 @@ class VideoActivity : AppCompatActivity() {
                     "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
                     "name=${remoteVideoTrack.name}]")
             videoStatusTextView.text = "onVideoTrackUnsubscribed"
-            removeParticipantVideo(remoteVideoTrack)
+//            if (remoteVideoTrackPublication.trackName == FRONT_CAMERA_TRACK_NAME) {
+//                remoteVideoTrackPublication.remoteVideoTrack?.let { removeParticipantFrontVideo(it) }
+//            } else {
+//                remoteVideoTrackPublication.remoteVideoTrack?.let { removeParticipantBackVideo(it) }
+//            }
         }
 
         override fun onVideoTrackSubscriptionFailed(remoteParticipant: RemoteParticipant,
@@ -641,10 +642,12 @@ class VideoActivity : AppCompatActivity() {
         // Share your cameras
         frontCameraVideoTrack = createLocalVideoTrack(this,
                 true,
-                frontCameraCapturer)
+                frontCameraCapturer,
+                name = FRONT_CAMERA_TRACK_NAME)
         backCameraVideoTrack = createLocalVideoTrack(this,
                 true,
-                backCameraCapturer)
+                backCameraCapturer,
+                name = BACK_CAMERA_TRACK_NAME)
     }
 
     private fun setAccessToken() {
@@ -782,27 +785,13 @@ class VideoActivity : AppCompatActivity() {
      * Called when participant joins the room
      */
     private fun addRemoteParticipant(remoteParticipant: RemoteParticipant) {
-        /*
-         * This app only displays video for one additional participant per Room
-         */
-        if (frontCameraThumbnailVideoView.visibility == View.VISIBLE) {
-            Snackbar.make(connectActionFab,
-                    "Multiple participants are not currently support in this UI",
-                    Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-            return
-        }
         participantIdentity = remoteParticipant.identity
         videoStatusTextView.text = "Participant $participantIdentity joined"
 
         /*
          * Add participant renderer
          */
-        remoteParticipant.remoteVideoTracks.firstOrNull()?.let { remoteVideoTrackPublication ->
-            if (remoteVideoTrackPublication.isTrackSubscribed) {
-                remoteVideoTrackPublication.remoteVideoTrack?.let { addRemoteParticipantVideo(it) }
-            }
-        }
+//        remoteParticipant.remoteVideoTracks.forEach { addRemoteParticipantVideoTrack(it) }
 
         /*
          * Start listening for participant events
@@ -810,34 +799,26 @@ class VideoActivity : AppCompatActivity() {
         remoteParticipant.setListener(participantListener)
     }
 
+    private fun addRemoteParticipantVideoTrack(remoteVideoTrackPublication: RemoteVideoTrackPublication) {
+        if (remoteVideoTrackPublication.trackName == FRONT_CAMERA_TRACK_NAME) {
+            remoteVideoTrackPublication.remoteVideoTrack?.let { addRemoteParticipantFrontCameraVideo(it) }
+        } else {
+            remoteVideoTrackPublication.remoteVideoTrack?.let { addRemoteParticipantBackCameraVideo(it) }
+        }
+    }
+
     /*
      * Set primary view as renderer for participant video track
      */
-    private fun addRemoteParticipantVideo(videoTrack: VideoTrack) {
-        moveLocalVideoToThumbnailView()
+    private fun addRemoteParticipantFrontCameraVideo(videoTrack: VideoTrack) {
+        frontCameraVideoTrack?.removeSink(frontVideoView)
+        if (!videoTrack.sinks.contains(frontVideoView)) videoTrack.addSink(frontVideoView)
         frontVideoView.mirror = false
-        videoTrack.addSink(frontVideoView)
     }
 
-    private fun moveLocalVideoToThumbnailView() {
-        if (frontCameraThumbnailVideoView.visibility == View.GONE) {
-            frontCameraThumbnailVideoView.visibility = View.VISIBLE
-            with(frontCameraVideoTrack) {
-                this?.removeSink(frontVideoView)
-                this?.addSink(frontCameraThumbnailVideoView)
-            }
-            frontVideoView = frontCameraThumbnailVideoView
-            frontCameraThumbnailVideoView.mirror = frontCameraCapturer.cameraSource ==
-                   CameraCapturerCompat.Source.FRONT_CAMERA
-        }
-        if (backCameraThumbnailVideoView.visibility == View.GONE) {
-            backCameraThumbnailVideoView.visibility = View.VISIBLE
-            with(backCameraVideoTrack) {
-                this?.removeSink(backCameraVideoView)
-                this?.addSink(backCameraThumbnailVideoView)
-            }
-            backVideoView = backCameraThumbnailVideoView
-        }
+    private fun addRemoteParticipantBackCameraVideo(videoTrack: VideoTrack) {
+        backCameraVideoTrack?.removeSink(backCameraVideoView)
+        if (!videoTrack.sinks.contains(backVideoView)) videoTrack.addSink(backVideoView)
     }
 
     /*
@@ -852,29 +833,37 @@ class VideoActivity : AppCompatActivity() {
         /*
          * Remove participant renderer
          */
-        remoteParticipant.remoteVideoTracks.firstOrNull()?.let { remoteVideoTrackPublication ->
-            if (remoteVideoTrackPublication.isTrackSubscribed) {
-                remoteVideoTrackPublication.remoteVideoTrack?.let { removeParticipantVideo(it) }
-            }
-        }
-        moveLocalVideoToPrimaryView()
+        removeRemoteParticipantVideoTracks(remoteParticipant)
+        restoreLocalTracksInPriamryView()
     }
 
-    private fun removeParticipantVideo(videoTrack: VideoTrack) {
+    private fun removeRemoteParticipantVideoTracks(remoteParticipant: RemoteParticipant) {
+        remoteParticipant.remoteVideoTracks.forEach { remoteVideoTrackPublication ->
+            if (remoteVideoTrackPublication.trackName == FRONT_CAMERA_TRACK_NAME) {
+                remoteVideoTrackPublication.remoteVideoTrack?.let { removeParticipantFrontVideo(it) }
+            } else {
+                remoteVideoTrackPublication.remoteVideoTrack?.let { removeParticipantBackVideo(it) }
+            }
+        }
+    }
+
+    private fun removeParticipantFrontVideo(videoTrack: VideoTrack) {
         videoTrack.removeSink(frontVideoView)
     }
 
-    private fun moveLocalVideoToPrimaryView() {
-        if (frontCameraThumbnailVideoView.visibility == View.VISIBLE) {
-            frontCameraThumbnailVideoView.visibility = View.GONE
-            with(frontCameraVideoTrack) {
-                this?.removeSink(frontCameraThumbnailVideoView)
-                this?.addSink(frontVideoView)
-            }
-            frontVideoView = frontVideoView
-            frontVideoView.mirror = frontCameraCapturer.cameraSource ==
-                   CameraCapturerCompat.Source.FRONT_CAMERA
+    private fun removeParticipantBackVideo(videoTrack: VideoTrack) {
+        videoTrack.removeSink(backVideoView)
+    }
+
+    private fun restoreLocalTracksInPriamryView() {
+        with(frontCameraVideoTrack) {
+            this?.addSink(frontVideoView)
         }
+        with(backCameraVideoTrack) {
+            this?.addSink(backVideoView)
+        }
+        frontVideoView.mirror = frontCameraCapturer.cameraSource ==
+               CameraCapturerCompat.Source.FRONT_CAMERA
     }
 
     private fun connectClickListener(roomEditText: EditText): DialogInterface.OnClickListener {

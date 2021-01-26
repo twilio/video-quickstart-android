@@ -10,30 +10,6 @@
     tools:showIn="@layout/activity_video">
 
     <com.twilio.video.VideoView
-        android:id="@+id/frontCameraThumbnailVideoView"
-        app:tviOverlaySurface="true"
-        app:tviMirror="true"
-        android:visibility="gone"
-        tools:visibility="visible"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <com.twilio.video.VideoView
-        android:id="@+id/backCameraThumbnailVideoView"
-        app:tviOverlaySurface="true"
-        app:tviMirror="true"
-        android:visibility="gone"
-        tools:visibility="visible"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="16dp"
-        app:layout_constraintStart_toEndOf="@id/frontCameraThumbnailVideoView"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <com.twilio.video.VideoView
         android:id="@+id/frontCameraVideoView"
         app:tviMirror="true"
         android:layout_width="wrap_content"
