@@ -358,6 +358,7 @@ class VideoActivity : AppCompatActivity() {
                     "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
                     "name=${remoteVideoTrack.name}]")
             videoStatusTextView.text = "onVideoTrackSubscribed"
+            // TODO 4) Render the local tracks to the appropriate view based on the track name
             addRemoteParticipantVideoTrack(remoteVideoTrackPublication)
         }
 
@@ -413,6 +414,7 @@ class VideoActivity : AppCompatActivity() {
     private var frontCameraVideoTrack: LocalVideoTrack? = null
     private var backCameraVideoTrack: LocalVideoTrack? = null
     private var alertDialog: android.support.v7.app.AlertDialog? = null
+    // TODO 1) Create CameraCapturerCompat for Camera 1 and Camera 2
     private val frontCameraCapturer by lazy {
         CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA)
     }
@@ -643,6 +645,7 @@ class VideoActivity : AppCompatActivity() {
         frontCameraVideoTrack = createLocalVideoTrack(this,
                 true,
                 frontCameraCapturer,
+                // TODO 2) Provide front and back camera names to video tracks to allow selection when later rendered from the remote participant
                 name = FRONT_CAMERA_TRACK_NAME)
         backCameraVideoTrack = createLocalVideoTrack(this,
                 true,
@@ -679,6 +682,8 @@ class VideoActivity : AppCompatActivity() {
              * Add local audio track to connect options to share with participants.
              */
             audioTracks(listOf(localAudioTrack))
+
+            // TODO 3) Provide the local camera video tracks to the connect options to publish to the room
             /*
              * Add local video track to connect options to share with participants.
              */
