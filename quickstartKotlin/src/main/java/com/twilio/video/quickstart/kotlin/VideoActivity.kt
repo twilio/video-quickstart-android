@@ -37,6 +37,8 @@ import com.twilio.video.IsacCodec
 import com.twilio.video.LocalAudioTrack
 import com.twilio.video.LocalParticipant
 import com.twilio.video.LocalVideoTrack
+import com.twilio.video.LogLevel
+import com.twilio.video.LogModule
 import com.twilio.video.OpusCodec
 import com.twilio.video.PcmaCodec
 import com.twilio.video.PcmuCodec
@@ -53,8 +55,6 @@ import com.twilio.video.Video
 import com.twilio.video.VideoCodec
 import com.twilio.video.VideoRenderer
 import com.twilio.video.VideoTrack
-import com.twilio.video.Vp8Codec
-import com.twilio.video.Vp9Codec
 import kotlinx.android.synthetic.main.activity_video.*
 import kotlinx.android.synthetic.main.content_video.*
 import java.util.*
@@ -103,20 +103,21 @@ class VideoActivity : AppCompatActivity() {
         }
     private val videoCodec: VideoCodec
         get() {
-            val videoCodecName = sharedPreferences.getString(SettingsActivity.PREF_VIDEO_CODEC,
-                    SettingsActivity.PREF_VIDEO_CODEC_DEFAULT)
-
-            return when (videoCodecName) {
-                Vp8Codec.NAME -> {
-                    val simulcast = sharedPreferences.getBoolean(
-                            SettingsActivity.PREF_VP8_SIMULCAST,
-                            SettingsActivity.PREF_VP8_SIMULCAST_DEFAULT)
-                    Vp8Codec(simulcast)
-                }
-                H264Codec.NAME -> H264Codec()
-                Vp9Codec.NAME -> Vp9Codec()
-                else -> Vp8Codec()
-            }
+            return H264Codec()
+//            val videoCodecName = sharedPreferences.getString(SettingsActivity.PREF_VIDEO_CODEC,
+//                    SettingsActivity.PREF_VIDEO_CODEC_DEFAULT)
+//
+//            return when (videoCodecName) {
+//                Vp8Codec.NAME -> {
+//                    val simulcast = sharedPreferences.getBoolean(
+//                            SettingsActivity.PREF_VP8_SIMULCAST,
+//                            SettingsActivity.PREF_VP8_SIMULCAST_DEFAULT)
+//                    Vp8Codec(simulcast)
+//                }
+//                H264Codec.NAME -> H264Codec()
+//                Vp9Codec.NAME -> Vp9Codec()
+//                else -> Vp8Codec()
+//            }
         }
 
     private val enableAutomaticSubscription: Boolean
@@ -148,6 +149,9 @@ class VideoActivity : AppCompatActivity() {
      */
     private val roomListener = object : Room.Listener {
         override fun onConnected(room: Room) {
+            Log.d(TAG, "room sid = ${room.sid}")
+            Video.setLogLevel(LogLevel.DEBUG)
+            Video.setModuleLogLevel(LogModule.WEBRTC, LogLevel.DEBUG)
             localParticipant = room.localParticipant
             videoStatusTextView.text = "Connected to ${room.name}"
             title = room.name
@@ -428,6 +432,7 @@ class VideoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        CodecTest.setHiSiliconCodec()
         setContentView(R.layout.activity_video)
 
         /*
