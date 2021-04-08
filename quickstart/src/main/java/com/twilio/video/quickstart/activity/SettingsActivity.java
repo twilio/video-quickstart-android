@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.EditTextPreference;
-import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceFragmentCompat;
 
 import com.twilio.video.AudioCodec;
 import com.twilio.video.G722Codec;
@@ -42,11 +43,11 @@ public class SettingsActivity extends AppCompatActivity {
     public static final boolean PREF_ENABLE_AUTOMATIC_SUBSCRIPTION_DEFAULT = true;
     public static final boolean PREF_VP8_SIMULCAST_DEFAULT = false;
 
-    private static final String[] VIDEO_CODEC_NAMES = new String[] {
+    private static final String[] VIDEO_CODEC_NAMES = new String[]{
             Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME
     };
 
-    private static final String[] AUDIO_CODEC_NAMES = new String[] {
+    private static final String[] AUDIO_CODEC_NAMES = new String[]{
             IsacCodec.NAME, OpusCodec.NAME, PcmaCodec.NAME, PcmuCodec.NAME, G722Codec.NAME
     };
 
@@ -111,8 +112,6 @@ public class SettingsActivity extends AppCompatActivity {
                     (EditTextPreference) findPreference(PREF_SENDER_MAX_VIDEO_BITRATE));
         }
 
-
-
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
@@ -128,9 +127,9 @@ public class SettingsActivity extends AppCompatActivity {
                                               String defaultValue,
                                               ListPreference preference) {
             List<String> codecEntries = new ArrayList<>();
-            if(codecClass == AudioCodec.class){
+            if (codecClass == AudioCodec.class) {
                 Collections.addAll(codecEntries, AUDIO_CODEC_NAMES);
-            }else{
+            } else {
                 Collections.addAll(codecEntries, VIDEO_CODEC_NAMES);
             }
 

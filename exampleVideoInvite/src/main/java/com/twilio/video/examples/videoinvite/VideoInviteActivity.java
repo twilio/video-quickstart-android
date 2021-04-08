@@ -14,14 +14,6 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.twilio.video.BuildConfig;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
@@ -66,6 +59,8 @@ import tvi.webrtc.VideoSink;
 
 import static com.twilio.video.examples.videoinvite.R.drawable.ic_phonelink_ring_white_24dp;
 import static com.twilio.video.examples.videoinvite.R.drawable.ic_volume_up_white_24dp;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /*
  * This Activity shows how to use Twilio Video with Twilio Notify to invite other participants

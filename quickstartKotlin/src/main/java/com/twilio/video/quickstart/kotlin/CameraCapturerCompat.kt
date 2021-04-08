@@ -7,7 +7,6 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.twilio.video.Camera2Capturer
 import com.twilio.video.CameraCapturer
 import com.twilio.video.VideoCapturer
@@ -15,7 +14,8 @@ import tvi.webrtc.Camera1Enumerator
 import tvi.webrtc.Camera2Enumerator
 import tvi.webrtc.CapturerObserver
 import tvi.webrtc.SurfaceTextureHelper
-import java.util.*
+import java.util.EnumMap
+import java.util.HashMap
 
 /*
  * Simple wrapper class that uses Camera2Capturer with supported devices.
@@ -118,16 +118,12 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
         }
     }
 
-    private val isLollipopApiSupported: Boolean
-        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun isCameraIdSupported(context: Context, cameraId: String): Boolean {
         var isMonoChromeSupported = false
         var isPrivateImageFormatSupported = false
         val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        val cameraCharacteristics: CameraCharacteristics
-        cameraCharacteristics = try {
+        val cameraCharacteristics: CameraCharacteristics = try {
             cameraManager.getCameraCharacteristics(cameraId)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -140,7 +136,7 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
          */
         val streamMap =
             cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-        if (streamMap != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (streamMap != null) {
             isPrivateImageFormatSupported = streamMap.isOutputSupportedFor(ImageFormat.PRIVATE)
         }
 
@@ -162,7 +158,7 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
     }
 
     init {
-        if (Camera2Capturer.isSupported(context) && isLollipopApiSupported) {
+        if (Camera2Capturer.isSupported(context)) {
             setCamera2Maps(context)
             camera2Capturer = Camera2Capturer(context, camera2IdMap[cameraSource]!!)
             activeCapturer = camera2Capturer
