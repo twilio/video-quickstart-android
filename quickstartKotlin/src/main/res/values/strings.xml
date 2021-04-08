@@ -14,4 +14,5 @@
     <string name="vp8_simulcast">VP8 Simulcast</string>
     <string name="audio_device">Audio Device</string>
     <string name="room_screen_select_device">Select Device</string>
+	<string name="floating_button">floating button</string>
 </resources>

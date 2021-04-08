@@ -1,12 +1,11 @@
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.4.30'
     ext.versions = [
             'java'               : JavaVersion.VERSION_1_8,
-            'androidGradlePlugin': '4.0.1',
+            'androidGradlePlugin': '7.0.0-alpha12',
             'googleServices'     : '3.2.1',
             'compileSdk'         : 30,
-            'buildTools'         : '28.0.3',
-            'minSdk'             : 16,
+            'minSdk'             : 24,
             'targetSdk'          : 30,
             'supportLibrary'     : '26.1.0',
             'constraintLayout'   : '1.1.3',
@@ -38,7 +37,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
@@ -51,6 +49,5 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 }
