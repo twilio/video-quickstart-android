@@ -23,7 +23,6 @@
 		android:layout_margin="@dimen/fab_margin"
 		android:src="@drawable/ic_play"
 		android:visibility="invisible"
-		android:contentDescription="@string/floating_button"
 		app:fabSize="normal" />
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -33,6 +32,5 @@
 		android:layout_gravity="end"
 		android:layout_margin="@dimen/fab_margin"
 		android:src="@android:drawable/sym_call_outgoing"
-		android:contentDescription="@string/floating_button"
 		app:fabSize="normal" />
 </LinearLayout>
