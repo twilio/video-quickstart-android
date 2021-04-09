@@ -26,7 +26,7 @@ android {
                 "USE_TOKEN_SERVER",
                 "${getSecretProperty("USE_TOKEN_SERVER", false)}")
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -45,10 +45,10 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation "com.koushikdutta.ion:ion:${versions.ion}"
     implementation "com.twilio:video-android:${versions.videoAndroid}"
-    implementation "com.android.support:design:${versions.supportLibrary}"
+    implementation 'com.google.android.material:material:1.0.0'
 }

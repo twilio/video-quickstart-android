@@ -24,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.twilio.video.BuildConfig;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
@@ -57,10 +59,12 @@ import retrofit2.Response;
 import tvi.webrtc.Camera1Enumerator;
 import tvi.webrtc.VideoSink;
 
-import static com.twilio.video.examples.videoinvite.R.drawable.ic_phonelink_ring_white_24dp;
-import static com.twilio.video.examples.videoinvite.R.drawable.ic_volume_up_white_24dp;
-
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /*
  * This Activity shows how to use Twilio Video with Twilio Notify to invite other participants
@@ -149,7 +153,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
     private ProgressBar reconnectingProgressBar;
-    private android.support.v7.app.AlertDialog alertDialog;
+    private AlertDialog alertDialog;
     private AudioManager audioManager;
     private String remoteParticipantIdentity;
     private MenuItem turnSpeakerOnMenuItem;
@@ -341,7 +345,7 @@ public class VideoInviteActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     @Override
-    protected  void onResume() {
+    protected void onResume() {
         super.onResume();
         registerReceiver();
         /*
@@ -450,14 +454,14 @@ public class VideoInviteActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean checkPermissionForCameraAndMicrophone(){
+    private boolean checkPermissionForCameraAndMicrophone() {
         int resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         int resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
         return resultCamera == PackageManager.PERMISSION_GRANTED &&
-               resultMic == PackageManager.PERMISSION_GRANTED;
+                resultMic == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestPermissionForCameraAndMicrophone(){
+    private void requestPermissionForCameraAndMicrophone() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.RECORD_AUDIO)) {
@@ -671,7 +675,7 @@ public class VideoInviteActivity extends AppCompatActivity {
      */
     @SuppressLint("SetTextI18n")
     private void removeParticipant(RemoteParticipant remoteParticipant) {
-        statusTextView.setText("Participant "+remoteParticipant.getIdentity()+ " left.");
+        statusTextView.setText("Participant " + remoteParticipant.getIdentity() + " left.");
         if (!remoteParticipant.getIdentity().equals(remoteParticipantIdentity)) {
             return;
         }
@@ -719,7 +723,7 @@ public class VideoInviteActivity extends AppCompatActivity {
                 statusTextView.setText("Connected to " + room.getName());
                 setTitle(room.getName());
 
-                for (RemoteParticipant remoteParticipant :  room.getRemoteParticipants()) {
+                for (RemoteParticipant remoteParticipant : room.getRemoteParticipants()) {
                     addRemoteParticipant(remoteParticipant);
                     break;
                 }
@@ -1051,7 +1055,8 @@ public class VideoInviteActivity extends AppCompatActivity {
                             .setAudioAttributes(playbackAttributes)
                             .setAcceptsDelayedFocusGain(true)
                             .setOnAudioFocusChangeListener(
-                                    i -> { })
+                                    i -> {
+                                    })
                             .build();
             audioManager.requestAudioFocus(focusRequest);
         } else {

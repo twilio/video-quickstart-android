@@ -9,19 +9,20 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.koushikdutta.ion.Ion
-import com.twilio.video.examples.examplecustomaudiodevice.dialog.Dialog
 import com.twilio.video.*
+import com.twilio.video.examples.examplecustomaudiodevice.CustomAudioDeviceActivity.Companion.TWILIO_ACCESS_TOKEN
+import com.twilio.video.examples.examplecustomaudiodevice.dialog.Dialog
 import java.util.*
 
 class CustomAudioDeviceActivity : AppCompatActivity() {
@@ -117,9 +118,11 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == MIC_PERMISSION_REQUEST_CODE) {
             var micPermissionGranted = true
             for (grantResult in grantResults) {
@@ -129,9 +132,11 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
                 createAudioTrack()
                 setAccessToken()
             } else {
-                Toast.makeText(this,
-                        R.string.permissions_needed,
-                        Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    R.string.permissions_needed,
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -159,14 +164,14 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     private fun connectToRoom(roomName: String) {
         configureAudio(true)
         val connectOptionsBuilder = ConnectOptions.Builder(accessToken!!)
-                .roomName(roomName)
+            .roomName(roomName)
 
         /*
          * Add local audio track to connect options to share with participants.
          */
         if (localAudioTrack != null) {
             connectOptionsBuilder
-                    .audioTracks(listOf(localAudioTrack))
+                .audioTracks(listOf(localAudioTrack))
         }
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener())
         setDisconnectAction()
@@ -174,18 +179,24 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
 
     private fun retrieveAccessTokenfromServer() {
         Ion.with(this)
-                .load(String.format("%s?identity=%s", ACCESS_TOKEN_SERVER,
-                        UUID.randomUUID().toString()))
-                .asString()
-                .setCallback { e: Exception?, token: String? ->
-                    if (e == null) {
-                        accessToken = token
-                    } else {
-                        Toast.makeText(this@CustomAudioDeviceActivity,
-                                R.string.error_retrieving_access_token, Toast.LENGTH_LONG)
-                                .show()
-                    }
+            .load(
+                String.format(
+                    "%s?identity=%s", ACCESS_TOKEN_SERVER,
+                    UUID.randomUUID().toString()
+                )
+            )
+            .asString()
+            .setCallback { e: Exception?, token: String? ->
+                if (e == null) {
+                    accessToken = token
+                } else {
+                    Toast.makeText(
+                        this@CustomAudioDeviceActivity,
+                        R.string.error_retrieving_access_token, Toast.LENGTH_LONG
+                    )
+                        .show()
                 }
+            }
     }
 
     private fun checkPermissionForMicrophone(): Boolean {
@@ -194,15 +205,21 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     }
 
     private fun requestPermissionForMicrophone() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.RECORD_AUDIO)) {
-            Toast.makeText(this,
-                    R.string.permissions_needed,
-                    Toast.LENGTH_LONG).show()
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            )
+        ) {
+            Toast.makeText(
+                this,
+                R.string.permissions_needed,
+                Toast.LENGTH_LONG
+            ).show()
         } else {
             ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.RECORD_AUDIO),
-                    MIC_PERMISSION_REQUEST_CODE)
+                this, arrayOf(Manifest.permission.RECORD_AUDIO),
+                MIC_PERMISSION_REQUEST_CODE
+            )
         }
     }
 
@@ -238,18 +255,20 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     private fun requestAudioFocus() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val playbackAttributes = AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .build()
+                .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .build()
             val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-                    .setAudioAttributes(playbackAttributes)
-                    .setAcceptsDelayedFocusGain(true)
-                    .setOnAudioFocusChangeListener { i: Int -> }
-                    .build()
+                .setAudioAttributes(playbackAttributes)
+                .setAcceptsDelayedFocusGain(true)
+                .setOnAudioFocusChangeListener { i: Int -> }
+                .build()
             audioManager?.requestAudioFocus(focusRequest)
         } else {
-            audioManager?.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
-                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+            audioManager?.requestAudioFocus(
+                null, AudioManager.STREAM_VOICE_CALL,
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+            )
         }
     }
 
@@ -334,8 +353,12 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     private fun initializeUI() {
         customAudioDeviceStatusText = findViewById(R.id.status_text)
         connectActionFab = findViewById(R.id.connect_action_fab)
-        connectActionFab?.setImageDrawable(ContextCompat.getDrawable(this,
-                android.R.drawable.sym_call_outgoing))
+        connectActionFab?.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                android.R.drawable.sym_call_outgoing
+            )
+        )
         connectActionFab?.show()
         connectActionFab?.setOnClickListener(connectActionClickListener())
         inputSwitchFab = findViewById(R.id.input_switch_fab)
@@ -348,10 +371,12 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
      */
     private fun showConnectDialog() {
         val roomEditText = EditText(this)
-        connectDialog = Dialog.createConnectDialog(roomEditText,
-                connectClickListener(roomEditText),
-                cancelConnectDialogClickListener(),
-                this)
+        connectDialog = Dialog.createConnectDialog(
+            roomEditText,
+            connectClickListener(roomEditText),
+            cancelConnectDialogClickListener(),
+            this
+        )
         connectDialog?.show()
     }
 
@@ -359,8 +384,12 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
      * The actions performed during disconnect.
      */
     private fun setDisconnectAction() {
-        connectActionFab?.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_end_white_24px))
+        connectActionFab?.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                R.drawable.ic_call_end_white_24px
+            )
+        )
         connectActionFab?.show()
         connectActionFab?.setOnClickListener(disconnectClickListener())
         inputSwitchFab?.show()
@@ -397,9 +426,17 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     }
 
     private fun applyFabState(button: FloatingActionButton?, enabled: Boolean) {
-        if (enabled) button!!.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_pause_white_24dp)) else button!!.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_play))
+        if (enabled) button!!.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                R.drawable.ic_pause_white_24dp
+            )
+        ) else button!!.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                R.drawable.ic_play
+            )
+        )
     }
 
     private fun inputSwitchActionFabClickListener(): View.OnClickListener {
