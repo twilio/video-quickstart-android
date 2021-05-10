@@ -2,7 +2,6 @@ package com.twilio.video.examples.rotatevideoframes
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -36,14 +35,18 @@ class RotateVideoFramesActivity : ComponentActivity() {
     private val localVideoTrack by lazy {
         LocalVideoTrack.create(this, true, cameraCapturer)
     }
-    private val recordButtonClickListener = View.OnClickListener { startVideoRecording() }
+    private val recordButtonClickListener = View.OnClickListener {
+        recordButton.text = if(recordButton.text == getString(R.string.start_recording)) {
+            startVideoRecording()
+            getString(R.string.stop_recording)
+        } else {
+            stopVideoRecording()
+            getString(R.string.start_recording)
+        }
+    }
     private val rotateButtonClickListener = View.OnClickListener { rotateVideo() }
 
-    /**
-     * An example of a [tvi.webrtc.VideoProcessor] that decodes the preview image to a [Bitmap]
-     * and shows the result in an alert dialog.
-     */
-    private val photographer by lazy { VideoRecorder(videoView) }
+    private val videoRecorder by lazy { VideoRecorder(videoView) }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,13 +113,17 @@ class RotateVideoFramesActivity : ComponentActivity() {
     }
 
     private fun addCameraVideo() {
-        localVideoTrack?.videoSource?.setVideoProcessor(photographer)
+        localVideoTrack?.videoSource?.setVideoProcessor(videoRecorder)
         recordButton.setOnClickListener(recordButtonClickListener)
         rotateButton.setOnClickListener(rotateButtonClickListener)
     }
 
     private fun startVideoRecording() {
-        // TODO
+        mediaHandler.encodeVideo(videoRecorder.videoFrameFlow)
+    }
+
+    private fun stopVideoRecording() {
+        mediaHandler.close()
     }
 
     private fun rotateVideo() {

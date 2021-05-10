@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="permissions_needed">Need camera permission for example</string>
-    <string name="record_video">Record Video</string>
+    <string name="start_recording">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
     <string name="rotate_video">Rotate Video</string>
 </resources>

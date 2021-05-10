@@ -117,8 +117,8 @@ class MediaHandler(
             return
         }
         input?.apply {
-//            YuvHelper.I420Copy(sample.dataY, sample.strideY, sample.dataU, sample.strideU, sample.dataV, sample.strideV, this, sample.width, sample.height)
-            YuvHelper.I420Rotate(sample.dataY, sample.strideY, sample.dataU, sample.strideU, sample.dataV, sample.strideV, this, sample.width, sample.height, rotation)
+            YuvHelper.I420Copy(sample.dataY, sample.strideY, sample.dataU, sample.strideU, sample.dataV, sample.strideV, this, sample.width, sample.height)
+//            YuvHelper.I420Rotate(sample.dataY, sample.strideY, sample.dataU, sample.strideU, sample.dataV, sample.strideV, this, sample.width, sample.height, rotation)
             codec.queueInputBuffer(availableIndex, 0, size, pts, 0)
         }
         sample.release()
