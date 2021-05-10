@@ -1,14 +1,16 @@
 package com.twilio.video.examples.rotatevideoframes
 
+import android.util.Log
 import com.twilio.video.VideoView
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.onCompletion
 import tvi.webrtc.VideoFrame
 import tvi.webrtc.VideoProcessor
 import tvi.webrtc.VideoSink
 
 class VideoRecorder(private val videoView: VideoView) : VideoProcessor {
-    private val _videoFrameFlow = MutableSharedFlow<FrameInfo>(extraBufferCapacity = 10)
+    private val _videoFrameFlow = MutableSharedFlow<VideoFrame>(extraBufferCapacity = 10)
     val videoFrameFlow = _videoFrameFlow.asSharedFlow()
 
     /**
@@ -31,21 +33,14 @@ class VideoRecorder(private val videoView: VideoView) : VideoProcessor {
          * Get information needed from frame and emit to flow for asynchronous processing.
          */
         if (_videoFrameFlow.subscriptionCount.value > 0) {
-            _videoFrameFlow.tryEmit(FrameInfo(
-                    videoFrame.buffer.toI420(),
-                    videoFrame.rotation,
-                    videoFrame.timestampNs))
+            _videoFrameFlow.tryEmit(videoFrame)
         }
 
         /**
          * Adapt the current frame and forward to the video view.
          */
-        VideoProcessor.applyFrameAdaptationParameters(videoFrame, parameters)?.let {
-            videoView.onFrame(it)
-            it.release()
-        } ?: run {
-            videoView.onFrame(videoFrame)
-            videoFrame.release()
-        }
+        val adaptedFrame = VideoProcessor.applyFrameAdaptationParameters(videoFrame, parameters) ?: videoFrame
+        videoView.onFrame(adaptedFrame)
+        videoFrame.release()
     }
 }

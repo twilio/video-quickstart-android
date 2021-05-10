@@ -2,6 +2,7 @@ package com.twilio.video.examples.rotatevideoframes
 
 import android.content.Context
 import android.media.*
+import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -44,10 +45,12 @@ class MediaHandler(
 
     private val videoEncoderProcessor = object : MediaCodec.Callback() {
         override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
+            Log.d("MediaHandler","onInputBufferAvailable: codec = $codec, index = $index")
             pendingVideoEncoderInputBufferIndicesChannel.offer(index)
         }
 
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
+            Log.d("MediaHandler","onOutputBufferAvailable: codec = $codec, index = $index")
             muxVideo(index, info)
         }
 
@@ -99,18 +102,18 @@ class MediaHandler(
         }
     }
 
-    fun encodeVideo(flow: Flow<FrameInfo>) {
-        encodeVideoJob = flow.onEach { frameInfo ->
+    fun encodeVideo(flow: Flow<VideoFrame>) {
+        encodeVideoJob = flow.onEach { frame ->
             if (endOfStream.get()) {
                 return@onEach
             }
-
-            encode(sample = frameInfo.I420Buffer, rotation = frameInfo.rotation, codec = videoCodec, pts = frameInfo.timestampNs / 1000, availableIndex = pendingVideoEncoderInputBufferIndicesChannel.receive())
+            val i420Buffer = frame.buffer.toI420()
+            encode(sample = i420Buffer, rotation = frame.rotation, codec = videoCodec, pts = frame.timestampNs / 1000, availableIndex = pendingVideoEncoderInputBufferIndicesChannel.receive())
         }.launchIn(externalScope)
     }
 
     private fun encode(sample: VideoFrame.I420Buffer, rotation: Int, pts: Long, codec: MediaCodec, availableIndex: Int) {
-        val size = sample.height * sample.width * 3 / 2
+        val size = sample.height * sample.width
         val input = try {
             codec.getInputBuffer(availableIndex)
         } catch (e: IllegalStateException) {
