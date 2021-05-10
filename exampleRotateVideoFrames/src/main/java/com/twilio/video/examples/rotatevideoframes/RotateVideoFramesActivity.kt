@@ -2,30 +2,23 @@ package com.twilio.video.examples.rotatevideoframes
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.hardware.Camera
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import com.twilio.video.CameraCapturer
-import com.twilio.video.CameraParameterUpdater
 import com.twilio.video.LocalVideoTrack
 import com.twilio.video.VideoView
 import tvi.webrtc.Camera1Enumerator
 
 class RotateVideoFramesActivity : Activity() {
     private lateinit var videoView: VideoView
-    private lateinit var toggleFlashButton: Button
-    private lateinit var takePictureButton: Button
-    private lateinit var pictureImageView: ImageView
-    private lateinit var pictureDialog: AlertDialog
+    private lateinit var recordButton: Button
+    private lateinit var rotateButton: Button
 
     private val backCameraId by lazy {
         val camera1Enumerator = Camera1Enumerator()
@@ -38,30 +31,8 @@ class RotateVideoFramesActivity : Activity() {
     private val localVideoTrack by lazy {
         LocalVideoTrack.create(this, true, cameraCapturer)
     }
-    private var flashOn = false
-    private val toggleFlashButtonClickListener = View.OnClickListener { toggleFlash() }
-    private val takePictureButtonClickListener = View.OnClickListener { takePicture() }
-
-    /**
-     * An example of a [CameraParameterUpdater] that shows how to toggle the flash of a
-     * camera if supported by the device.
-     */
-    @Suppress("DEPRECATION")
-    private val flashToggler =
-        CameraParameterUpdater { parameters: Camera.Parameters ->
-            if (parameters.flashMode != null) {
-                val flashMode =
-                    if (flashOn) Camera.Parameters.FLASH_MODE_OFF else Camera.Parameters.FLASH_MODE_TORCH
-                parameters.flashMode = flashMode
-                flashOn = !flashOn
-            } else {
-                Toast.makeText(
-                    this@RotateVideoFramesActivity,
-                    R.string.flash_not_supported,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
+    private val recordButtonClickListener = View.OnClickListener { startVideoRecording() }
+    private val rotateButtonClickListener = View.OnClickListener { rotateVideo() }
 
     /**
      * An example of a [tvi.webrtc.VideoProcessor] that decodes the preview image to a [Bitmap]
@@ -73,19 +44,8 @@ class RotateVideoFramesActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_advanced_camera_capturer)
         videoView = findViewById<View>(R.id.video_view) as VideoView
-        toggleFlashButton = findViewById<View>(R.id.toggle_flash_button) as Button
-        takePictureButton = findViewById<View>(R.id.take_picture_button) as Button
-        pictureImageView = layoutInflater.inflate(
-            R.layout.picture_image_view,
-            findViewById(android.R.id.content),
-            false
-        ) as ImageView
-        pictureDialog = AlertDialog.Builder(this)
-            .setView(pictureImageView)
-            .setTitle(null)
-            .setPositiveButton(
-                R.string.close
-            ) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.create()
+        recordButton = findViewById<View>(R.id.record_video) as Button
+        rotateButton = findViewById<View>(R.id.rotate_video) as Button
 
         if (!checkPermissionForCamera()) {
             requestPermissionForCamera()
@@ -139,26 +99,16 @@ class RotateVideoFramesActivity : Activity() {
 
     private fun addCameraVideo() {
         localVideoTrack?.videoSource?.setVideoProcessor(photographer)
-        toggleFlashButton.setOnClickListener(toggleFlashButtonClickListener)
-        takePictureButton.setOnClickListener(takePictureButtonClickListener)
+        recordButton.setOnClickListener(recordButtonClickListener)
+        rotateButton.setOnClickListener(rotateButtonClickListener)
     }
 
-    private fun toggleFlash() {
-        // Request an update to camera parameters with flash toggler
-        cameraCapturer.updateCameraParameters(flashToggler)
+    private fun startVideoRecording() {
+        // TODO
     }
 
-    private fun takePicture() {
-        photographer.takePicture { bitmap: Bitmap? ->
-            bitmap?.let {
-                runOnUiThread { showPicture(it) }
-            }
-        }
-    }
-
-    private fun showPicture(bitmap: Bitmap) {
-        pictureImageView.setImageBitmap(bitmap)
-        pictureDialog.show()
+    private fun rotateVideo() {
+        // TODO
     }
 
     companion object {
