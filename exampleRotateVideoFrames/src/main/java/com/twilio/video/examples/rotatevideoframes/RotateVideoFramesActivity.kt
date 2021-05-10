@@ -1,24 +1,29 @@
 package com.twilio.video.examples.rotatevideoframes
 
 import android.Manifest
-import android.app.Activity
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.twilio.video.CameraCapturer
 import com.twilio.video.LocalVideoTrack
 import com.twilio.video.VideoView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import tvi.webrtc.Camera1Enumerator
 
-class RotateVideoFramesActivity : Activity() {
+class RotateVideoFramesActivity : ComponentActivity() {
     private lateinit var videoView: VideoView
     private lateinit var recordButton: Button
     private lateinit var rotateButton: Button
+    private var mediaScope = CoroutineScope(lifecycleScope.coroutineContext + Dispatchers.Default)
+    private lateinit var mediaHandler: MediaHandler
 
     private val backCameraId by lazy {
         val camera1Enumerator = Camera1Enumerator()
@@ -38,11 +43,15 @@ class RotateVideoFramesActivity : Activity() {
      * An example of a [tvi.webrtc.VideoProcessor] that decodes the preview image to a [Bitmap]
      * and shows the result in an alert dialog.
      */
-    private val photographer by lazy { Photographer(videoView) }
+    private val photographer by lazy { VideoRecorder(videoView) }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_advanced_camera_capturer)
+        mediaHandler = MediaHandler(
+                this,
+                mediaScope
+        )
         videoView = findViewById<View>(R.id.video_view) as VideoView
         recordButton = findViewById<View>(R.id.record_video) as Button
         rotateButton = findViewById<View>(R.id.rotate_video) as Button
@@ -54,11 +63,14 @@ class RotateVideoFramesActivity : Activity() {
         }
     }
 
+
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             var cameraPermissionGranted = true
             for (grantResult in grantResults) {

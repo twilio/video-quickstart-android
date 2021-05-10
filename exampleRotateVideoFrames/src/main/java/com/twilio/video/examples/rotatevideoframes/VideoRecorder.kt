@@ -1,17 +1,15 @@
 package com.twilio.video.examples.rotatevideoframes
 
-import android.graphics.Bitmap
 import com.twilio.video.VideoView
-import com.twilio.video.examples.common.toBitmap
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import tvi.webrtc.VideoFrame
 import tvi.webrtc.VideoProcessor
 import tvi.webrtc.VideoSink
-import java.util.concurrent.atomic.AtomicReference
 
-typealias PictureListener = (Bitmap?) -> Unit
-
-class Photographer(private val videoView: VideoView) : VideoProcessor {
-    private val pictureRequest = AtomicReference<PictureListener?>(null)
+class VideoRecorder(private val videoView: VideoView) : VideoProcessor {
+    private val _videoFrameFlow = MutableSharedFlow<FrameInfo>(extraBufferCapacity = 10)
+    val videoFrameFlow = _videoFrameFlow.asSharedFlow()
 
     /**
      * These methods are part of the [tvi.webrtc.VideoProcessor] API, but are not required to be
@@ -22,12 +20,6 @@ class Photographer(private val videoView: VideoView) : VideoProcessor {
     override fun setSink(videoSink: VideoSink?) {}
     override fun onFrameCaptured(frame: VideoFrame?) {}
 
-    /**
-     * This onFrameCaptured method provides an unadapted [tvi.webrtc.VideoFrame].
-     *
-     * The following code demonstrates how to capture the unadapted frame to a [Bitmap] and then
-     * forward the adapted frame to a [VideoView].
-     */
     override fun onFrameCaptured(
         videoFrame: VideoFrame?,
         parameters: VideoProcessor.FrameAdaptationParameters?
@@ -36,10 +28,14 @@ class Photographer(private val videoView: VideoView) : VideoProcessor {
         videoFrame.retain()
 
         /**
-         * Get the picture request and then capture the current frame to a Bitmap. The
-         * picture request is cleared for subsequent calls to [takePicture].
+         * Get information needed from frame and emit to flow for asynchronous processing.
          */
-        pictureRequest.getAndSet(null)?.invoke(videoFrame.toBitmap())
+        if (_videoFrameFlow.subscriptionCount.value > 0) {
+            _videoFrameFlow.tryEmit(FrameInfo(
+                    videoFrame.buffer.toI420(),
+                    videoFrame.rotation,
+                    videoFrame.timestampNs))
+        }
 
         /**
          * Adapt the current frame and forward to the video view.
@@ -47,11 +43,9 @@ class Photographer(private val videoView: VideoView) : VideoProcessor {
         VideoProcessor.applyFrameAdaptationParameters(videoFrame, parameters)?.let {
             videoView.onFrame(it)
             it.release()
-        } ?: videoView.onFrame(videoFrame)
-        videoFrame.release()
-    }
-
-    fun takePicture(pictureListener: PictureListener) {
-        this.pictureRequest.set(pictureListener)
+        } ?: run {
+            videoView.onFrame(videoFrame)
+            videoFrame.release()
+        }
     }
 }
