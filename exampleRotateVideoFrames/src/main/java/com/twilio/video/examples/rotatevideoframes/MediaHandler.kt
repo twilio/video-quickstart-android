@@ -7,7 +7,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import tvi.webrtc.*
-import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -45,12 +44,12 @@ class MediaHandler(
 
     private val videoEncoderProcessor = object : MediaCodec.Callback() {
         override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
-            Log.d("MediaHandler","onInputBufferAvailable: codec = $codec, index = $index")
+            Log.d("MediaHandler","onInputBufferAvailable: index = $index")
             pendingVideoEncoderInputBufferIndicesChannel.offer(index)
         }
 
         override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
-            Log.d("MediaHandler","onOutputBufferAvailable: codec = $codec, index = $index")
+            Log.d("MediaHandler","onOutputBufferAvailable: index = $index")
             muxVideo(index, info)
         }
 
@@ -105,26 +104,29 @@ class MediaHandler(
     fun encodeVideo(flow: Flow<VideoFrame>) {
         encodeVideoJob = flow.onEach { frame ->
             if (endOfStream.get()) {
+                frame.release()
                 return@onEach
             }
             val i420Buffer = frame.buffer.toI420()
-            encode(sample = i420Buffer, rotation = frame.rotation, codec = videoCodec, pts = frame.timestampNs / 1000, availableIndex = pendingVideoEncoderInputBufferIndicesChannel.receive())
+            encode(buffer = i420Buffer, rotation = frame.rotation, codec = videoCodec, pts = frame.timestampNs / 1000, availableIndex = pendingVideoEncoderInputBufferIndicesChannel.receive())
         }.launchIn(externalScope)
     }
 
-    private fun encode(sample: VideoFrame.I420Buffer, rotation: Int, pts: Long, codec: MediaCodec, availableIndex: Int) {
-        val size = sample.height * sample.width
+    private fun encode(buffer: VideoFrame.I420Buffer, rotation: Int, pts: Long, codec: MediaCodec, availableIndex: Int) {
+        Log.d("MediaHandler","encode: index = $availableIndex")
+        val size = buffer.height * buffer.width
         val input = try {
             codec.getInputBuffer(availableIndex)
         } catch (e: IllegalStateException) {
             return
         }
         input?.apply {
-            YuvHelper.I420Copy(sample.dataY, sample.strideY, sample.dataU, sample.strideU, sample.dataV, sample.strideV, this, sample.width, sample.height)
+            YuvHelper.I420Copy(buffer.dataY, buffer.strideY, buffer.dataU, buffer.strideU, buffer.dataV, buffer.strideV, this, buffer.width, buffer.height)
 //            YuvHelper.I420Rotate(sample.dataY, sample.strideY, sample.dataU, sample.strideU, sample.dataV, sample.strideV, this, sample.width, sample.height, rotation)
             codec.queueInputBuffer(availableIndex, 0, size, pts, 0)
         }
-        sample.release()
+        buffer.release()
+        Log.d("MediaHandler", "Releasing frame")
     }
 
     fun close() {

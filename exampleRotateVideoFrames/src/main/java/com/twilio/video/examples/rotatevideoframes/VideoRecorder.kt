@@ -41,6 +41,7 @@ class VideoRecorder(private val videoView: VideoView) : VideoProcessor {
          */
         val adaptedFrame = VideoProcessor.applyFrameAdaptationParameters(videoFrame, parameters) ?: videoFrame
         videoView.onFrame(adaptedFrame)
-        videoFrame.release()
+        adaptedFrame.release()
+        Log.d("VideoRecorder", "Passed adaptive frame to view")
     }
 }
