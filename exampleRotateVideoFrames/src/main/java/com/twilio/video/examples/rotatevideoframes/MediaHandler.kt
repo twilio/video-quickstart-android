@@ -3,6 +3,7 @@ package com.twilio.video.examples.rotatevideoframes
 import android.content.Context
 import android.media.*
 import android.util.Log
+import com.twilio.video.VideoFormat
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -12,17 +13,19 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class MediaHandler(
         context: Context,
+        private val videoFormat: VideoFormat,
         private val externalScope: CoroutineScope
 ) {
     private var videoEncoderDone = CompletableDeferred<Unit>()
     private lateinit var encodeVideoJob: Job
     private val videoMediaFormat = MediaFormat().apply {
         setString(MediaFormat.KEY_MIME, MediaFormat.MIMETYPE_VIDEO_AVC)
-        setInteger(MediaFormat.KEY_WIDTH, 1080) // hardcoded
-        setInteger(MediaFormat.KEY_HEIGHT, 1920) // hardcoded
-        setInteger(MediaFormat.KEY_FRAME_RATE, 30)
+        setInteger(MediaFormat.KEY_WIDTH, videoFormat.dimensions.height)
+        setInteger(MediaFormat.KEY_HEIGHT, videoFormat.dimensions.width)
+        setInteger(MediaFormat.KEY_FRAME_RATE, videoFormat.framerate)
         setInteger(MediaFormat.KEY_BIT_RATE, 1080 * 1920 * 5)
         setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
+        setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible)
     }
 
     private val videoCodec by lazy {
@@ -30,7 +33,6 @@ class MediaHandler(
                 ?: throw IllegalStateException("No matching codecs available on device")
 
         MediaCodec.createByCodecName(encoder).apply {
-            videoMediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible)
             configure(videoMediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
         }
     }
@@ -122,7 +124,7 @@ class MediaHandler(
         }
         input?.apply {
             YuvHelper.I420Copy(buffer.dataY, buffer.strideY, buffer.dataU, buffer.strideU, buffer.dataV, buffer.strideV, this, buffer.width, buffer.height)
-//            YuvHelper.I420Rotate(sample.dataY, sample.strideY, sample.dataU, sample.strideU, sample.dataV, sample.strideV, this, sample.width, sample.height, rotation)
+            YuvHelper.I420Rotate(buffer.dataY, buffer.strideY, buffer.dataU, buffer.strideU, buffer.dataV, buffer.strideV, this, buffer.width, buffer.height, rotation)
             codec.queueInputBuffer(availableIndex, 0, size, pts, 0)
         }
         buffer.release()

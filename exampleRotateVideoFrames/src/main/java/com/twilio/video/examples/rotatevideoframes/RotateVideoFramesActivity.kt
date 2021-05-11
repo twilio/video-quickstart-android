@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.twilio.video.CameraCapturer
 import com.twilio.video.LocalVideoTrack
+import com.twilio.video.VideoDimensions
+import com.twilio.video.VideoFormat
 import com.twilio.video.VideoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,9 @@ class RotateVideoFramesActivity : ComponentActivity() {
     private lateinit var rotateButton: Button
     private var mediaScope = CoroutineScope(lifecycleScope.coroutineContext + Dispatchers.Default)
     private lateinit var mediaHandler: MediaHandler
+    private val videoFormat = VideoFormat(
+            VideoDimensions(VideoDimensions.HD_720P_VIDEO_WIDTH, VideoDimensions.HD_720P_VIDEO_HEIGHT),
+            30)
 
     private val backCameraId by lazy {
         val camera1Enumerator = Camera1Enumerator()
@@ -33,7 +38,7 @@ class RotateVideoFramesActivity : ComponentActivity() {
         CameraCapturer(this, backCameraId)
     }
     private val localVideoTrack by lazy {
-        LocalVideoTrack.create(this, true, cameraCapturer)
+        LocalVideoTrack.create(this, true, cameraCapturer, videoFormat)
     }
     private val recordButtonClickListener = View.OnClickListener {
         recordButton.text = if(recordButton.text == getString(R.string.start_recording)) {
@@ -53,6 +58,7 @@ class RotateVideoFramesActivity : ComponentActivity() {
         setContentView(R.layout.activity_advanced_camera_capturer)
         mediaHandler = MediaHandler(
                 this,
+                videoFormat,
                 mediaScope
         )
         videoView = findViewById<View>(R.id.video_view) as VideoView
