@@ -22,7 +22,6 @@ import tvi.webrtc.Camera1Enumerator
 class RotateVideoFramesActivity : ComponentActivity() {
     private lateinit var videoView: VideoView
     private lateinit var recordButton: Button
-    private lateinit var rotateButton: Button
     private var mediaScope = CoroutineScope(lifecycleScope.coroutineContext + Dispatchers.Default)
     private lateinit var mediaHandler: MediaHandler
     private val videoFormat = VideoFormat(
@@ -49,8 +48,6 @@ class RotateVideoFramesActivity : ComponentActivity() {
             getString(R.string.start_recording)
         }
     }
-    private val rotateButtonClickListener = View.OnClickListener { rotateVideo() }
-
     private val videoRecorder by lazy { VideoRecorder(videoView) }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +60,6 @@ class RotateVideoFramesActivity : ComponentActivity() {
         )
         videoView = findViewById<View>(R.id.video_view) as VideoView
         recordButton = findViewById<View>(R.id.record_video) as Button
-        rotateButton = findViewById<View>(R.id.rotate_video) as Button
 
         if (!checkPermissionForCamera()) {
             requestPermissionForCamera()
@@ -121,7 +117,6 @@ class RotateVideoFramesActivity : ComponentActivity() {
     private fun addCameraVideo() {
         localVideoTrack?.videoSource?.setVideoProcessor(videoRecorder)
         recordButton.setOnClickListener(recordButtonClickListener)
-        rotateButton.setOnClickListener(rotateButtonClickListener)
     }
 
     private fun startVideoRecording() {
@@ -130,10 +125,6 @@ class RotateVideoFramesActivity : ComponentActivity() {
 
     private fun stopVideoRecording() {
         mediaHandler.close()
-    }
-
-    private fun rotateVideo() {
-        // TODO
     }
 
     companion object {

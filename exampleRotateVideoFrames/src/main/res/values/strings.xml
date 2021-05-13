@@ -3,5 +3,4 @@
     <string name="permissions_needed">Need camera permission for example</string>
     <string name="start_recording">Start Recording</string>
     <string name="stop_recording">Stop Recording</string>
-    <string name="rotate_video">Rotate Video</string>
 </resources>

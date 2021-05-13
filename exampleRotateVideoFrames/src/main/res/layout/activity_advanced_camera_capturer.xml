@@ -18,12 +18,5 @@
             android:id="@+id/record_video"
             android:text="@string/start_recording"
             android:layout_margin="16dp"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/rotate_video"
-            android:text="@string/rotate_video"
-            android:layout_margin="16dp"/>
-
     </LinearLayout>
 </merge>
