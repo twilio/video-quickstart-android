@@ -1,28 +1,28 @@
 package com.twilio.video.examples.datatrack;
 
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Message that represents a drawing event on a view.
- *
+ * <p>
  * A motion message is represented as the following JSON object.
- *
+ * <p>
  * {
- *   mouseDown: true,
- *   mouseCoordinates: {
- *     x: 1,
- *     y: 2
- *   }
+ * mouseDown: true,
+ * mouseCoordinates: {
+ * x: 1,
+ * y: 2
  * }
- *
+ * }
+ * <p>
  * The web app sends messages prefixed with mouse so the message is serialized and
  * deserialized using this convention.
- *
  */
 public class MotionMessage {
     private static final String TAG = "MotionMessage";
@@ -48,7 +48,8 @@ public class MotionMessage {
      * @param json raw json motion message.
      * @return motion message instance.
      */
-    public static @Nullable MotionMessage fromJson(String json) {
+    public static @Nullable
+    MotionMessage fromJson(String json) {
         MotionMessage motionMessage = null;
 
         try {

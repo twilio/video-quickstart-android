@@ -8,12 +8,12 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.hardware.Camera
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.twilio.video.CameraCapturer
 import com.twilio.video.CameraParameterUpdater
 import com.twilio.video.LocalVideoTrack

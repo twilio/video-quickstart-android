@@ -40,7 +40,7 @@ dependencies {
 
     implementation project(":common")
     implementation "com.twilio:video-android:${versions.videoAndroid}"
-    implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
-    implementation "com.android.support:design:${versions.supportLibrary}"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }

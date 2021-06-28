@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".AudioSinkActivity">
+<LinearLayout android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context=".AudioSinkActivity">
 
-    <TextView
-        android:id="@+id/status_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:text="@string/status_join_room"
-        android:textSize="24sp" />
+	<TextView
+		android:id="@+id/status_text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
+		android:text="@string/status_join_room"
+		android:textSize="24sp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="50dp"
-        android:orientation="horizontal">
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="50dp"
+		android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/toggle_sink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.5"
-            android:src="@android:drawable/ic_btn_speak_now"
-            android:contentDescription="@string/toogle_audio_sink"/>
+		<ImageButton
+			android:id="@+id/toggle_sink"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_weight="0.5"
+			android:src="@android:drawable/ic_btn_speak_now"
+			android:contentDescription="@string/toogle_audio_sink" />
 
-        <ImageButton
-            android:id="@+id/toggle_play_file"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.5"
-            android:contentDescription="@string/play_file"
-            android:src="@android:drawable/ic_media_play" />
-    </LinearLayout>
+		<ImageButton
+			android:id="@+id/toggle_play_file"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_weight="0.5"
+			android:contentDescription="@string/play_file"
+			android:src="@android:drawable/ic_media_play" />
+	</LinearLayout>
 
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/connect_action_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/sym_call_outgoing"
-        app:fabSize="normal" />
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/connect_action_fab"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="end"
+		android:layout_margin="@dimen/fab_margin"
+		android:src="@android:drawable/sym_call_outgoing"
+		android:contentDescription="@string/connect_failed"
+		app:fabSize="normal" />
 </LinearLayout>

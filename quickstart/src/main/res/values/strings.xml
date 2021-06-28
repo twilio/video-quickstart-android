@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Video Quickstart</string>
     <string name="room_status">status</string>
     <string name="error_retrieving_access_token">Error retrieving token</string>

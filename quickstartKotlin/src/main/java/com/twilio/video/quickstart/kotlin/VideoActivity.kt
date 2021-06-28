@@ -9,17 +9,17 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import com.koushikdutta.ion.Ion
 import com.twilio.audioswitch.AudioDevice
 import com.twilio.audioswitch.AudioDevice.BluetoothHeadset
@@ -407,7 +407,7 @@ class VideoActivity : AppCompatActivity() {
 
     private var localAudioTrack: LocalAudioTrack? = null
     private var localVideoTrack: LocalVideoTrack? = null
-    private var alertDialog: android.support.v7.app.AlertDialog? = null
+    private var alertDialog: AlertDialog? = null
     private val cameraCapturerCompat by lazy {
         CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA)
     }

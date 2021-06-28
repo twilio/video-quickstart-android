@@ -1,14 +1,9 @@
 package com.twilio.video.examples.datatrack;
 
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,8 +14,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.koushikdutta.async.future.FutureCallback;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.koushikdutta.ion.Ion;
+import com.twilio.video.BuildConfig;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalDataTrack;
 import com.twilio.video.RemoteAudioTrack;
@@ -179,7 +180,8 @@ public class DataTrackActivity extends AppCompatActivity {
     private TextWatcher roomEditTextWatcher() {
         return new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -195,7 +197,8 @@ public class DataTrackActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         };
     }
 
