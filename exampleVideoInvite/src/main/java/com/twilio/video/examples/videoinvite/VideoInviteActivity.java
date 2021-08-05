@@ -439,16 +439,13 @@ public class VideoInviteActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_turn_speaker_on:
-            case R.id.menu_turn_speaker_off:
+        int itemId = item.getItemId();
+        if(itemId == R.id.menu_turn_speaker_on || itemId == R.id.menu_turn_speaker_off) {
                 boolean expectedSpeakerPhoneState = !audioManager.isSpeakerphoneOn();
 
                 audioManager.setSpeakerphoneOn(expectedSpeakerPhoneState);
                 turnSpeakerOffMenuItem.setVisible(expectedSpeakerPhoneState);
                 turnSpeakerOnMenuItem.setVisible(!expectedSpeakerPhoneState);
-
-                return true;
         }
         return true;
     }

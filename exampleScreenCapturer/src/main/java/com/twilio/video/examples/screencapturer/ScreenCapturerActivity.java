@@ -71,28 +71,28 @@ public class ScreenCapturerActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.share_screen_menu_item:
-                String shareScreen = getString(R.string.share_screen);
-                if (item.getTitle().equals(shareScreen)) {
-                    if (Build.VERSION.SDK_INT >= 29) {
-                        screenCapturerManager.startForeground();
-                    }
-                    if (screenCapturer == null) {
-                        requestScreenCapturePermission();
-                    } else {
-                        startScreenCapture();
-                    }
-                } else {
-                    if (Build.VERSION.SDK_INT >= 29) {
-                        screenCapturerManager.endForeground();
-                    }
-                    stopScreenCapture();
+        int itemId = item.getItemId();
+        if(itemId == R.id.share_screen_menu_item) {
+            String shareScreen = getString(R.string.share_screen);
+            if (item.getTitle().equals(shareScreen)) {
+                if (Build.VERSION.SDK_INT >= 29) {
+                    screenCapturerManager.startForeground();
                 }
+                if (screenCapturer == null) {
+                    requestScreenCapturePermission();
+                } else {
+                    startScreenCapture();
+                }
+            } else {
+                if (Build.VERSION.SDK_INT >= 29) {
+                    screenCapturerManager.endForeground();
+                }
+                stopScreenCapture();
+            }
 
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

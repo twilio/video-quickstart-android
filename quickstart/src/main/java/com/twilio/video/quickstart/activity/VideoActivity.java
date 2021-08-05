@@ -216,15 +216,15 @@ public class VideoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
-            case R.id.menu_audio_device:
-                showAudioDevices();
-                return true;
-            default:
-                return false;
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (itemId == R.id.menu_audio_device) {
+            showAudioDevices();
+            return true;
+        } else {
+            return false;
         }
     }
 
