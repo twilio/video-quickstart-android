@@ -6,6 +6,7 @@ android {
     lintOptions {
         warningsAsErrors true
         disable "GradleDependency"
+        baseline file("lint-baseline.xml")
     }
 
     defaultConfig {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 4.2.0" client="gradle" variant="all" version="4.2.0">
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final in Android Gradle Plugin version 7.0, avoid using them in switch case statements"
+        errorLine1="            case R.id.share_screen_menu_item:"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/twilio/video/examples/screencapturer/ScreenCapturerActivity.java"
+            line="75"
+            column="18"/>
+    </issue>
+
+</issues>

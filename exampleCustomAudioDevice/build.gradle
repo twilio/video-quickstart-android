@@ -12,6 +12,7 @@ android {
     lintOptions {
         warningsAsErrors true
         disable "GradleDependency", "UnusedResources"
+        baseline file("lint-baseline.xml")
     }
 
     defaultConfig {

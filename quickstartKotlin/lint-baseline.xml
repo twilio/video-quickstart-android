@@ -2,14 +2,14 @@
 <issues format="5" by="lint 4.2.0" client="gradle" variant="all" version="4.2.0">
 
     <issue
-        id="MissingFirebaseInstanceTokenRefresh"
-        message="Apps that use Firebase Cloud Messaging should implement `onNewToken()` in order to observe token changes"
-        errorLine1="public class NotifyFirebaseMessagingService extends FirebaseMessagingService {"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="InlinedApi"
+        message="Field requires API level 23 (current min is 21): `android.graphics.ImageFormat#PRIVATE`"
+        errorLine1="            isPrivateImageFormatSupported = streamMap.isOutputSupportedFor(ImageFormat.PRIVATE)"
+        errorLine2="                                                                           ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/twilio/video/examples/videoinvite/notify/fcm/NotifyFirebaseMessagingService.java"
-            line="20"
-            column="14"/>
+            file="src/main/java/com/twilio/video/quickstart/kotlin/CameraCapturerCompat.kt"
+            line="140"
+            column="76"/>
     </issue>
 
     <issue

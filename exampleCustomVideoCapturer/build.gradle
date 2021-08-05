@@ -7,6 +7,7 @@ android {
     lintOptions {
         warningsAsErrors true
         disable "MissingApplicationIcon", "GradleDependency"
+        baseline file("lint-baseline.xml")
     }
 
     defaultConfig {

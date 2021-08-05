@@ -2,17 +2,6 @@
 <issues format="5" by="lint 4.2.0" client="gradle" variant="all" version="4.2.0">
 
     <issue
-        id="MissingFirebaseInstanceTokenRefresh"
-        message="Apps that use Firebase Cloud Messaging should implement `onNewToken()` in order to observe token changes"
-        errorLine1="public class NotifyFirebaseMessagingService extends FirebaseMessagingService {"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/twilio/video/examples/videoinvite/notify/fcm/NotifyFirebaseMessagingService.java"
-            line="20"
-            column="14"/>
-    </issue>
-
-    <issue
         id="TrustAllX509TrustManager"
         message="`checkClientTrusted` is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers">
         <location
