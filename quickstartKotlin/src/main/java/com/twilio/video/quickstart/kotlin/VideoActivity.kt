@@ -747,7 +747,7 @@ class VideoActivity : AppCompatActivity() {
         val roomEditText = EditText(this)
         alertDialog = createConnectDialog(roomEditText,
                 connectClickListener(roomEditText), cancelConnectDialogClickListener(), this)
-        alertDialog!!.show()
+        alertDialog?.show()
     }
 
     /*
@@ -867,7 +867,7 @@ class VideoActivity : AppCompatActivity() {
     private fun cancelConnectDialogClickListener(): DialogInterface.OnClickListener {
         return DialogInterface.OnClickListener { _, _ ->
             initializeUI()
-            alertDialog!!.dismiss()
+            alertDialog?.dismiss()
         }
     }
 
