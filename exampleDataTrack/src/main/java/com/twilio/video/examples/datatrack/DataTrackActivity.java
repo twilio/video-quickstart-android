@@ -21,7 +21,6 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.koushikdutta.ion.Ion;
-import com.twilio.video.BuildConfig;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalDataTrack;
 import com.twilio.video.RemoteAudioTrack;
