@@ -12,7 +12,7 @@ buildscript {
             'firebase'           : '10.0.1',
             'retrofit'           : '2.0.0-beta4',
             'okhttp'             : '3.6.0',
-            'ion'                : '2.1.8',
+            'ion'                : '3.1.0',
             'videoAndroid'       : '6.4.0',
             'audioSwitch'        : '1.1.2'
     ]
