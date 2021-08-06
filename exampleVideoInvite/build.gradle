@@ -48,8 +48,8 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-jackson:${versions.retrofit}"
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
     implementation "com.koushikdutta.ion:ion:${versions.ion}"
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation "androidx.appcompat:appcompat:$versions.appcompat"
+    implementation "com.google.android.material:material:$versions.material"
 }
 
 apply plugin: 'com.google.gms.google-services'

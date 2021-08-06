@@ -14,7 +14,9 @@ buildscript {
             'okhttp'             : '3.6.0',
             'ion'                : '3.1.0',
             'videoAndroid'       : '6.4.0',
-            'audioSwitch'        : '1.1.2'
+            'audioSwitch'        : '1.1.2',
+            'appcompat'          : '1.3.1',
+            'material'           : '1.4.0'
     ]
 
     ext.getSecretProperty = { key, defaultValue ->
