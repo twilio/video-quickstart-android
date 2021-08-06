@@ -54,7 +54,7 @@ import com.twilio.video.Vp9Codec
 import com.twilio.video.ktx.Video.connect
 import com.twilio.video.ktx.createLocalAudioTrack
 import com.twilio.video.ktx.createLocalVideoTrack
-import java.util.*
+import java.util.UUID
 import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
 import kotlinx.android.synthetic.main.activity_video.connectActionFab
