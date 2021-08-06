@@ -91,6 +91,19 @@ jobs:
       # Save cache
       - save-cache: *save-cache-gradle
 
+  check-format:
+    <<: *build-defaults
+    resource_class: medium+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+      - run:
+          name: Spotless Check
+          command: ./gradlew -q spotlessCheck
+      - save-cache: *save-cache-gradle
+
   build-exampleAdvancedCameraCapturer:
     <<: *build-defaults
     resource_class: large
@@ -238,16 +251,6 @@ jobs:
           name: Build exampleCustomAudioDevice
           command: ./gradlew -q exampleCustomAudioDevice:assemble
       - save-cache: *save-cache-gradle
-
-  check-format:
-    <<: *build-defaults
-    resource_class: large
-    steps:
-      - setup-build:
-          after-setup:
-            - run:
-                name: Spotless Check
-                command: ./gradlew -q spotlessCheck
 
 workflows:
   version: 2
