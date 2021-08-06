@@ -33,5 +33,4 @@ android {
 
 dependencies {
     compileOnly "com.twilio:video-android:${versions.videoAndroid}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
 }
