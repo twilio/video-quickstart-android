@@ -60,8 +60,6 @@ android {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-
     implementation project(':common')
     implementation "com.twilio:audioswitch:${versions.audioSwitch}"
     implementation "com.twilio:video-android-ktx:${versions.videoAndroid}"
