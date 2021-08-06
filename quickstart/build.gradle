@@ -62,5 +62,7 @@ dependencies {
     implementation "com.twilio:audioswitch:${versions.audioSwitch}"
     implementation "com.twilio:video-android:${versions.videoAndroid}"
     implementation "com.koushikdutta.ion:ion:${versions.ion}"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
 }
