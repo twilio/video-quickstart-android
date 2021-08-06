@@ -7,15 +7,15 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.twilio.video.Camera2Capturer
 import com.twilio.video.CameraCapturer
 import com.twilio.video.VideoCapturer
+import java.util.EnumMap
+import kotlin.collections.HashMap
 import tvi.webrtc.Camera1Enumerator
 import tvi.webrtc.Camera2Enumerator
 import tvi.webrtc.CapturerObserver
 import tvi.webrtc.SurfaceTextureHelper
-import java.util.*
 
 /*
  * Simple wrapper class that uses Camera2Capturer with supported devices.
@@ -154,8 +154,8 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && colorFilterArrangement != null) {
             isMonoChromeSupported = (colorFilterArrangement
-                    == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO
-                    || colorFilterArrangement
+                    == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO ||
+                    colorFilterArrangement
                     == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR)
         }
         return isPrivateImageFormatSupported && !isMonoChromeSupported

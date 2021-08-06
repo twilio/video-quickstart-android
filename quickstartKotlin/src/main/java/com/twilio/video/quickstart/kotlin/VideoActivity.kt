@@ -28,8 +28,6 @@ import com.twilio.audioswitch.AudioDevice.Speakerphone
 import com.twilio.audioswitch.AudioDevice.WiredHeadset
 import com.twilio.audioswitch.AudioSwitch
 import com.twilio.video.AudioCodec
-import com.twilio.video.CameraCapturer
-import com.twilio.video.ConnectOptions
 import com.twilio.video.EncodingParameters
 import com.twilio.video.G722Codec
 import com.twilio.video.H264Codec
@@ -49,21 +47,25 @@ import com.twilio.video.RemoteVideoTrack
 import com.twilio.video.RemoteVideoTrackPublication
 import com.twilio.video.Room
 import com.twilio.video.TwilioException
-import com.twilio.video.Video
 import com.twilio.video.VideoCodec
 import com.twilio.video.VideoTrack
 import com.twilio.video.Vp8Codec
 import com.twilio.video.Vp9Codec
-import com.twilio.video.ktx.createConnectOptions
 import com.twilio.video.ktx.Video.connect
 import com.twilio.video.ktx.createLocalAudioTrack
 import com.twilio.video.ktx.createLocalVideoTrack
-import kotlinx.android.synthetic.main.activity_video.*
-import kotlinx.android.synthetic.main.content_video.*
-import tvi.webrtc.VideoSink
-import java.util.*
+import java.util.UUID
+import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
-
+import kotlinx.android.synthetic.main.activity_video.connectActionFab
+import kotlinx.android.synthetic.main.activity_video.localVideoActionFab
+import kotlinx.android.synthetic.main.activity_video.muteActionFab
+import kotlinx.android.synthetic.main.activity_video.switchCameraActionFab
+import kotlinx.android.synthetic.main.content_video.primaryVideoView
+import kotlinx.android.synthetic.main.content_video.reconnectingProgressBar
+import kotlinx.android.synthetic.main.content_video.thumbnailVideoView
+import kotlinx.android.synthetic.main.content_video.videoStatusTextView
+import tvi.webrtc.VideoSink
 
 class VideoActivity : AppCompatActivity() {
     private val CAMERA_MIC_PERMISSION_REQUEST_CODE = 1
@@ -93,8 +95,10 @@ class VideoActivity : AppCompatActivity() {
      */
     private val audioCodec: AudioCodec
         get() {
-            val audioCodecName = sharedPreferences.getString(SettingsActivity.PREF_AUDIO_CODEC,
-                    SettingsActivity.PREF_AUDIO_CODEC_DEFAULT)
+            val audioCodecName = sharedPreferences.getString(
+                SettingsActivity.PREF_AUDIO_CODEC,
+                SettingsActivity.PREF_AUDIO_CODEC_DEFAULT
+            )
 
             return when (audioCodecName) {
                 IsacCodec.NAME -> IsacCodec()
@@ -107,14 +111,17 @@ class VideoActivity : AppCompatActivity() {
         }
     private val videoCodec: VideoCodec
         get() {
-            val videoCodecName = sharedPreferences.getString(SettingsActivity.PREF_VIDEO_CODEC,
-                    SettingsActivity.PREF_VIDEO_CODEC_DEFAULT)
+            val videoCodecName = sharedPreferences.getString(
+                SettingsActivity.PREF_VIDEO_CODEC,
+                SettingsActivity.PREF_VIDEO_CODEC_DEFAULT
+            )
 
             return when (videoCodecName) {
                 Vp8Codec.NAME -> {
                     val simulcast = sharedPreferences.getBoolean(
-                            SettingsActivity.PREF_VP8_SIMULCAST,
-                            SettingsActivity.PREF_VP8_SIMULCAST_DEFAULT)
+                        SettingsActivity.PREF_VP8_SIMULCAST,
+                        SettingsActivity.PREF_VP8_SIMULCAST_DEFAULT
+                    )
                     Vp8Codec(simulcast)
                 }
                 H264Codec.NAME -> H264Codec()
@@ -125,7 +132,10 @@ class VideoActivity : AppCompatActivity() {
 
     private val enableAutomaticSubscription: Boolean
         get() {
-            return sharedPreferences.getBoolean(SettingsActivity.PREF_ENABLE_AUTOMATIC_SUBSCRIPTION, SettingsActivity.PREF_ENABLE_AUTOMATIC_SUBCRIPTION_DEFAULT)
+            return sharedPreferences.getBoolean(
+                SettingsActivity.PREF_ENABLE_AUTOMATIC_SUBSCRIPTION,
+                SettingsActivity.PREF_ENABLE_AUTOMATIC_SUBCRIPTION_DEFAULT
+            )
         }
 
     /*
@@ -136,12 +146,16 @@ class VideoActivity : AppCompatActivity() {
             val defaultMaxAudioBitrate = SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT
             val defaultMaxVideoBitrate = SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT
             val maxAudioBitrate = Integer.parseInt(
-                    sharedPreferences.getString(SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE,
-                            defaultMaxAudioBitrate) ?: defaultMaxAudioBitrate
+                sharedPreferences.getString(
+                    SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE,
+                    defaultMaxAudioBitrate
+                ) ?: defaultMaxAudioBitrate
             )
             val maxVideoBitrate = Integer.parseInt(
-                    sharedPreferences.getString(SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE,
-                            defaultMaxVideoBitrate) ?: defaultMaxVideoBitrate
+                sharedPreferences.getString(
+                    SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE,
+                    defaultMaxVideoBitrate
+                ) ?: defaultMaxVideoBitrate
             )
 
             return EncodingParameters(maxAudioBitrate, maxVideoBitrate)
@@ -162,12 +176,12 @@ class VideoActivity : AppCompatActivity() {
 
         override fun onReconnected(room: Room) {
             videoStatusTextView.text = "Connected to ${room.name}"
-            reconnectingProgressBar.visibility = View.GONE;
+            reconnectingProgressBar.visibility = View.GONE
         }
 
         override fun onReconnecting(room: Room, twilioException: TwilioException) {
             videoStatusTextView.text = "Reconnecting to ${room.name}"
-            reconnectingProgressBar.visibility = View.VISIBLE;
+            reconnectingProgressBar.visibility = View.VISIBLE
         }
 
         override fun onConnectFailure(room: Room, e: TwilioException) {
@@ -179,7 +193,7 @@ class VideoActivity : AppCompatActivity() {
         override fun onDisconnected(room: Room, e: TwilioException?) {
             localParticipant = null
             videoStatusTextView.text = "Disconnected from ${room.name}"
-            reconnectingProgressBar.visibility = View.GONE;
+            reconnectingProgressBar.visibility = View.GONE
             this@VideoActivity.room = null
             // Only reinitialize the UI if disconnect was not called from onDestroy()
             if (!disconnectedFromOnDestroy) {
@@ -218,190 +232,260 @@ class VideoActivity : AppCompatActivity() {
      * RemoteParticipant events listener
      */
     private val participantListener = object : RemoteParticipant.Listener {
-        override fun onAudioTrackPublished(remoteParticipant: RemoteParticipant,
-                                           remoteAudioTrackPublication: RemoteAudioTrackPublication) {
-            Log.i(TAG, "onAudioTrackPublished: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteAudioTrackPublication: sid=${remoteAudioTrackPublication.trackSid}, " +
-                    "enabled=${remoteAudioTrackPublication.isTrackEnabled}, " +
-                    "subscribed=${remoteAudioTrackPublication.isTrackSubscribed}, " +
-                    "name=${remoteAudioTrackPublication.trackName}]")
+        override fun onAudioTrackPublished(
+            remoteParticipant: RemoteParticipant,
+            remoteAudioTrackPublication: RemoteAudioTrackPublication
+        ) {
+            Log.i(
+                TAG, "onAudioTrackPublished: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteAudioTrackPublication: sid=${remoteAudioTrackPublication.trackSid}, " +
+                        "enabled=${remoteAudioTrackPublication.isTrackEnabled}, " +
+                        "subscribed=${remoteAudioTrackPublication.isTrackSubscribed}, " +
+                        "name=${remoteAudioTrackPublication.trackName}]"
+            )
             videoStatusTextView.text = "onAudioTrackAdded"
         }
 
-        override fun onAudioTrackUnpublished(remoteParticipant: RemoteParticipant,
-                                             remoteAudioTrackPublication: RemoteAudioTrackPublication) {
-            Log.i(TAG, "onAudioTrackUnpublished: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteAudioTrackPublication: sid=${remoteAudioTrackPublication.trackSid}, " +
-                    "enabled=${remoteAudioTrackPublication.isTrackEnabled}, " +
-                    "subscribed=${remoteAudioTrackPublication.isTrackSubscribed}, " +
-                    "name=${remoteAudioTrackPublication.trackName}]")
+        override fun onAudioTrackUnpublished(
+            remoteParticipant: RemoteParticipant,
+            remoteAudioTrackPublication: RemoteAudioTrackPublication
+        ) {
+            Log.i(
+                TAG, "onAudioTrackUnpublished: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteAudioTrackPublication: sid=${remoteAudioTrackPublication.trackSid}, " +
+                        "enabled=${remoteAudioTrackPublication.isTrackEnabled}, " +
+                        "subscribed=${remoteAudioTrackPublication.isTrackSubscribed}, " +
+                        "name=${remoteAudioTrackPublication.trackName}]"
+            )
             videoStatusTextView.text = "onAudioTrackRemoved"
         }
 
-        override fun onDataTrackPublished(remoteParticipant: RemoteParticipant,
-                                          remoteDataTrackPublication: RemoteDataTrackPublication) {
-            Log.i(TAG, "onDataTrackPublished: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteDataTrackPublication: sid=${remoteDataTrackPublication.trackSid}, " +
-                    "enabled=${remoteDataTrackPublication.isTrackEnabled}, " +
-                    "subscribed=${remoteDataTrackPublication.isTrackSubscribed}, " +
-                    "name=${remoteDataTrackPublication.trackName}]")
+        override fun onDataTrackPublished(
+            remoteParticipant: RemoteParticipant,
+            remoteDataTrackPublication: RemoteDataTrackPublication
+        ) {
+            Log.i(
+                TAG, "onDataTrackPublished: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteDataTrackPublication: sid=${remoteDataTrackPublication.trackSid}, " +
+                        "enabled=${remoteDataTrackPublication.isTrackEnabled}, " +
+                        "subscribed=${remoteDataTrackPublication.isTrackSubscribed}, " +
+                        "name=${remoteDataTrackPublication.trackName}]"
+            )
             videoStatusTextView.text = "onDataTrackPublished"
         }
 
-        override fun onDataTrackUnpublished(remoteParticipant: RemoteParticipant,
-                                            remoteDataTrackPublication: RemoteDataTrackPublication) {
-            Log.i(TAG, "onDataTrackUnpublished: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteDataTrackPublication: sid=${remoteDataTrackPublication.trackSid}, " +
-                    "enabled=${remoteDataTrackPublication.isTrackEnabled}, " +
-                    "subscribed=${remoteDataTrackPublication.isTrackSubscribed}, " +
-                    "name=${remoteDataTrackPublication.trackName}]")
+        override fun onDataTrackUnpublished(
+            remoteParticipant: RemoteParticipant,
+            remoteDataTrackPublication: RemoteDataTrackPublication
+        ) {
+            Log.i(
+                TAG, "onDataTrackUnpublished: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteDataTrackPublication: sid=${remoteDataTrackPublication.trackSid}, " +
+                        "enabled=${remoteDataTrackPublication.isTrackEnabled}, " +
+                        "subscribed=${remoteDataTrackPublication.isTrackSubscribed}, " +
+                        "name=${remoteDataTrackPublication.trackName}]"
+            )
             videoStatusTextView.text = "onDataTrackUnpublished"
         }
 
-        override fun onVideoTrackPublished(remoteParticipant: RemoteParticipant,
-                                           remoteVideoTrackPublication: RemoteVideoTrackPublication) {
-            Log.i(TAG, "onVideoTrackPublished: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteVideoTrackPublication: sid=${remoteVideoTrackPublication.trackSid}, " +
-                    "enabled=${remoteVideoTrackPublication.isTrackEnabled}, " +
-                    "subscribed=${remoteVideoTrackPublication.isTrackSubscribed}, " +
-                    "name=${remoteVideoTrackPublication.trackName}]")
+        override fun onVideoTrackPublished(
+            remoteParticipant: RemoteParticipant,
+            remoteVideoTrackPublication: RemoteVideoTrackPublication
+        ) {
+            Log.i(
+                TAG, "onVideoTrackPublished: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteVideoTrackPublication: sid=${remoteVideoTrackPublication.trackSid}, " +
+                        "enabled=${remoteVideoTrackPublication.isTrackEnabled}, " +
+                        "subscribed=${remoteVideoTrackPublication.isTrackSubscribed}, " +
+                        "name=${remoteVideoTrackPublication.trackName}]"
+            )
             videoStatusTextView.text = "onVideoTrackPublished"
         }
 
-        override fun onVideoTrackUnpublished(remoteParticipant: RemoteParticipant,
-                                             remoteVideoTrackPublication: RemoteVideoTrackPublication) {
-            Log.i(TAG, "onVideoTrackUnpublished: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteVideoTrackPublication: sid=${remoteVideoTrackPublication.trackSid}, " +
-                    "enabled=${remoteVideoTrackPublication.isTrackEnabled}, " +
-                    "subscribed=${remoteVideoTrackPublication.isTrackSubscribed}, " +
-                    "name=${remoteVideoTrackPublication.trackName}]")
+        override fun onVideoTrackUnpublished(
+            remoteParticipant: RemoteParticipant,
+            remoteVideoTrackPublication: RemoteVideoTrackPublication
+        ) {
+            Log.i(
+                TAG, "onVideoTrackUnpublished: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteVideoTrackPublication: sid=${remoteVideoTrackPublication.trackSid}, " +
+                        "enabled=${remoteVideoTrackPublication.isTrackEnabled}, " +
+                        "subscribed=${remoteVideoTrackPublication.isTrackSubscribed}, " +
+                        "name=${remoteVideoTrackPublication.trackName}]"
+            )
             videoStatusTextView.text = "onVideoTrackUnpublished"
         }
 
-        override fun onAudioTrackSubscribed(remoteParticipant: RemoteParticipant,
-                                            remoteAudioTrackPublication: RemoteAudioTrackPublication,
-                                            remoteAudioTrack: RemoteAudioTrack) {
-            Log.i(TAG, "onAudioTrackSubscribed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteAudioTrack: enabled=${remoteAudioTrack.isEnabled}, " +
-                    "playbackEnabled=${remoteAudioTrack.isPlaybackEnabled}, " +
-                    "name=${remoteAudioTrack.name}]")
+        override fun onAudioTrackSubscribed(
+            remoteParticipant: RemoteParticipant,
+            remoteAudioTrackPublication: RemoteAudioTrackPublication,
+            remoteAudioTrack: RemoteAudioTrack
+        ) {
+            Log.i(
+                TAG, "onAudioTrackSubscribed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteAudioTrack: enabled=${remoteAudioTrack.isEnabled}, " +
+                        "playbackEnabled=${remoteAudioTrack.isPlaybackEnabled}, " +
+                        "name=${remoteAudioTrack.name}]"
+            )
             videoStatusTextView.text = "onAudioTrackSubscribed"
         }
 
-        override fun onAudioTrackUnsubscribed(remoteParticipant: RemoteParticipant,
-                                              remoteAudioTrackPublication: RemoteAudioTrackPublication,
-                                              remoteAudioTrack: RemoteAudioTrack) {
-            Log.i(TAG, "onAudioTrackUnsubscribed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteAudioTrack: enabled=${remoteAudioTrack.isEnabled}, " +
-                    "playbackEnabled=${remoteAudioTrack.isPlaybackEnabled}, " +
-                    "name=${remoteAudioTrack.name}]")
+        override fun onAudioTrackUnsubscribed(
+            remoteParticipant: RemoteParticipant,
+            remoteAudioTrackPublication: RemoteAudioTrackPublication,
+            remoteAudioTrack: RemoteAudioTrack
+        ) {
+            Log.i(
+                TAG, "onAudioTrackUnsubscribed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteAudioTrack: enabled=${remoteAudioTrack.isEnabled}, " +
+                        "playbackEnabled=${remoteAudioTrack.isPlaybackEnabled}, " +
+                        "name=${remoteAudioTrack.name}]"
+            )
             videoStatusTextView.text = "onAudioTrackUnsubscribed"
         }
 
-        override fun onAudioTrackSubscriptionFailed(remoteParticipant: RemoteParticipant,
-                                                    remoteAudioTrackPublication: RemoteAudioTrackPublication,
-                                                    twilioException: TwilioException) {
-            Log.i(TAG, "onAudioTrackSubscriptionFailed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteAudioTrackPublication: sid=${remoteAudioTrackPublication.trackSid}, " +
-                    "name=${remoteAudioTrackPublication.trackName}]" +
-                    "[TwilioException: code=${twilioException.code}, " +
-                    "message=${twilioException.message}]")
+        override fun onAudioTrackSubscriptionFailed(
+            remoteParticipant: RemoteParticipant,
+            remoteAudioTrackPublication: RemoteAudioTrackPublication,
+            twilioException: TwilioException
+        ) {
+            Log.i(
+                TAG, "onAudioTrackSubscriptionFailed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteAudioTrackPublication: sid=${remoteAudioTrackPublication.trackSid}, " +
+                        "name=${remoteAudioTrackPublication.trackName}]" +
+                        "[TwilioException: code=${twilioException.code}, " +
+                        "message=${twilioException.message}]"
+            )
             videoStatusTextView.text = "onAudioTrackSubscriptionFailed"
         }
 
-        override fun onDataTrackSubscribed(remoteParticipant: RemoteParticipant,
-                                           remoteDataTrackPublication: RemoteDataTrackPublication,
-                                           remoteDataTrack: RemoteDataTrack) {
-            Log.i(TAG, "onDataTrackSubscribed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteDataTrack: enabled=${remoteDataTrack.isEnabled}, " +
-                    "name=${remoteDataTrack.name}]")
+        override fun onDataTrackSubscribed(
+            remoteParticipant: RemoteParticipant,
+            remoteDataTrackPublication: RemoteDataTrackPublication,
+            remoteDataTrack: RemoteDataTrack
+        ) {
+            Log.i(
+                TAG, "onDataTrackSubscribed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteDataTrack: enabled=${remoteDataTrack.isEnabled}, " +
+                        "name=${remoteDataTrack.name}]"
+            )
             videoStatusTextView.text = "onDataTrackSubscribed"
         }
 
-        override fun onDataTrackUnsubscribed(remoteParticipant: RemoteParticipant,
-                                             remoteDataTrackPublication: RemoteDataTrackPublication,
-                                             remoteDataTrack: RemoteDataTrack) {
-            Log.i(TAG, "onDataTrackUnsubscribed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteDataTrack: enabled=${remoteDataTrack.isEnabled}, " +
-                    "name=${remoteDataTrack.name}]")
+        override fun onDataTrackUnsubscribed(
+            remoteParticipant: RemoteParticipant,
+            remoteDataTrackPublication: RemoteDataTrackPublication,
+            remoteDataTrack: RemoteDataTrack
+        ) {
+            Log.i(
+                TAG, "onDataTrackUnsubscribed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteDataTrack: enabled=${remoteDataTrack.isEnabled}, " +
+                        "name=${remoteDataTrack.name}]"
+            )
             videoStatusTextView.text = "onDataTrackUnsubscribed"
         }
 
-        override fun onDataTrackSubscriptionFailed(remoteParticipant: RemoteParticipant,
-                                                   remoteDataTrackPublication: RemoteDataTrackPublication,
-                                                   twilioException: TwilioException) {
-            Log.i(TAG, "onDataTrackSubscriptionFailed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteDataTrackPublication: sid=${remoteDataTrackPublication.trackSid}, " +
-                    "name=${remoteDataTrackPublication.trackName}]" +
-                    "[TwilioException: code=${twilioException.code}, " +
-                    "message=${twilioException.message}]")
+        override fun onDataTrackSubscriptionFailed(
+            remoteParticipant: RemoteParticipant,
+            remoteDataTrackPublication: RemoteDataTrackPublication,
+            twilioException: TwilioException
+        ) {
+            Log.i(
+                TAG, "onDataTrackSubscriptionFailed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteDataTrackPublication: sid=${remoteDataTrackPublication.trackSid}, " +
+                        "name=${remoteDataTrackPublication.trackName}]" +
+                        "[TwilioException: code=${twilioException.code}, " +
+                        "message=${twilioException.message}]"
+            )
             videoStatusTextView.text = "onDataTrackSubscriptionFailed"
         }
 
-        override fun onVideoTrackSubscribed(remoteParticipant: RemoteParticipant,
-                                            remoteVideoTrackPublication: RemoteVideoTrackPublication,
-                                            remoteVideoTrack: RemoteVideoTrack) {
-            Log.i(TAG, "onVideoTrackSubscribed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
-                    "name=${remoteVideoTrack.name}]")
+        override fun onVideoTrackSubscribed(
+            remoteParticipant: RemoteParticipant,
+            remoteVideoTrackPublication: RemoteVideoTrackPublication,
+            remoteVideoTrack: RemoteVideoTrack
+        ) {
+            Log.i(
+                TAG, "onVideoTrackSubscribed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
+                        "name=${remoteVideoTrack.name}]"
+            )
             videoStatusTextView.text = "onVideoTrackSubscribed"
             addRemoteParticipantVideo(remoteVideoTrack)
         }
 
-        override fun onVideoTrackUnsubscribed(remoteParticipant: RemoteParticipant,
-                                              remoteVideoTrackPublication: RemoteVideoTrackPublication,
-                                              remoteVideoTrack: RemoteVideoTrack) {
-            Log.i(TAG, "onVideoTrackUnsubscribed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
-                    "name=${remoteVideoTrack.name}]")
+        override fun onVideoTrackUnsubscribed(
+            remoteParticipant: RemoteParticipant,
+            remoteVideoTrackPublication: RemoteVideoTrackPublication,
+            remoteVideoTrack: RemoteVideoTrack
+        ) {
+            Log.i(
+                TAG, "onVideoTrackUnsubscribed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
+                        "name=${remoteVideoTrack.name}]"
+            )
             videoStatusTextView.text = "onVideoTrackUnsubscribed"
             removeParticipantVideo(remoteVideoTrack)
         }
 
-        override fun onVideoTrackSubscriptionFailed(remoteParticipant: RemoteParticipant,
-                                                    remoteVideoTrackPublication: RemoteVideoTrackPublication,
-                                                    twilioException: TwilioException) {
-            Log.i(TAG, "onVideoTrackSubscriptionFailed: " +
-                    "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
-                    "[RemoteVideoTrackPublication: sid=${remoteVideoTrackPublication.trackSid}, " +
-                    "name=${remoteVideoTrackPublication.trackName}]" +
-                    "[TwilioException: code=${twilioException.code}, " +
-                    "message=${twilioException.message}]")
+        override fun onVideoTrackSubscriptionFailed(
+            remoteParticipant: RemoteParticipant,
+            remoteVideoTrackPublication: RemoteVideoTrackPublication,
+            twilioException: TwilioException
+        ) {
+            Log.i(
+                TAG, "onVideoTrackSubscriptionFailed: " +
+                        "[RemoteParticipant: identity=${remoteParticipant.identity}], " +
+                        "[RemoteVideoTrackPublication: sid=${remoteVideoTrackPublication.trackSid}, " +
+                        "name=${remoteVideoTrackPublication.trackName}]" +
+                        "[TwilioException: code=${twilioException.code}, " +
+                        "message=${twilioException.message}]"
+            )
             videoStatusTextView.text = "onVideoTrackSubscriptionFailed"
-            Snackbar.make(connectActionFab,
-                    "Failed to subscribe to ${remoteParticipant.identity}",
-                    Snackbar.LENGTH_LONG)
-                    .show()
+            Snackbar.make(
+                connectActionFab,
+                "Failed to subscribe to ${remoteParticipant.identity}",
+                Snackbar.LENGTH_LONG
+            )
+                .show()
         }
 
-        override fun onAudioTrackEnabled(remoteParticipant: RemoteParticipant,
-                                         remoteAudioTrackPublication: RemoteAudioTrackPublication) {
+        override fun onAudioTrackEnabled(
+            remoteParticipant: RemoteParticipant,
+            remoteAudioTrackPublication: RemoteAudioTrackPublication
+        ) {
         }
 
-        override fun onVideoTrackEnabled(remoteParticipant: RemoteParticipant,
-                                         remoteVideoTrackPublication: RemoteVideoTrackPublication) {
+        override fun onVideoTrackEnabled(
+            remoteParticipant: RemoteParticipant,
+            remoteVideoTrackPublication: RemoteVideoTrackPublication
+        ) {
         }
 
-        override fun onVideoTrackDisabled(remoteParticipant: RemoteParticipant,
-                                          remoteVideoTrackPublication: RemoteVideoTrackPublication) {
+        override fun onVideoTrackDisabled(
+            remoteParticipant: RemoteParticipant,
+            remoteVideoTrackPublication: RemoteVideoTrackPublication
+        ) {
         }
 
-        override fun onAudioTrackDisabled(remoteParticipant: RemoteParticipant,
-                                          remoteAudioTrackPublication: RemoteAudioTrackPublication) {
+        override fun onAudioTrackDisabled(
+            remoteParticipant: RemoteParticipant,
+            remoteAudioTrackPublication: RemoteAudioTrackPublication
+        ) {
         }
     }
 
@@ -419,8 +503,12 @@ class VideoActivity : AppCompatActivity() {
      * Audio management
      */
     private val audioSwitch by lazy {
-        AudioSwitch(applicationContext, preferredDeviceList = listOf(BluetoothHeadset::class.java,
-                WiredHeadset::class.java, Speakerphone::class.java, Earpiece::class.java))
+        AudioSwitch(
+            applicationContext, preferredDeviceList = listOf(
+                BluetoothHeadset::class.java,
+                WiredHeadset::class.java, Speakerphone::class.java, Earpiece::class.java
+            )
+        )
     }
     private var savedVolumeControlStream by Delegates.notNull<Int>()
     private lateinit var audioDeviceMenuItem: MenuItem
@@ -461,9 +549,11 @@ class VideoActivity : AppCompatActivity() {
         initializeUI()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == CAMERA_MIC_PERMISSION_REQUEST_CODE) {
             var cameraAndMicPermissionGranted = true
 
@@ -475,9 +565,11 @@ class VideoActivity : AppCompatActivity() {
             if (cameraAndMicPermissionGranted) {
                 createAudioAndVideoTracks()
             } else {
-                Toast.makeText(this,
-                        R.string.permissions_needed,
-                        Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    R.string.permissions_needed,
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -488,9 +580,11 @@ class VideoActivity : AppCompatActivity() {
          * If the local video track was released when the app was put in the background, recreate.
          */
         localVideoTrack = if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
-            createLocalVideoTrack(this,
-                    true,
-                    cameraCapturerCompat)
+            createLocalVideoTrack(
+                this,
+                true,
+                cameraCapturerCompat
+            )
         } else {
             localVideoTrack
         }
@@ -584,16 +678,22 @@ class VideoActivity : AppCompatActivity() {
 
     private fun requestPermissionForCameraAndMicrophone() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.RECORD_AUDIO)) {
-            Toast.makeText(this,
-                    R.string.permissions_needed,
-                    Toast.LENGTH_LONG).show()
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            )
+        ) {
+            Toast.makeText(
+                this,
+                R.string.permissions_needed,
+                Toast.LENGTH_LONG
+            ).show()
         } else {
             ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
-                    CAMERA_MIC_PERMISSION_REQUEST_CODE)
+                this,
+                arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
+                CAMERA_MIC_PERMISSION_REQUEST_CODE
+            )
         }
     }
 
@@ -610,9 +710,11 @@ class VideoActivity : AppCompatActivity() {
         localAudioTrack = createLocalAudioTrack(this, true)
 
         // Share your camera
-        localVideoTrack = createLocalVideoTrack(this,
-                true,
-                cameraCapturerCompat)
+        localVideoTrack = createLocalVideoTrack(
+            this,
+            true,
+            cameraCapturerCompat
+        )
     }
 
     private fun setAccessToken() {
@@ -636,7 +738,7 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private fun connectToRoom(roomName: String) {
-        audioSwitch.activate();
+        audioSwitch.activate()
 
         room = connect(this, accessToken, roomListener) {
             roomName(roomName)
@@ -676,8 +778,12 @@ class VideoActivity : AppCompatActivity() {
      * The initial state when there is no active room.
      */
     private fun initializeUI() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_video_call_white_24dp))
+        connectActionFab.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                R.drawable.ic_video_call_white_24dp
+            )
+        )
         connectActionFab.show()
         connectActionFab.setOnClickListener(connectActionClickListener())
         switchCameraActionFab.show()
@@ -703,16 +809,16 @@ class VideoActivity : AppCompatActivity() {
             }
 
             AlertDialog.Builder(this)
-                    .setTitle(R.string.room_screen_select_device)
-                    .setSingleChoiceItems(
-                            audioDeviceNames.toTypedArray<CharSequence>(),
-                            selectedDeviceIndex
-                    ) { dialog, index ->
-                        dialog.dismiss()
-                        val selectedAudioDevice = availableAudioDevices[index]
-                        updateAudioDeviceIcon(selectedAudioDevice)
-                        audioSwitch.selectDevice(selectedAudioDevice)
-                    }.create().show()
+                .setTitle(R.string.room_screen_select_device)
+                .setSingleChoiceItems(
+                    audioDeviceNames.toTypedArray<CharSequence>(),
+                    selectedDeviceIndex
+                ) { dialog, index ->
+                    dialog.dismiss()
+                    val selectedAudioDevice = availableAudioDevices[index]
+                    updateAudioDeviceIcon(selectedAudioDevice)
+                    audioSwitch.selectDevice(selectedAudioDevice)
+                }.create().show()
         }
     }
 
@@ -720,7 +826,7 @@ class VideoActivity : AppCompatActivity() {
      * Update the menu icon based on the currently selected audio device.
      */
     private fun updateAudioDeviceIcon(selectedAudioDevice: AudioDevice?) {
-        val audioDeviceMenuIcon = when(selectedAudioDevice) {
+        val audioDeviceMenuIcon = when (selectedAudioDevice) {
             is BluetoothHeadset -> R.drawable.ic_bluetooth_white_24dp
             is WiredHeadset -> R.drawable.ic_headset_mic_white_24dp
             is Speakerphone -> R.drawable.ic_volume_up_white_24dp
@@ -734,8 +840,12 @@ class VideoActivity : AppCompatActivity() {
      * The actions performed during disconnect.
      */
     private fun setDisconnectAction() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_end_white_24px))
+        connectActionFab.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                R.drawable.ic_call_end_white_24px
+            )
+        )
         connectActionFab.show()
         connectActionFab.setOnClickListener(disconnectClickListener())
     }
@@ -745,8 +855,10 @@ class VideoActivity : AppCompatActivity() {
      */
     private fun showConnectDialog() {
         val roomEditText = EditText(this)
-        alertDialog = createConnectDialog(roomEditText,
-                connectClickListener(roomEditText), cancelConnectDialogClickListener(), this)
+        alertDialog = createConnectDialog(
+            roomEditText,
+            connectClickListener(roomEditText), cancelConnectDialogClickListener(), this
+        )
         alertDialog?.show()
     }
 
@@ -758,10 +870,12 @@ class VideoActivity : AppCompatActivity() {
          * This app only displays video for one additional participant per Room
          */
         if (thumbnailVideoView.visibility == View.VISIBLE) {
-            Snackbar.make(connectActionFab,
-                    "Multiple participants are not currently support in this UI",
-                    Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            Snackbar.make(
+                connectActionFab,
+                "Multiple participants are not currently support in this UI",
+                Snackbar.LENGTH_LONG
+            )
+                .setAction("Action", null).show()
             return
         }
         participantIdentity = remoteParticipant.identity
@@ -800,7 +914,7 @@ class VideoActivity : AppCompatActivity() {
             }
             localVideoView = thumbnailVideoView
             thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
-                   CameraCapturerCompat.Source.FRONT_CAMERA
+                    CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
 
@@ -837,7 +951,7 @@ class VideoActivity : AppCompatActivity() {
             }
             localVideoView = primaryVideoView
             primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
-                   CameraCapturerCompat.Source.FRONT_CAMERA
+                    CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
 
@@ -900,7 +1014,8 @@ class VideoActivity : AppCompatActivity() {
                     switchCameraActionFab.hide()
                 }
                 localVideoActionFab.setImageDrawable(
-                        ContextCompat.getDrawable(this@VideoActivity, icon))
+                    ContextCompat.getDrawable(this@VideoActivity, icon)
+                )
             }
         }
     }
@@ -919,31 +1034,38 @@ class VideoActivity : AppCompatActivity() {
                     R.drawable.ic_mic_white_24dp
                 else
                     R.drawable.ic_mic_off_black_24dp
-                muteActionFab.setImageDrawable(ContextCompat.getDrawable(
-                        this@VideoActivity, icon))
+                muteActionFab.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this@VideoActivity, icon
+                    )
+                )
             }
         }
     }
 
     private fun retrieveAccessTokenfromServer() {
         Ion.with(this)
-                .load("$ACCESS_TOKEN_SERVER?identity=${UUID.randomUUID()}")
-                .asString()
-                .setCallback { e, token ->
-                    if (e == null) {
-                        this@VideoActivity.accessToken = token
-                    } else {
-                        Toast.makeText(this@VideoActivity,
-                                R.string.error_retrieving_access_token, Toast.LENGTH_LONG)
-                                .show()
-                    }
+            .load("$ACCESS_TOKEN_SERVER?identity=${UUID.randomUUID()}")
+            .asString()
+            .setCallback { e, token ->
+                if (e == null) {
+                    this@VideoActivity.accessToken = token
+                } else {
+                    Toast.makeText(
+                        this@VideoActivity,
+                        R.string.error_retrieving_access_token, Toast.LENGTH_LONG
+                    )
+                        .show()
                 }
+            }
     }
 
-    private fun createConnectDialog(participantEditText: EditText,
-                                    callParticipantsClickListener: DialogInterface.OnClickListener,
-                                    cancelClickListener: DialogInterface.OnClickListener,
-                                    context: Context): AlertDialog {
+    private fun createConnectDialog(
+        participantEditText: EditText,
+        callParticipantsClickListener: DialogInterface.OnClickListener,
+        cancelClickListener: DialogInterface.OnClickListener,
+        context: Context
+    ): AlertDialog {
         val alertDialogBuilder = AlertDialog.Builder(context).apply {
             setIcon(R.drawable.ic_video_call_white_24dp)
             setTitle("Connect to a room")
@@ -958,16 +1080,22 @@ class VideoActivity : AppCompatActivity() {
     }
 
     @SuppressLint("RestrictedApi")
-    private fun setRoomNameFieldInDialog(roomNameEditText: EditText,
-                                         alertDialogBuilder: AlertDialog.Builder,
-                                         context: Context) {
+    private fun setRoomNameFieldInDialog(
+        roomNameEditText: EditText,
+        alertDialogBuilder: AlertDialog.Builder,
+        context: Context
+    ) {
         roomNameEditText.hint = "room name"
-        val horizontalPadding = context.resources.getDimensionPixelOffset(R.dimen.activity_horizontal_margin)
-        val verticalPadding = context.resources.getDimensionPixelOffset(R.dimen.activity_vertical_margin)
-        alertDialogBuilder.setView(roomNameEditText,
-                horizontalPadding,
-                verticalPadding,
-                horizontalPadding,
-                0)
+        val horizontalPadding =
+            context.resources.getDimensionPixelOffset(R.dimen.activity_horizontal_margin)
+        val verticalPadding =
+            context.resources.getDimensionPixelOffset(R.dimen.activity_vertical_margin)
+        alertDialogBuilder.setView(
+            roomNameEditText,
+            horizontalPadding,
+            verticalPadding,
+            horizontalPadding,
+            0
+        )
     }
 }

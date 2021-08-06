@@ -11,12 +11,12 @@ import com.twilio.video.Rgba8888Buffer
 import com.twilio.video.VideoCapturer
 import com.twilio.video.VideoDimensions
 import com.twilio.video.VideoFormat
-import tvi.webrtc.CapturerObserver
-import tvi.webrtc.SurfaceTextureHelper
-import tvi.webrtc.VideoFrame
 import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import tvi.webrtc.CapturerObserver
+import tvi.webrtc.SurfaceTextureHelper
+import tvi.webrtc.VideoFrame
 
 /**
  * ViewCapturer demonstrates how to implement a custom [VideoCapturer]. This class

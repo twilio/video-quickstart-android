@@ -176,9 +176,9 @@ public class CameraCapturerCompat implements VideoCapturer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && colorFilterArrangement != null) {
             isMonoChromeSupported =
                     colorFilterArrangement
-                            == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO
+                                    == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO
                             || colorFilterArrangement
-                            == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR;
+                                    == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR;
         }
         return isPrivateImageFormatSupported && !isMonoChromeSupported;
     }

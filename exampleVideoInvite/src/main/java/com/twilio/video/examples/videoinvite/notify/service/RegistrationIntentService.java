@@ -1,5 +1,10 @@
 package com.twilio.video.examples.videoinvite.notify.service;
 
+import static com.twilio.video.examples.videoinvite.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
+import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.ADDRESS;
+import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.ENDPOINT;
+import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.IDENTITY;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,22 +12,15 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.twilio.video.examples.videoinvite.R;
 import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
 import com.twilio.video.examples.videoinvite.notify.api.model.Binding;
 import com.twilio.video.examples.videoinvite.notify.api.model.Token;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.twilio.video.examples.videoinvite.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
-import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.ADDRESS;
-import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.ENDPOINT;
-import static com.twilio.video.examples.videoinvite.notify.service.BindingSharedPreferences.IDENTITY;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -51,31 +49,38 @@ public class RegistrationIntentService extends IntentService {
     }
 
     private void register() {
-        if (TWILIO_SDK_STARTER_SERVER_URL.equals(getString(R.string.twilio_sdk_starter_server_url))) {
+        if (TWILIO_SDK_STARTER_SERVER_URL.equals(
+                getString(R.string.twilio_sdk_starter_server_url))) {
             String message = "Error: Set a valid sdk starter server url";
             Log.e(TAG, message);
             sendRegistrationFailure(message);
         } else {
             String identity = sharedPreferences.getString(IDENTITY, null);
-            TwilioSDKStarterAPI.fetchToken(identity).enqueue(new Callback<Token>() {
-                @Override
-                public void onResponse(Call<Token> call, Response<Token> response) {
-                    if (response.isSuccess()) {
-                        bind(response.body().identity, response.body().token);
-                    } else {
-                        String message = "Fetching token failed: " + response.code() + " " + response.message();
-                        Log.e(TAG, message);
-                        sendRegistrationFailure(message);
-                    }
-                }
+            TwilioSDKStarterAPI.fetchToken(identity)
+                    .enqueue(
+                            new Callback<Token>() {
+                                @Override
+                                public void onResponse(Call<Token> call, Response<Token> response) {
+                                    if (response.isSuccess()) {
+                                        bind(response.body().identity, response.body().token);
+                                    } else {
+                                        String message =
+                                                "Fetching token failed: "
+                                                        + response.code()
+                                                        + " "
+                                                        + response.message();
+                                        Log.e(TAG, message);
+                                        sendRegistrationFailure(message);
+                                    }
+                                }
 
-                @Override
-                public void onFailure(Call<Token> call, Throwable t) {
-                    String message = "Fetching token failed: " + t.getMessage();
-                    Log.e(TAG, message);
-                    sendRegistrationFailure(message);
-                }
-            });
+                                @Override
+                                public void onFailure(Call<Token> call, Throwable t) {
+                                    String message = "Fetching token failed: " + t.getMessage();
+                                    Log.e(TAG, message);
+                                    sendRegistrationFailure(message);
+                                }
+                            });
         }
     }
 
@@ -115,50 +120,58 @@ public class RegistrationIntentService extends IntentService {
          * were stored in shared preferences after the last successful binding registration.
          */
         if (newEndpoint.equals(endpoint) && newAddress.equals(address)) {
-            Log.i(TAG, "A new binding registration was not performed because " +
-                    "the binding values are the same as the last registered binding.");
+            Log.i(
+                    TAG,
+                    "A new binding registration was not performed because "
+                            + "the binding values are the same as the last registered binding.");
             sendRegistrationSuccess(identity, token);
         } else {
             /*
              * Clear the existing binding from SharedPreferences and attempt to register
              * the new binding values.
              */
-            sharedPreferences.edit()
-                    .remove(IDENTITY)
-                    .remove(ENDPOINT)
-                    .remove(ADDRESS)
-                    .apply();
+            sharedPreferences.edit().remove(IDENTITY).remove(ENDPOINT).remove(ADDRESS).apply();
 
-            final Binding binding = new Binding(identity,
-                    newEndpoint,
-                    newAddress,
-                    BINDING_TYPE,
-                    VideoInviteActivity.NOTIFY_TAGS);
+            final Binding binding =
+                    new Binding(
+                            identity,
+                            newEndpoint,
+                            newAddress,
+                            BINDING_TYPE,
+                            VideoInviteActivity.NOTIFY_TAGS);
 
-            TwilioSDKStarterAPI.registerBinding(binding).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccess()) {
-                        sharedPreferences.edit()
-                                .putString(IDENTITY, identity)
-                                .putString(ENDPOINT, newEndpoint)
-                                .putString(ADDRESS, newAddress)
-                                .apply();
-                        sendRegistrationSuccess(identity, token);
-                    } else {
-                        String message = "Binding registration failed: " + response.code() + " " + response.message();
-                        Log.e(TAG, message);
-                        sendRegistrationFailure(message);
-                    }
-                }
+            TwilioSDKStarterAPI.registerBinding(binding)
+                    .enqueue(
+                            new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    if (response.isSuccess()) {
+                                        sharedPreferences
+                                                .edit()
+                                                .putString(IDENTITY, identity)
+                                                .putString(ENDPOINT, newEndpoint)
+                                                .putString(ADDRESS, newAddress)
+                                                .apply();
+                                        sendRegistrationSuccess(identity, token);
+                                    } else {
+                                        String message =
+                                                "Binding registration failed: "
+                                                        + response.code()
+                                                        + " "
+                                                        + response.message();
+                                        Log.e(TAG, message);
+                                        sendRegistrationFailure(message);
+                                    }
+                                }
 
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    String message = "Binding registration failed: " + t.getMessage();
-                    Log.e(TAG, message);
-                    sendRegistrationFailure(message);
-                }
-            });
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    String message =
+                                            "Binding registration failed: " + t.getMessage();
+                                    Log.e(TAG, message);
+                                    sendRegistrationFailure(message);
+                                }
+                            });
         }
     }
 
@@ -174,5 +187,4 @@ public class RegistrationIntentService extends IntentService {
         intent.putExtra(VideoInviteActivity.REGISTRATION_ERROR, message);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
-
 }

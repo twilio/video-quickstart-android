@@ -24,16 +24,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.koushikdutta.ion.Ion;
 import com.twilio.audioswitch.AudioDevice;
 import com.twilio.audioswitch.AudioDevice.BluetoothHeadset;
-import com.twilio.audioswitch.AudioDevice.WiredHeadset;
 import com.twilio.audioswitch.AudioDevice.Earpiece;
 import com.twilio.audioswitch.AudioDevice.Speakerphone;
+import com.twilio.audioswitch.AudioDevice.WiredHeadset;
 import com.twilio.audioswitch.AudioSwitch;
 import com.twilio.video.AudioCodec;
-import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.EncodingParameters;
 import com.twilio.video.G722Codec;
@@ -64,12 +62,10 @@ import com.twilio.video.quickstart.BuildConfig;
 import com.twilio.video.quickstart.R;
 import com.twilio.video.quickstart.dialog.Dialog;
 import com.twilio.video.quickstart.util.CameraCapturerCompat;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
 import kotlin.Unit;
 import tvi.webrtc.VideoSink;
 
@@ -206,10 +202,11 @@ public class VideoActivity extends AppCompatActivity {
          * Start the audio device selector after the menu is created and update the icon when the
          * selected audio device changes.
          */
-        audioSwitch.start((audioDevices, audioDevice) -> {
-            updateAudioDeviceIcon(audioDevice);
-            return Unit.INSTANCE;
-        });
+        audioSwitch.start(
+                (audioDevices, audioDevice) -> {
+                    updateAudioDeviceIcon(audioDevice);
+                    return Unit.INSTANCE;
+                });
 
         return true;
     }
@@ -229,9 +226,8 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == CAMERA_MIC_PERMISSION_REQUEST_CODE) {
             boolean cameraAndMicPermissionGranted = true;
 
@@ -243,9 +239,7 @@ public class VideoActivity extends AppCompatActivity {
                 createAudioAndVideoTracks();
                 setAccessToken();
             } else {
-                Toast.makeText(this,
-                        R.string.permissions_needed,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.permissions_needed, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -258,12 +252,18 @@ public class VideoActivity extends AppCompatActivity {
         /*
          * Update preferred audio and video codec in case changed in settings
          */
-        audioCodec = getAudioCodecPreference(SettingsActivity.PREF_AUDIO_CODEC,
-                SettingsActivity.PREF_AUDIO_CODEC_DEFAULT);
-        videoCodec = getVideoCodecPreference(SettingsActivity.PREF_VIDEO_CODEC,
-                SettingsActivity.PREF_VIDEO_CODEC_DEFAULT);
-        enableAutomaticSubscription = getAutomaticSubscriptionPreference(SettingsActivity.PREF_ENABLE_AUTOMATIC_SUBSCRIPTION,
-                SettingsActivity.PREF_ENABLE_AUTOMATIC_SUBSCRIPTION_DEFAULT);
+        audioCodec =
+                getAudioCodecPreference(
+                        SettingsActivity.PREF_AUDIO_CODEC,
+                        SettingsActivity.PREF_AUDIO_CODEC_DEFAULT);
+        videoCodec =
+                getVideoCodecPreference(
+                        SettingsActivity.PREF_VIDEO_CODEC,
+                        SettingsActivity.PREF_VIDEO_CODEC_DEFAULT);
+        enableAutomaticSubscription =
+                getAutomaticSubscriptionPreference(
+                        SettingsActivity.PREF_ENABLE_AUTOMATIC_SUBSCRIPTION,
+                        SettingsActivity.PREF_ENABLE_AUTOMATIC_SUBSCRIPTION_DEFAULT);
         /*
          * Get latest encoding parameters
          */
@@ -273,10 +273,9 @@ public class VideoActivity extends AppCompatActivity {
          * If the local video track was released when the app was put in the background, recreate.
          */
         if (localVideoTrack == null && checkPermissionForCameraAndMicrophone()) {
-            localVideoTrack = LocalVideoTrack.create(this,
-                    true,
-                    cameraCapturerCompat,
-                    LOCAL_VIDEO_TRACK_NAME);
+            localVideoTrack =
+                    LocalVideoTrack.create(
+                            this, true, cameraCapturerCompat, LOCAL_VIDEO_TRACK_NAME);
             localVideoTrack.addSink(localVideoView);
 
             /*
@@ -303,9 +302,8 @@ public class VideoActivity extends AppCompatActivity {
          * Update reconnecting UI
          */
         if (room != null) {
-            reconnectingProgressBar.setVisibility((room.getState() != Room.State.RECONNECTING) ?
-                    View.GONE :
-                    View.VISIBLE);
+            reconnectingProgressBar.setVisibility(
+                    (room.getState() != Room.State.RECONNECTING) ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -367,21 +365,19 @@ public class VideoActivity extends AppCompatActivity {
     private boolean checkPermissionForCameraAndMicrophone() {
         int resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         int resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-        return resultCamera == PackageManager.PERMISSION_GRANTED &&
-                resultMic == PackageManager.PERMISSION_GRANTED;
+        return resultCamera == PackageManager.PERMISSION_GRANTED
+                && resultMic == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermissionForCameraAndMicrophone() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.RECORD_AUDIO)) {
-            Toast.makeText(this,
-                    R.string.permissions_needed,
-                    Toast.LENGTH_LONG).show();
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)
+                || ActivityCompat.shouldShowRequestPermissionRationale(
+                        this, Manifest.permission.RECORD_AUDIO)) {
+            Toast.makeText(this, R.string.permissions_needed, Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(
                     this,
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
+                    new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
                     CAMERA_MIC_PERMISSION_REQUEST_CODE);
         }
     }
@@ -391,11 +387,10 @@ public class VideoActivity extends AppCompatActivity {
         localAudioTrack = LocalAudioTrack.create(this, true, LOCAL_AUDIO_TRACK_NAME);
 
         // Share your camera
-        cameraCapturerCompat = new CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA);
-        localVideoTrack = LocalVideoTrack.create(this,
-                true,
-                cameraCapturerCompat,
-                LOCAL_VIDEO_TRACK_NAME);
+        cameraCapturerCompat =
+                new CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA);
+        localVideoTrack =
+                LocalVideoTrack.create(this, true, cameraCapturerCompat, LOCAL_VIDEO_TRACK_NAME);
         primaryVideoView.setMirror(true);
         localVideoTrack.addSink(primaryVideoView);
         localVideoView = primaryVideoView;
@@ -423,15 +418,14 @@ public class VideoActivity extends AppCompatActivity {
 
     private void connectToRoom(String roomName) {
         audioSwitch.activate();
-        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(accessToken)
-                .roomName(roomName);
+        ConnectOptions.Builder connectOptionsBuilder =
+                new ConnectOptions.Builder(accessToken).roomName(roomName);
 
         /*
          * Add local audio track to connect options to share with participants.
          */
         if (localAudioTrack != null) {
-            connectOptionsBuilder
-                    .audioTracks(Collections.singletonList(localAudioTrack));
+            connectOptionsBuilder.audioTracks(Collections.singletonList(localAudioTrack));
         }
 
         /*
@@ -469,8 +463,8 @@ public class VideoActivity extends AppCompatActivity {
      * The initial state when there is no active room.
      */
     private void intializeUI() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_video_call_white_24dp));
+        connectActionFab.setImageDrawable(
+                ContextCompat.getDrawable(this, R.drawable.ic_video_call_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(connectActionClickListener());
         switchCameraActionFab.show();
@@ -506,7 +500,9 @@ public class VideoActivity extends AppCompatActivity {
                                 AudioDevice selectedAudioDevice = availableAudioDevices.get(index);
                                 updateAudioDeviceIcon(selectedAudioDevice);
                                 audioSwitch.selectDevice(selectedAudioDevice);
-                            }).create().show();
+                            })
+                    .create()
+                    .show();
         }
     }
 
@@ -559,8 +555,10 @@ public class VideoActivity extends AppCompatActivity {
 
         switch (videoCodecName) {
             case Vp8Codec.NAME:
-                boolean simulcast = preferences.getBoolean(SettingsActivity.PREF_VP8_SIMULCAST,
-                        SettingsActivity.PREF_VP8_SIMULCAST_DEFAULT);
+                boolean simulcast =
+                        preferences.getBoolean(
+                                SettingsActivity.PREF_VP8_SIMULCAST,
+                                SettingsActivity.PREF_VP8_SIMULCAST_DEFAULT);
                 return new Vp8Codec(simulcast);
             case H264Codec.NAME:
                 return new H264Codec();
@@ -576,12 +574,16 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     private EncodingParameters getEncodingParameters() {
-        final int maxAudioBitrate = Integer.parseInt(
-                preferences.getString(SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE,
-                        SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT));
-        final int maxVideoBitrate = Integer.parseInt(
-                preferences.getString(SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE,
-                        SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT));
+        final int maxAudioBitrate =
+                Integer.parseInt(
+                        preferences.getString(
+                                SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE,
+                                SettingsActivity.PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT));
+        final int maxVideoBitrate =
+                Integer.parseInt(
+                        preferences.getString(
+                                SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE,
+                                SettingsActivity.PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT));
 
         return new EncodingParameters(maxAudioBitrate, maxVideoBitrate);
     }
@@ -590,8 +592,8 @@ public class VideoActivity extends AppCompatActivity {
      * The actions performed during disconnect.
      */
     private void setDisconnectAction() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_end_white_24px));
+        connectActionFab.setImageDrawable(
+                ContextCompat.getDrawable(this, R.drawable.ic_call_end_white_24px));
         connectActionFab.show();
         connectActionFab.setOnClickListener(disconnectClickListener());
     }
@@ -601,10 +603,12 @@ public class VideoActivity extends AppCompatActivity {
      */
     private void showConnectDialog() {
         EditText roomEditText = new EditText(this);
-        connectDialog = Dialog.createConnectDialog(roomEditText,
-                connectClickListener(roomEditText),
-                cancelConnectDialogClickListener(),
-                this);
+        connectDialog =
+                Dialog.createConnectDialog(
+                        roomEditText,
+                        connectClickListener(roomEditText),
+                        cancelConnectDialogClickListener(),
+                        this);
         connectDialog.show();
     }
 
@@ -617,10 +621,12 @@ public class VideoActivity extends AppCompatActivity {
          * This app only displays video for one additional participant per Room
          */
         if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-            Snackbar.make(connectActionFab,
-                    "Multiple participants are not currently support in this UI",
-                    Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            Snackbar.make(
+                            connectActionFab,
+                            "Multiple participants are not currently support in this UI",
+                            Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
+                    .show();
             return;
         }
         remoteParticipantIdentity = remoteParticipant.getIdentity();
@@ -661,8 +667,9 @@ public class VideoActivity extends AppCompatActivity {
             localVideoTrack.removeSink(primaryVideoView);
             localVideoTrack.addSink(thumbnailVideoView);
             localVideoView = thumbnailVideoView;
-            thumbnailVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
-                    CameraCapturerCompat.Source.FRONT_CAMERA);
+            thumbnailVideoView.setMirror(
+                    cameraCapturerCompat.getCameraSource()
+                            == CameraCapturerCompat.Source.FRONT_CAMERA);
         }
     }
 
@@ -704,8 +711,9 @@ public class VideoActivity extends AppCompatActivity {
                 localVideoTrack.addSink(primaryVideoView);
             }
             localVideoView = primaryVideoView;
-            primaryVideoView.setMirror(cameraCapturerCompat.getCameraSource() ==
-                    CameraCapturerCompat.Source.FRONT_CAMERA);
+            primaryVideoView.setMirror(
+                    cameraCapturerCompat.getCameraSource()
+                            == CameraCapturerCompat.Source.FRONT_CAMERA);
         }
     }
 
@@ -727,7 +735,8 @@ public class VideoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onReconnecting(@NonNull Room room, @NonNull TwilioException twilioException) {
+            public void onReconnecting(
+                    @NonNull Room room, @NonNull TwilioException twilioException) {
                 reconnectingProgressBar.setVisibility(View.VISIBLE);
             }
 
@@ -758,7 +767,6 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onParticipantConnected(Room room, RemoteParticipant remoteParticipant) {
                 addRemoteParticipant(remoteParticipant);
-
             }
 
             @Override
@@ -790,238 +798,296 @@ public class VideoActivity extends AppCompatActivity {
     private RemoteParticipant.Listener remoteParticipantListener() {
         return new RemoteParticipant.Listener() {
             @Override
-            public void onAudioTrackPublished(RemoteParticipant remoteParticipant,
-                                              RemoteAudioTrackPublication remoteAudioTrackPublication) {
-                Log.i(TAG, String.format("onAudioTrackPublished: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteAudioTrackPublication: sid=%s, enabled=%b, " +
-                                "subscribed=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteAudioTrackPublication.getTrackSid(),
-                        remoteAudioTrackPublication.isTrackEnabled(),
-                        remoteAudioTrackPublication.isTrackSubscribed(),
-                        remoteAudioTrackPublication.getTrackName()));
+            public void onAudioTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onAudioTrackPublished: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteAudioTrackPublication: sid=%s, enabled=%b, "
+                                        + "subscribed=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteAudioTrackPublication.getTrackSid(),
+                                remoteAudioTrackPublication.isTrackEnabled(),
+                                remoteAudioTrackPublication.isTrackSubscribed(),
+                                remoteAudioTrackPublication.getTrackName()));
             }
 
             @Override
-            public void onAudioTrackUnpublished(RemoteParticipant remoteParticipant,
-                                                RemoteAudioTrackPublication remoteAudioTrackPublication) {
-                Log.i(TAG, String.format("onAudioTrackUnpublished: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteAudioTrackPublication: sid=%s, enabled=%b, " +
-                                "subscribed=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteAudioTrackPublication.getTrackSid(),
-                        remoteAudioTrackPublication.isTrackEnabled(),
-                        remoteAudioTrackPublication.isTrackSubscribed(),
-                        remoteAudioTrackPublication.getTrackName()));
+            public void onAudioTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onAudioTrackUnpublished: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteAudioTrackPublication: sid=%s, enabled=%b, "
+                                        + "subscribed=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteAudioTrackPublication.getTrackSid(),
+                                remoteAudioTrackPublication.isTrackEnabled(),
+                                remoteAudioTrackPublication.isTrackSubscribed(),
+                                remoteAudioTrackPublication.getTrackName()));
             }
 
             @Override
-            public void onDataTrackPublished(RemoteParticipant remoteParticipant,
-                                             RemoteDataTrackPublication remoteDataTrackPublication) {
-                Log.i(TAG, String.format("onDataTrackPublished: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteDataTrackPublication: sid=%s, enabled=%b, " +
-                                "subscribed=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteDataTrackPublication.getTrackSid(),
-                        remoteDataTrackPublication.isTrackEnabled(),
-                        remoteDataTrackPublication.isTrackSubscribed(),
-                        remoteDataTrackPublication.getTrackName()));
+            public void onDataTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onDataTrackPublished: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteDataTrackPublication: sid=%s, enabled=%b, "
+                                        + "subscribed=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteDataTrackPublication.getTrackSid(),
+                                remoteDataTrackPublication.isTrackEnabled(),
+                                remoteDataTrackPublication.isTrackSubscribed(),
+                                remoteDataTrackPublication.getTrackName()));
             }
 
             @Override
-            public void onDataTrackUnpublished(RemoteParticipant remoteParticipant,
-                                               RemoteDataTrackPublication remoteDataTrackPublication) {
-                Log.i(TAG, String.format("onDataTrackUnpublished: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteDataTrackPublication: sid=%s, enabled=%b, " +
-                                "subscribed=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteDataTrackPublication.getTrackSid(),
-                        remoteDataTrackPublication.isTrackEnabled(),
-                        remoteDataTrackPublication.isTrackSubscribed(),
-                        remoteDataTrackPublication.getTrackName()));
+            public void onDataTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onDataTrackUnpublished: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteDataTrackPublication: sid=%s, enabled=%b, "
+                                        + "subscribed=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteDataTrackPublication.getTrackSid(),
+                                remoteDataTrackPublication.isTrackEnabled(),
+                                remoteDataTrackPublication.isTrackSubscribed(),
+                                remoteDataTrackPublication.getTrackName()));
             }
 
             @Override
-            public void onVideoTrackPublished(RemoteParticipant remoteParticipant,
-                                              RemoteVideoTrackPublication remoteVideoTrackPublication) {
-                Log.i(TAG, String.format("onVideoTrackPublished: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteVideoTrackPublication: sid=%s, enabled=%b, " +
-                                "subscribed=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteVideoTrackPublication.getTrackSid(),
-                        remoteVideoTrackPublication.isTrackEnabled(),
-                        remoteVideoTrackPublication.isTrackSubscribed(),
-                        remoteVideoTrackPublication.getTrackName()));
+            public void onVideoTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onVideoTrackPublished: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteVideoTrackPublication: sid=%s, enabled=%b, "
+                                        + "subscribed=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteVideoTrackPublication.getTrackSid(),
+                                remoteVideoTrackPublication.isTrackEnabled(),
+                                remoteVideoTrackPublication.isTrackSubscribed(),
+                                remoteVideoTrackPublication.getTrackName()));
             }
 
             @Override
-            public void onVideoTrackUnpublished(RemoteParticipant remoteParticipant,
-                                                RemoteVideoTrackPublication remoteVideoTrackPublication) {
-                Log.i(TAG, String.format("onVideoTrackUnpublished: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteVideoTrackPublication: sid=%s, enabled=%b, " +
-                                "subscribed=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteVideoTrackPublication.getTrackSid(),
-                        remoteVideoTrackPublication.isTrackEnabled(),
-                        remoteVideoTrackPublication.isTrackSubscribed(),
-                        remoteVideoTrackPublication.getTrackName()));
+            public void onVideoTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onVideoTrackUnpublished: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteVideoTrackPublication: sid=%s, enabled=%b, "
+                                        + "subscribed=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteVideoTrackPublication.getTrackSid(),
+                                remoteVideoTrackPublication.isTrackEnabled(),
+                                remoteVideoTrackPublication.isTrackSubscribed(),
+                                remoteVideoTrackPublication.getTrackName()));
             }
 
             @Override
-            public void onAudioTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                               RemoteAudioTrack remoteAudioTrack) {
-                Log.i(TAG, String.format("onAudioTrackSubscribed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteAudioTrack: enabled=%b, playbackEnabled=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteAudioTrack.isEnabled(),
-                        remoteAudioTrack.isPlaybackEnabled(),
-                        remoteAudioTrack.getName()));
+            public void onAudioTrackSubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    RemoteAudioTrack remoteAudioTrack) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onAudioTrackSubscribed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteAudioTrack: enabled=%b, playbackEnabled=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteAudioTrack.isEnabled(),
+                                remoteAudioTrack.isPlaybackEnabled(),
+                                remoteAudioTrack.getName()));
             }
 
             @Override
-            public void onAudioTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                                 RemoteAudioTrack remoteAudioTrack) {
-                Log.i(TAG, String.format("onAudioTrackUnsubscribed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteAudioTrack: enabled=%b, playbackEnabled=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteAudioTrack.isEnabled(),
-                        remoteAudioTrack.isPlaybackEnabled(),
-                        remoteAudioTrack.getName()));
+            public void onAudioTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    RemoteAudioTrack remoteAudioTrack) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onAudioTrackUnsubscribed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteAudioTrack: enabled=%b, playbackEnabled=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteAudioTrack.isEnabled(),
+                                remoteAudioTrack.isPlaybackEnabled(),
+                                remoteAudioTrack.getName()));
             }
 
             @Override
-            public void onAudioTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                       RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                                       TwilioException twilioException) {
-                Log.i(TAG, String.format("onAudioTrackSubscriptionFailed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteAudioTrackPublication: sid=%b, name=%s]" +
-                                "[TwilioException: code=%d, message=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteAudioTrackPublication.getTrackSid(),
-                        remoteAudioTrackPublication.getTrackName(),
-                        twilioException.getCode(),
-                        twilioException.getMessage()));
+            public void onAudioTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    TwilioException twilioException) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onAudioTrackSubscriptionFailed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteAudioTrackPublication: sid=%b, name=%s]"
+                                        + "[TwilioException: code=%d, message=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteAudioTrackPublication.getTrackSid(),
+                                remoteAudioTrackPublication.getTrackName(),
+                                twilioException.getCode(),
+                                twilioException.getMessage()));
             }
 
             @Override
-            public void onDataTrackSubscribed(RemoteParticipant remoteParticipant,
-                                              RemoteDataTrackPublication remoteDataTrackPublication,
-                                              RemoteDataTrack remoteDataTrack) {
-                Log.i(TAG, String.format("onDataTrackSubscribed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteDataTrack: enabled=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteDataTrack.isEnabled(),
-                        remoteDataTrack.getName()));
+            public void onDataTrackSubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    RemoteDataTrack remoteDataTrack) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onDataTrackSubscribed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteDataTrack: enabled=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteDataTrack.isEnabled(),
+                                remoteDataTrack.getName()));
             }
 
             @Override
-            public void onDataTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                RemoteDataTrackPublication remoteDataTrackPublication,
-                                                RemoteDataTrack remoteDataTrack) {
-                Log.i(TAG, String.format("onDataTrackUnsubscribed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteDataTrack: enabled=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteDataTrack.isEnabled(),
-                        remoteDataTrack.getName()));
+            public void onDataTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    RemoteDataTrack remoteDataTrack) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onDataTrackUnsubscribed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteDataTrack: enabled=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteDataTrack.isEnabled(),
+                                remoteDataTrack.getName()));
             }
 
             @Override
-            public void onDataTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                      RemoteDataTrackPublication remoteDataTrackPublication,
-                                                      TwilioException twilioException) {
-                Log.i(TAG, String.format("onDataTrackSubscriptionFailed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteDataTrackPublication: sid=%b, name=%s]" +
-                                "[TwilioException: code=%d, message=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteDataTrackPublication.getTrackSid(),
-                        remoteDataTrackPublication.getTrackName(),
-                        twilioException.getCode(),
-                        twilioException.getMessage()));
+            public void onDataTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    TwilioException twilioException) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onDataTrackSubscriptionFailed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteDataTrackPublication: sid=%b, name=%s]"
+                                        + "[TwilioException: code=%d, message=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteDataTrackPublication.getTrackSid(),
+                                remoteDataTrackPublication.getTrackName(),
+                                twilioException.getCode(),
+                                twilioException.getMessage()));
             }
 
             @Override
-            public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                               RemoteVideoTrack remoteVideoTrack) {
-                Log.i(TAG, String.format("onVideoTrackSubscribed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteVideoTrack: enabled=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteVideoTrack.isEnabled(),
-                        remoteVideoTrack.getName()));
+            public void onVideoTrackSubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    RemoteVideoTrack remoteVideoTrack) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onVideoTrackSubscribed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteVideoTrack: enabled=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteVideoTrack.isEnabled(),
+                                remoteVideoTrack.getName()));
                 addRemoteParticipantVideo(remoteVideoTrack);
             }
 
             @Override
-            public void onVideoTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                                 RemoteVideoTrack remoteVideoTrack) {
-                Log.i(TAG, String.format("onVideoTrackUnsubscribed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteVideoTrack: enabled=%b, name=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteVideoTrack.isEnabled(),
-                        remoteVideoTrack.getName()));
+            public void onVideoTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    RemoteVideoTrack remoteVideoTrack) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onVideoTrackUnsubscribed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteVideoTrack: enabled=%b, name=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteVideoTrack.isEnabled(),
+                                remoteVideoTrack.getName()));
                 removeParticipantVideo(remoteVideoTrack);
             }
 
             @Override
-            public void onVideoTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                       RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                                       TwilioException twilioException) {
-                Log.i(TAG, String.format("onVideoTrackSubscriptionFailed: " +
-                                "[RemoteParticipant: identity=%s], " +
-                                "[RemoteVideoTrackPublication: sid=%b, name=%s]" +
-                                "[TwilioException: code=%d, message=%s]",
-                        remoteParticipant.getIdentity(),
-                        remoteVideoTrackPublication.getTrackSid(),
-                        remoteVideoTrackPublication.getTrackName(),
-                        twilioException.getCode(),
-                        twilioException.getMessage()));
-                Snackbar.make(connectActionFab,
-                        String.format("Failed to subscribe to %s video track",
-                                remoteParticipant.getIdentity()),
-                        Snackbar.LENGTH_LONG)
+            public void onVideoTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    TwilioException twilioException) {
+                Log.i(
+                        TAG,
+                        String.format(
+                                "onVideoTrackSubscriptionFailed: "
+                                        + "[RemoteParticipant: identity=%s], "
+                                        + "[RemoteVideoTrackPublication: sid=%b, name=%s]"
+                                        + "[TwilioException: code=%d, message=%s]",
+                                remoteParticipant.getIdentity(),
+                                remoteVideoTrackPublication.getTrackSid(),
+                                remoteVideoTrackPublication.getTrackName(),
+                                twilioException.getCode(),
+                                twilioException.getMessage()));
+                Snackbar.make(
+                                connectActionFab,
+                                String.format(
+                                        "Failed to subscribe to %s video track",
+                                        remoteParticipant.getIdentity()),
+                                Snackbar.LENGTH_LONG)
                         .show();
             }
 
             @Override
-            public void onAudioTrackEnabled(RemoteParticipant remoteParticipant,
-                                            RemoteAudioTrackPublication remoteAudioTrackPublication) {
-
-            }
-
-            @Override
-            public void onAudioTrackDisabled(RemoteParticipant remoteParticipant,
-                                             RemoteAudioTrackPublication remoteAudioTrackPublication) {
-
-            }
+            public void onAudioTrackEnabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {}
 
             @Override
-            public void onVideoTrackEnabled(RemoteParticipant remoteParticipant,
-                                            RemoteVideoTrackPublication remoteVideoTrackPublication) {
-
-            }
+            public void onAudioTrackDisabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {}
 
             @Override
-            public void onVideoTrackDisabled(RemoteParticipant remoteParticipant,
-                                             RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackEnabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {}
 
-            }
+            @Override
+            public void onVideoTrackDisabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {}
         };
     }
 
@@ -1063,9 +1129,11 @@ public class VideoActivity extends AppCompatActivity {
                 CameraCapturerCompat.Source cameraSource = cameraCapturerCompat.getCameraSource();
                 cameraCapturerCompat.switchCamera();
                 if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-                    thumbnailVideoView.setMirror(cameraSource == CameraCapturerCompat.Source.BACK_CAMERA);
+                    thumbnailVideoView.setMirror(
+                            cameraSource == CameraCapturerCompat.Source.BACK_CAMERA);
                 } else {
-                    primaryVideoView.setMirror(cameraSource == CameraCapturerCompat.Source.BACK_CAMERA);
+                    primaryVideoView.setMirror(
+                            cameraSource == CameraCapturerCompat.Source.BACK_CAMERA);
                 }
             }
         };
@@ -1103,27 +1171,30 @@ public class VideoActivity extends AppCompatActivity {
             if (localAudioTrack != null) {
                 boolean enable = !localAudioTrack.isEnabled();
                 localAudioTrack.enable(enable);
-                int icon = enable ?
-                        R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
-                muteActionFab.setImageDrawable(ContextCompat.getDrawable(
-                        VideoActivity.this, icon));
+                int icon = enable ? R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
+                muteActionFab.setImageDrawable(ContextCompat.getDrawable(VideoActivity.this, icon));
             }
         };
     }
 
     private void retrieveAccessTokenfromServer() {
         Ion.with(this)
-                .load(String.format("%s?identity=%s", ACCESS_TOKEN_SERVER,
-                        UUID.randomUUID().toString()))
+                .load(
+                        String.format(
+                                "%s?identity=%s",
+                                ACCESS_TOKEN_SERVER, UUID.randomUUID().toString()))
                 .asString()
-                .setCallback((e, token) -> {
-                    if (e == null) {
-                        VideoActivity.this.accessToken = token;
-                    } else {
-                        Toast.makeText(VideoActivity.this,
-                                R.string.error_retrieving_access_token, Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
+                .setCallback(
+                        (e, token) -> {
+                            if (e == null) {
+                                VideoActivity.this.accessToken = token;
+                            } else {
+                                Toast.makeText(
+                                                VideoActivity.this,
+                                                R.string.error_retrieving_access_token,
+                                                Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
     }
 }

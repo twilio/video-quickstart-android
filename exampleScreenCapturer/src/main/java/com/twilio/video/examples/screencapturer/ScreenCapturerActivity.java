@@ -12,14 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.ScreenCapturer;
 import com.twilio.video.VideoView;
 
-/**
- * This example demonstrates how to use the screen capturer
- */
+/** This example demonstrates how to use the screen capturer */
 public class ScreenCapturerActivity extends AppCompatActivity {
     private static final String TAG = "ScreenCapturer";
     private static final int REQUEST_MEDIA_PROJECTION = 100;
@@ -29,20 +26,24 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     private ScreenCapturer screenCapturer;
     private MenuItem screenCaptureMenuItem;
     private ScreenCapturerManager screenCapturerManager;
-    private final ScreenCapturer.Listener screenCapturerListener = new ScreenCapturer.Listener() {
-        @Override
-        public void onScreenCaptureError(String errorDescription) {
-            Log.e(TAG, "Screen capturer error: " + errorDescription);
-            stopScreenCapture();
-            Toast.makeText(ScreenCapturerActivity.this, R.string.screen_capture_error,
-                    Toast.LENGTH_LONG).show();
-        }
+    private final ScreenCapturer.Listener screenCapturerListener =
+            new ScreenCapturer.Listener() {
+                @Override
+                public void onScreenCaptureError(String errorDescription) {
+                    Log.e(TAG, "Screen capturer error: " + errorDescription);
+                    stopScreenCapture();
+                    Toast.makeText(
+                                    ScreenCapturerActivity.this,
+                                    R.string.screen_capture_error,
+                                    Toast.LENGTH_LONG)
+                            .show();
+                }
 
-        @Override
-        public void onFirstFrameAvailable() {
-            Log.d(TAG, "First frame from screen capturer available");
-        }
-    };
+                @Override
+                public void onFirstFrameAvailable() {
+                    Log.d(TAG, "First frame from screen capturer available");
+                }
+            };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,20 +98,23 @@ public class ScreenCapturerActivity extends AppCompatActivity {
 
     private void requestScreenCapturePermission() {
         Log.d(TAG, "Requesting permission to capture screen");
-        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)
-                getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        MediaProjectionManager mediaProjectionManager =
+                (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         // This initiates a prompt dialog for the user to confirm screen projection.
-        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(),
-                REQUEST_MEDIA_PROJECTION);
+        startActivityForResult(
+                mediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_MEDIA_PROJECTION) {
             if (resultCode != AppCompatActivity.RESULT_OK) {
-                Toast.makeText(this, R.string.screen_capture_permission_not_granted,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                                this,
+                                R.string.screen_capture_permission_not_granted,
+                                Toast.LENGTH_LONG)
+                        .show();
                 return;
             }
             screenCapturer = new ScreenCapturer(this, resultCode, data, screenCapturerListener);

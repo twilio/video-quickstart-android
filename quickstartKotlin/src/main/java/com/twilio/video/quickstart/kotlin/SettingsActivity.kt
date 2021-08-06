@@ -9,7 +9,16 @@ import android.support.v7.preference.ListPreference
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.MenuItem
-import com.twilio.video.*
+import com.twilio.video.AudioCodec
+import com.twilio.video.G722Codec
+import com.twilio.video.H264Codec
+import com.twilio.video.IsacCodec
+import com.twilio.video.OpusCodec
+import com.twilio.video.PcmaCodec
+import com.twilio.video.PcmuCodec
+import com.twilio.video.VideoCodec
+import com.twilio.video.Vp8Codec
+import com.twilio.video.Vp9Codec
 import com.twilio.video.examples.common.isH264Supported
 
 class SettingsActivity : AppCompatActivity() {
@@ -77,7 +86,6 @@ class SettingsActivity : AppCompatActivity() {
                     findPreference(PREF_SENDER_MAX_VIDEO_BITRATE) as EditTextPreference)
         }
 
-
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             return when (item.itemId) {
                 android.R.id.home -> {
@@ -88,10 +96,12 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        private fun setupCodecListPreference(codecClass: Class<*>,
-                                             key: String,
-                                             defaultValue: String,
-                                             listPreference: ListPreference) {
+        private fun setupCodecListPreference(
+            codecClass: Class<*>,
+            key: String,
+            defaultValue: String,
+            listPreference: ListPreference
+        ) {
             // Set codec entries
             val codecEntries = if (codecClass == AudioCodec::class.java)
                 AUDIO_CODEC_NAMES.toMutableList()
@@ -118,12 +128,13 @@ class SettingsActivity : AppCompatActivity() {
                             true
                         }
             }
-
         }
 
-        private fun setupSenderBandwidthPreferences(key: String,
-                                                    defaultValue: String,
-                                                    editTextPreference: EditTextPreference) {
+        private fun setupSenderBandwidthPreferences(
+            key: String,
+            defaultValue: String,
+            editTextPreference: EditTextPreference
+        ) {
             val value = sharedPreferences.getString(key, defaultValue)
 
             // Set layout with input type number for edit text
@@ -136,7 +147,6 @@ class SettingsActivity : AppCompatActivity() {
                             true
                         }
             }
-
         }
 
         companion object {

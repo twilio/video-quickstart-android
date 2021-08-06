@@ -20,9 +20,14 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.koushikdutta.ion.Ion
+import com.twilio.video.ConnectOptions
+import com.twilio.video.LocalAudioTrack
+import com.twilio.video.RemoteParticipant
+import com.twilio.video.Room
+import com.twilio.video.TwilioException
+import com.twilio.video.Video
 import com.twilio.video.examples.examplecustomaudiodevice.dialog.Dialog
-import com.twilio.video.*
-import java.util.*
+import java.util.UUID
 
 class CustomAudioDeviceActivity : AppCompatActivity() {
     /*
@@ -117,9 +122,11 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == MIC_PERMISSION_REQUEST_CODE) {
             var micPermissionGranted = true
             for (grantResult in grantResults) {

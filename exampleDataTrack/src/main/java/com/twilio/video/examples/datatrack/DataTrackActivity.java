@@ -1,13 +1,13 @@
 package com.twilio.video.examples.datatrack;
 
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,8 +18,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalDataTrack;
@@ -33,7 +31,6 @@ import com.twilio.video.RemoteVideoTrackPublication;
 import com.twilio.video.Room;
 import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
-
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -68,14 +65,15 @@ public class DataTrackActivity extends AppCompatActivity {
             new CollaborativeDrawingView.Listener() {
                 @Override
                 public void onTouchEvent(int actionEvent, float x, float y) {
-                    Log.d(TAG, String.format("onTouchEvent: actionEvent=%d, x=%f, y=%f",
-                            actionEvent, x, y));
+                    Log.d(
+                            TAG,
+                            String.format(
+                                    "onTouchEvent: actionEvent=%d, x=%f, y=%f", actionEvent, x, y));
                     boolean actionDown = (actionEvent == MotionEvent.ACTION_DOWN);
                     float normalizedX = x / (float) collaborativeDrawingView.getWidth();
                     float normalizedY = y / (float) collaborativeDrawingView.getHeight();
-                    MotionMessage motionMessage = new MotionMessage(actionDown,
-                            normalizedX,
-                            normalizedY);
+                    MotionMessage motionMessage =
+                            new MotionMessage(actionDown, normalizedX, normalizedY);
 
                     if (localDataTrack != null) {
                         localDataTrack.send(motionMessage.toJsonString());
@@ -110,9 +108,9 @@ public class DataTrackActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         containerLayout = findViewById(R.id.container);
         collaborativeDrawingView = findViewById(R.id.drawing_view);
-        snackbar = Snackbar.make(containerLayout,
-                R.string.connect_to_share,
-                Snackbar.LENGTH_INDEFINITE);
+        snackbar =
+                Snackbar.make(
+                        containerLayout, R.string.connect_to_share, Snackbar.LENGTH_INDEFINITE);
         reconnectingProgressBar = findViewById(R.id.reconnecting_progress_bar);
         setSupportActionBar(toolbar);
         snackbar.show();
@@ -130,9 +128,8 @@ public class DataTrackActivity extends AppCompatActivity {
          * Update reconnecting UI
          */
         if (room != null) {
-            reconnectingProgressBar.setVisibility((room.getState() != Room.State.RECONNECTING) ?
-                    View.GONE :
-                    View.VISIBLE);
+            reconnectingProgressBar.setVisibility(
+                    (room.getState() != Room.State.RECONNECTING) ? View.GONE : View.VISIBLE);
             snackbar.setText("Connected to " + room.getName());
         }
     }
@@ -187,9 +184,9 @@ public class DataTrackActivity extends AppCompatActivity {
                     connectButton.setTextColor(Color.WHITE);
                     connectButton.setEnabled(true);
                 } else {
-                    connectButton.setTextColor(ResourcesCompat.getColor(getResources(),
-                            R.color.colorButtonText,
-                            null));
+                    connectButton.setTextColor(
+                            ResourcesCompat.getColor(
+                                    getResources(), R.color.colorButtonText, null));
                     connectButton.setEnabled(false);
                 }
             }
@@ -214,10 +211,11 @@ public class DataTrackActivity extends AppCompatActivity {
     }
 
     private void connectToRoom(String roomName) {
-        ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
-                .roomName(roomName)
-                .dataTracks(Collections.singletonList(localDataTrack))
-                .build();
+        ConnectOptions connectOptions =
+                new ConnectOptions.Builder(accessToken)
+                        .roomName(roomName)
+                        .dataTracks(Collections.singletonList(localDataTrack))
+                        .build();
 
         room = Video.connect(this, connectOptions, roomListener());
     }
@@ -242,24 +240,29 @@ public class DataTrackActivity extends AppCompatActivity {
 
         // Get token
         Ion.with(this)
-                .load(String.format("%s?identity=%s", ACCESS_TOKEN_SERVER,
-                        UUID.randomUUID().toString()))
+                .load(
+                        String.format(
+                                "%s?identity=%s",
+                                ACCESS_TOKEN_SERVER, UUID.randomUUID().toString()))
                 .asString()
-                .setCallback((e, token) -> {
-                    boolean requestSucceeded = e == null;
+                .setCallback(
+                        (e, token) -> {
+                            boolean requestSucceeded = e == null;
 
-                    if (requestSucceeded) {
-                        DataTrackActivity.this.accessToken = token;
-                    } else {
-                        Toast.makeText(DataTrackActivity.this,
-                                R.string.error_retrieving_access_token, Toast.LENGTH_LONG)
-                                .show();
-                    }
+                            if (requestSucceeded) {
+                                DataTrackActivity.this.accessToken = token;
+                            } else {
+                                Toast.makeText(
+                                                DataTrackActivity.this,
+                                                R.string.error_retrieving_access_token,
+                                                Toast.LENGTH_LONG)
+                                        .show();
+                            }
 
-                    // Setup UI based on request result
-                    roomEditText.setEnabled(requestSucceeded);
-                    connectButton.setEnabled(requestSucceeded);
-                });
+                            // Setup UI based on request result
+                            roomEditText.setEnabled(requestSucceeded);
+                            connectButton.setEnabled(requestSucceeded);
+                        });
     }
 
     private void disconnectFromRoom() {
@@ -277,9 +280,7 @@ public class DataTrackActivity extends AppCompatActivity {
                 connectButton.setText(R.string.disconnect);
                 connectButton.setEnabled(true);
                 collaborativeDrawingView.setEnabled(true);
-                Toast.makeText(DataTrackActivity.this,
-                        R.string.start_drawing,
-                        Toast.LENGTH_SHORT)
+                Toast.makeText(DataTrackActivity.this, R.string.start_drawing, Toast.LENGTH_SHORT)
                         .show();
 
                 for (RemoteParticipant remoteParticipant : room.getRemoteParticipants()) {
@@ -289,9 +290,10 @@ public class DataTrackActivity extends AppCompatActivity {
 
             @Override
             public void onConnectFailure(Room room, TwilioException e) {
-                Toast.makeText(DataTrackActivity.this,
-                        "Failed to connect: " + e.getMessage(),
-                        Toast.LENGTH_LONG)
+                Toast.makeText(
+                                DataTrackActivity.this,
+                                "Failed to connect: " + e.getMessage(),
+                                Toast.LENGTH_LONG)
                         .show();
                 initializeUi();
             }
@@ -314,31 +316,29 @@ public class DataTrackActivity extends AppCompatActivity {
 
             @Override
             public void onParticipantConnected(Room room, RemoteParticipant remoteParticipant) {
-                Toast.makeText(DataTrackActivity.this,
-                        String.format("%s connected", remoteParticipant.getIdentity()),
-                        Toast.LENGTH_SHORT)
+                Toast.makeText(
+                                DataTrackActivity.this,
+                                String.format("%s connected", remoteParticipant.getIdentity()),
+                                Toast.LENGTH_SHORT)
                         .show();
                 addRemoteParticipant(remoteParticipant);
             }
 
             @Override
             public void onParticipantDisconnected(Room room, RemoteParticipant remoteParticipant) {
-                Toast.makeText(DataTrackActivity.this,
-                        String.format("%s disconnected", remoteParticipant.getIdentity()),
-                        Toast.LENGTH_SHORT)
+                Toast.makeText(
+                                DataTrackActivity.this,
+                                String.format("%s disconnected", remoteParticipant.getIdentity()),
+                                Toast.LENGTH_SHORT)
                         .show();
                 removeRemoteParticipant(remoteParticipant);
             }
 
             @Override
-            public void onRecordingStarted(Room room) {
-
-            }
+            public void onRecordingStarted(Room room) {}
 
             @Override
-            public void onRecordingStopped(Room room) {
-
-            }
+            public void onRecordingStopped(Room room) {}
 
             @Override
             public void onReconnecting(Room room, TwilioException exception) {
@@ -365,8 +365,11 @@ public class DataTrackActivity extends AppCompatActivity {
              * invocation of setting the listener onto our dedicated data track message thread.
              */
             if (remoteDataTrackPublication.isTrackSubscribed()) {
-                dataTrackMessageThreadHandler.post(() -> addRemoteDataTrack(remoteParticipant,
-                        remoteDataTrackPublication.getRemoteDataTrack()));
+                dataTrackMessageThreadHandler.post(
+                        () ->
+                                addRemoteDataTrack(
+                                        remoteParticipant,
+                                        remoteDataTrackPublication.getRemoteDataTrack()));
             }
         }
     }
@@ -376,8 +379,8 @@ public class DataTrackActivity extends AppCompatActivity {
         collaborativeDrawingView.clear(remoteParticipant);
     }
 
-    private void addRemoteDataTrack(RemoteParticipant remoteParticipant,
-                                    RemoteDataTrack remoteDataTrack) {
+    private void addRemoteDataTrack(
+            RemoteParticipant remoteParticipant, RemoteDataTrack remoteDataTrack) {
         dataTrackRemoteParticipantMap.put(remoteDataTrack, remoteParticipant);
         remoteDataTrack.setListener(remoteDataTrackListener());
     }
@@ -385,125 +388,122 @@ public class DataTrackActivity extends AppCompatActivity {
     private RemoteParticipant.Listener remoteParticipantListener() {
         return new RemoteParticipant.Listener() {
             @Override
-            public void onAudioTrackPublished(RemoteParticipant remoteParticipant,
-                                              RemoteAudioTrackPublication remoteAudioTrackPublication) {
-            }
+            public void onAudioTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {}
 
             @Override
-            public void onAudioTrackUnpublished(RemoteParticipant remoteParticipant,
-                                                RemoteAudioTrackPublication remoteAudioTrackPublication) {
-            }
+            public void onAudioTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {}
 
             @Override
-            public void onDataTrackPublished(RemoteParticipant remoteParticipant,
-                                             RemoteDataTrackPublication remoteDataTrackPublication) {
-            }
+            public void onDataTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication) {}
 
             @Override
-            public void onDataTrackUnpublished(RemoteParticipant remoteParticipant,
-                                               RemoteDataTrackPublication remoteDataTrackPublication) {
-            }
+            public void onDataTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication) {}
 
             @Override
-            public void onVideoTrackPublished(RemoteParticipant remoteParticipant,
-                                              RemoteVideoTrackPublication remoteVideoTrackPublication) {
-            }
+            public void onVideoTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {}
 
             @Override
-            public void onVideoTrackUnpublished(RemoteParticipant remoteParticipant,
-                                                RemoteVideoTrackPublication remoteVideoTrackPublication) {
-            }
+            public void onVideoTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {}
 
             @Override
-            public void onAudioTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                               RemoteAudioTrack remoteAudioTrack) {
-            }
+            public void onAudioTrackSubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    RemoteAudioTrack remoteAudioTrack) {}
 
             @Override
-            public void onAudioTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                                 RemoteAudioTrack remoteAudioTrack) {
-            }
+            public void onAudioTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    RemoteAudioTrack remoteAudioTrack) {}
 
             @Override
-            public void onAudioTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                       RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                                       TwilioException twilioException) {
-            }
+            public void onAudioTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    TwilioException twilioException) {}
 
             @Override
-            public void onDataTrackSubscribed(final RemoteParticipant remoteParticipant,
-                                              RemoteDataTrackPublication remoteDataTrackPublication,
-                                              final RemoteDataTrack remoteDataTrack) {
+            public void onDataTrackSubscribed(
+                    final RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    final RemoteDataTrack remoteDataTrack) {
                 /*
                  * Data track messages are received on the thread that calls setListener. Post the
                  * invocation of setting the listener onto our dedicated data track message thread.
                  */
-                dataTrackMessageThreadHandler.post(() -> addRemoteDataTrack(remoteParticipant, remoteDataTrack));
+                dataTrackMessageThreadHandler.post(
+                        () -> addRemoteDataTrack(remoteParticipant, remoteDataTrack));
             }
 
             @Override
-            public void onDataTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                RemoteDataTrackPublication remoteDataTrackPublication,
-                                                RemoteDataTrack remoteDataTrack) {
-            }
+            public void onDataTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    RemoteDataTrack remoteDataTrack) {}
 
             @Override
-            public void onDataTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                      RemoteDataTrackPublication remoteDataTrackPublication,
-                                                      TwilioException twilioException) {
-            }
+            public void onDataTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    TwilioException twilioException) {}
 
             @Override
-            public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                               RemoteVideoTrack remoteVideoTrack) {
-            }
+            public void onVideoTrackSubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    RemoteVideoTrack remoteVideoTrack) {}
 
             @Override
-            public void onVideoTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                                 RemoteVideoTrack remoteVideoTrack) {
-            }
+            public void onVideoTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    RemoteVideoTrack remoteVideoTrack) {}
 
             @Override
-            public void onVideoTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                       RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                                       TwilioException twilioException) {
-            }
+            public void onVideoTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    TwilioException twilioException) {}
 
             @Override
-            public void onAudioTrackEnabled(RemoteParticipant remoteParticipant,
-                                            RemoteAudioTrackPublication remoteAudioTrackPublication) {
-            }
+            public void onAudioTrackEnabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {}
 
             @Override
-            public void onAudioTrackDisabled(RemoteParticipant remoteParticipant,
-                                             RemoteAudioTrackPublication remoteAudioTrackPublication) {
-
-            }
-
-            @Override
-            public void onVideoTrackEnabled(RemoteParticipant remoteParticipant,
-                                            RemoteVideoTrackPublication remoteVideoTrackPublication) {
-
-            }
+            public void onAudioTrackDisabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {}
 
             @Override
-            public void onVideoTrackDisabled(RemoteParticipant remoteParticipant,
-                                             RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackEnabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {}
 
-            }
+            @Override
+            public void onVideoTrackDisabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {}
         };
     }
 
     private RemoteDataTrack.Listener remoteDataTrackListener() {
         return new RemoteDataTrack.Listener() {
             @Override
-            public void onMessage(RemoteDataTrack remoteDataTrack, ByteBuffer byteBuffer) {
-
-            }
+            public void onMessage(RemoteDataTrack remoteDataTrack, ByteBuffer byteBuffer) {}
 
             @Override
             public void onMessage(RemoteDataTrack remoteDataTrack, String message) {
@@ -511,21 +511,22 @@ public class DataTrackActivity extends AppCompatActivity {
                 MotionMessage motionMessage = MotionMessage.fromJson(message);
 
                 if (motionMessage != null) {
-                    RemoteParticipant remoteParticipant = dataTrackRemoteParticipantMap
-                            .get(remoteDataTrack);
-                    int actionEvent = (motionMessage.actionDown) ?
-                            (MotionEvent.ACTION_DOWN) :
-                            MotionEvent.ACTION_UP;
+                    RemoteParticipant remoteParticipant =
+                            dataTrackRemoteParticipantMap.get(remoteDataTrack);
+                    int actionEvent =
+                            (motionMessage.actionDown)
+                                    ? (MotionEvent.ACTION_DOWN)
+                                    : MotionEvent.ACTION_UP;
 
                     // Process remote drawing event
-                    float projectedX = motionMessage.coordinates.first *
-                            (float) collaborativeDrawingView.getWidth();
-                    float projectedY = motionMessage.coordinates.second *
-                            (float) collaborativeDrawingView.getHeight();
-                    collaborativeDrawingView.onRemoteTouchEvent(remoteParticipant,
-                            actionEvent,
-                            projectedX,
-                            projectedY);
+                    float projectedX =
+                            motionMessage.coordinates.first
+                                    * (float) collaborativeDrawingView.getWidth();
+                    float projectedY =
+                            motionMessage.coordinates.second
+                                    * (float) collaborativeDrawingView.getHeight();
+                    collaborativeDrawingView.onRemoteTouchEvent(
+                            remoteParticipant, actionEvent, projectedX, projectedY);
                 } else {
                     Log.e(TAG, "Failed to deserialize message: " + message);
                 }

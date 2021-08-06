@@ -2,7 +2,6 @@ package com.twilio.exampleaudiosink;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-
 import java.io.IOException;
 
 class MediaPlayerHelper {

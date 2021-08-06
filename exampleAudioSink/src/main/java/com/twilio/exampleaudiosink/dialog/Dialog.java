@@ -7,10 +7,11 @@ import android.widget.EditText;
 
 public class Dialog {
 
-    public static AlertDialog createConnectDialog(EditText participantEditText,
-                                                  DialogInterface.OnClickListener callParticipantsClickListener,
-                                                  DialogInterface.OnClickListener cancelClickListener,
-                                                  Context context) {
+    public static AlertDialog createConnectDialog(
+            EditText participantEditText,
+            DialogInterface.OnClickListener callParticipantsClickListener,
+            DialogInterface.OnClickListener cancelClickListener,
+            Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
         alertDialogBuilder.setIcon(android.R.drawable.sym_call_outgoing);
@@ -24,10 +25,9 @@ public class Dialog {
         return alertDialogBuilder.create();
     }
 
-    private static void setRoomNameFieldInDialog(EditText roomNameEditText,
-                                                 AlertDialog.Builder alertDialogBuilder) {
+    private static void setRoomNameFieldInDialog(
+            EditText roomNameEditText, AlertDialog.Builder alertDialogBuilder) {
         roomNameEditText.setHint("room name");
         alertDialogBuilder.setView(roomNameEditText);
     }
-
 }

@@ -2,7 +2,6 @@ package com.twilio.video.examples.videoinvite.notify.fcm;
 
 import android.content.Intent;
 import android.util.Log;
-
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.twilio.video.examples.videoinvite.notify.service.RegistrationIntentService;
@@ -12,9 +11,9 @@ public class NotifyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private static final String TAG = "NotifyFbIIDService";
 
     /**
-     * Called if InstanceID token is updated. This may occur if the security of
-     * the previous token had been compromised. Note that this is called when the InstanceID token
-     * is initially generated so this is where you would retrieve the token.
+     * Called if InstanceID token is updated. This may occur if the security of the previous token
+     * had been compromised. Note that this is called when the InstanceID token is initially
+     * generated so this is where you would retrieve the token.
      */
     // [START refresh_token]
     @Override
@@ -33,8 +32,8 @@ public class NotifyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     /**
      * Persist token to third-party servers.
      *
-     * Modify this method to associate the user's FCM InstanceID token with any server-side account
-     * maintained by your application.
+     * <p>Modify this method to associate the user's FCM InstanceID token with any server-side
+     * account maintained by your application.
      *
      * @param token The new token.
      */
@@ -46,5 +45,4 @@ public class NotifyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         Intent intent = new Intent(this, RegistrationIntentService.class);
         startService(intent);
     }
-
 }
