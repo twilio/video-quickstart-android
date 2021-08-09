@@ -31,8 +31,10 @@ To get started with the Quickstart application follow these steps:
 1. Open this project in Android Studio and select the quickstart or quickstartKotlin app module.
   <img width="700px" src="images/quickstart/android_studio_quickstart.png"/>
 
-2. Type in an identity and click on "Generate Access Token" from the [Testing Tools page](https://www.twilio.com/console/video/runtime/testing-tools).
-  <img width="700px" src="images/quickstart/generate_access_token.png"/>
+2. Generate an Access Token
+
+   View instructions here for how to [generate an Access Token using the Twilio CLI](https://www.twilio.com/docs/video/tutorials/user-identity-access-tokens#generate-cli).
+   Generating Access Tokens with the Twilio CLI is a quick way to get an Access Token for testing and development purposes.
 
 3. Add the access token string copied from the console to a variable named `TWILIO_ACCESS_TOKEN`
 in your **local.properties** file.
