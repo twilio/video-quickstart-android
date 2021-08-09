@@ -20,8 +20,8 @@ public class ScreenCapturerService extends Service {
     private final IBinder binder = new LocalBinder();
 
     /**
-     * Class used for the client Binder.  We know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
+     * Class used for the client Binder. We know this service always runs in the same process as its
+     * clients, we don't need to deal with IPC.
      */
     public class LocalBinder extends Binder {
         public ScreenCapturerService getService() {
@@ -41,21 +41,25 @@ public class ScreenCapturerService extends Service {
     }
 
     public void startForeground() {
-        NotificationChannel chan = new NotificationChannel(CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_NONE);
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel chan =
+                new NotificationChannel(
+                        CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_NONE);
+        NotificationManager manager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         assert manager != null;
         manager.createNotificationChannel(chan);
 
         final int notificationId = (int) System.currentTimeMillis();
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
-        Notification notification = notificationBuilder.setOngoing(true)
-                .setSmallIcon(R.drawable.ic_screen_share_white_24dp)
-                .setContentTitle("ScreenCapturerService is running in the foreground")
-                .setPriority(NotificationManager.IMPORTANCE_MIN)
-                .setCategory(Notification.CATEGORY_SERVICE)
-                .build();
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, CHANNEL_ID);
+        Notification notification =
+                notificationBuilder
+                        .setOngoing(true)
+                        .setSmallIcon(R.drawable.ic_screen_share_white_24dp)
+                        .setContentTitle("ScreenCapturerService is running in the foreground")
+                        .setPriority(NotificationManager.IMPORTANCE_MIN)
+                        .setCategory(Notification.CATEGORY_SERVICE)
+                        .build();
         startForeground(notificationId, notification);
     }
 

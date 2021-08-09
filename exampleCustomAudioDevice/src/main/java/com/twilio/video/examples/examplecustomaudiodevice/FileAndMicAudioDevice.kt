@@ -14,11 +14,11 @@ import androidx.annotation.RequiresApi
 import com.twilio.video.AudioDevice
 import com.twilio.video.AudioDeviceContext
 import com.twilio.video.AudioFormat
-import tvi.webrtc.ThreadUtils
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
+import tvi.webrtc.ThreadUtils
 
 class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
     private var keepAliveRendererRunnable = true

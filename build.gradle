@@ -47,6 +47,29 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.diffplug.gradle.spotless" version "4.1.0"
+}
+apply plugin: "com.diffplug.gradle.spotless"
+spotless {
+    format 'misc', {
+        target '**/*.gradle', '**/*.md', '**/.gitignore'
+        targetExclude '**/build/**/settings.gradle'
+
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+    }
+    java {
+        target '**/*.java'
+        googleJavaFormat().aosp()
+    }
+    kotlin {
+        target '**/*.kt'
+        ktlint()
+    }
+}
+
 allprojects {
     repositories {
         google()

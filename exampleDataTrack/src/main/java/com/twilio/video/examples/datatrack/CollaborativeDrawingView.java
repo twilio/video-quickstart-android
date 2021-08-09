@@ -13,9 +13,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
-
 import com.twilio.video.RemoteParticipant;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -23,9 +21,9 @@ import java.util.Random;
 /**
  * Collaborative drawing view inspired by the smooth signatures blog from Square.
  *
- * https://medium.com/square-corner-blog/smoother-signatures-be64515adb33
+ * <p>https://medium.com/square-corner-blog/smoother-signatures-be64515adb33
  *
- * This view will draw the path of the local participant as well as all other participants.
+ * <p>This view will draw the path of the local participant as well as all other participants.
  */
 public class CollaborativeDrawingView extends View {
     private static final float STROKE_WIDTH = 5f;
@@ -40,7 +38,6 @@ public class CollaborativeDrawingView extends View {
     private float lastTouchX;
     private float lastTouchY;
     private final RectF dirtyRect = new RectF();
-
 
     /*
      * Listener of local drawing events.
@@ -62,9 +59,7 @@ public class CollaborativeDrawingView extends View {
         paint.setStrokeWidth(STROKE_WIDTH);
     }
 
-    /**
-     * Listen for local drawing events.
-     */
+    /** Listen for local drawing events. */
     public void setListener(@Nullable Listener listener) {
         this.listener = listener;
     }
@@ -77,14 +72,12 @@ public class CollaborativeDrawingView extends View {
      * @param eventX the x coordinate of the motion event.
      * @param eventY the y coordinate of the motion event.
      */
-    public void onRemoteTouchEvent(RemoteParticipant remoteParticipant,
-                                   int actionEvent,
-                                   float eventX,
-                                   float eventY) {
+    public void onRemoteTouchEvent(
+            RemoteParticipant remoteParticipant, int actionEvent, float eventX, float eventY) {
         Pair<Path, Paint> remoteParticipantPalette =
-                (remoteParticipantPalettes.containsKey(remoteParticipant)) ?
-                        (remoteParticipantPalettes.get(remoteParticipant)) :
-                        (insertAndGetRemoteParticipantPalette(remoteParticipant));
+                (remoteParticipantPalettes.containsKey(remoteParticipant))
+                        ? (remoteParticipantPalettes.get(remoteParticipant))
+                        : (insertAndGetRemoteParticipantPalette(remoteParticipant));
 
         // Process action event
         switch (actionEvent) {
@@ -103,9 +96,7 @@ public class CollaborativeDrawingView extends View {
         post(this::invalidate);
     }
 
-    /**
-     * Clear the local drawing.
-     */
+    /** Clear the local drawing. */
     public void clear() {
         // Clear the local path
         path.reset();
@@ -140,7 +131,6 @@ public class CollaborativeDrawingView extends View {
         // Draw remote paths
         for (Pair<Path, Paint> remoteParticipantPalette : remoteParticipantPalettes.values()) {
             canvas.drawPath(remoteParticipantPalette.first, remoteParticipantPalette.second);
-
         }
     }
 
@@ -236,7 +226,8 @@ public class CollaborativeDrawingView extends View {
     /*
      * Assigns a new path and palette to a remote participant.
      */
-    private Pair<Path, Paint> insertAndGetRemoteParticipantPalette(RemoteParticipant remoteParticipant) {
+    private Pair<Path, Paint> insertAndGetRemoteParticipantPalette(
+            RemoteParticipant remoteParticipant) {
         Path path = new Path();
         Paint paint = getRemoteParticipantPaint(remoteParticipant);
         Pair<Path, Paint> remoteParticipantPalette = new Pair<>(path, paint);
@@ -270,9 +261,7 @@ public class CollaborativeDrawingView extends View {
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
 
-    /**
-     * Listener for drawing events.
-     */
+    /** Listener for drawing events. */
     public interface Listener {
         /**
          * Notifies of a local touch event from the view on the UI thread.

@@ -1,10 +1,11 @@
 package com.twilio.video.examples.videoinvite.notify.api;
 
+import static com.twilio.video.examples.videoinvite.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
+
 import com.twilio.video.examples.videoinvite.notify.api.model.Binding;
 import com.twilio.video.examples.videoinvite.notify.api.model.Identity;
 import com.twilio.video.examples.videoinvite.notify.api.model.Notification;
 import com.twilio.video.examples.videoinvite.notify.api.model.Token;
-
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -15,13 +16,12 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
-import static com.twilio.video.examples.videoinvite.VideoInviteActivity.TWILIO_SDK_STARTER_SERVER_URL;
-
 public class TwilioSDKStarterAPI {
     /**
-     * Resources defined in the sdk-starter projects available in C#, Java, Node, PHP, Python, or Ruby.
+     * Resources defined in the sdk-starter projects available in C#, Java, Node, PHP, Python, or
+     * Ruby.
      *
-     * https://github.com/TwilioDevEd?q=sdk-starter
+     * <p>https://github.com/TwilioDevEd?q=sdk-starter
      */
     interface SDKStarterService {
         // Fetch an access token
@@ -43,18 +43,21 @@ public class TwilioSDKStarterAPI {
 
     private static HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
-    private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging.setLevel(HttpLoggingInterceptor.Level.BODY));
+    private static OkHttpClient.Builder httpClient =
+            new OkHttpClient.Builder()
+                    .addInterceptor(logging.setLevel(HttpLoggingInterceptor.Level.BODY));
 
-    private static SDKStarterService sdkStarterService = new Retrofit.Builder()
-            .baseUrl(TWILIO_SDK_STARTER_SERVER_URL)
-            .addConverterFactory(JacksonConverterFactory.create())
-            .client(httpClient.build())
-            .build()
-            .create(SDKStarterService.class);
+    private static SDKStarterService sdkStarterService =
+            new Retrofit.Builder()
+                    .baseUrl(TWILIO_SDK_STARTER_SERVER_URL)
+                    .addConverterFactory(JacksonConverterFactory.create())
+                    .client(httpClient.build())
+                    .build()
+                    .create(SDKStarterService.class);
 
     // Fetch a token with a specific identity
     public static Call<Token> fetchToken(final String identity) {
-        if(identity == null) {
+        if (identity == null) {
             return sdkStarterService.fetchToken();
         } else {
             return sdkStarterService.fetchToken(new Identity(identity));

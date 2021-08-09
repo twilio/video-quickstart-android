@@ -91,6 +91,19 @@ jobs:
       # Save cache
       - save-cache: *save-cache-gradle
 
+  check-format:
+    <<: *build-defaults
+    resource_class: medium+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: *workspace
+      - restore-cache: *restore-cache-gradle
+      - run:
+          name: Spotless Check
+          command: ./gradlew -q spotlessCheck
+      - save-cache: *save-cache-gradle
+
   build-exampleAdvancedCameraCapturer:
     <<: *build-defaults
     resource_class: large
@@ -249,6 +262,9 @@ workflows:
 
       # Hygiene
       - lint:
+          requires:
+            - setup-workspace
+      - check-format:
           requires:
             - setup-workspace
 

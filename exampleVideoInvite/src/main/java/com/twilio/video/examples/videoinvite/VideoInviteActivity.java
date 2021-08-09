@@ -31,7 +31,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
@@ -53,19 +52,14 @@ import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
 import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
 import com.twilio.video.examples.videoinvite.notify.api.model.Notification;
 import com.twilio.video.examples.videoinvite.notify.service.RegistrationIntentService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import tvi.webrtc.Camera1Enumerator;
 import tvi.webrtc.VideoSink;
-
-import static com.twilio.video.examples.videoinvite.R.drawable.ic_phonelink_ring_white_24dp;
-import static com.twilio.video.examples.videoinvite.R.drawable.ic_volume_up_white_24dp;
 
 /*
  * This Activity shows how to use Twilio Video with Twilio Notify to invite other participants
@@ -87,9 +81,12 @@ public class VideoInviteActivity extends AppCompatActivity {
     /*
      * The tag used to notify others when this identity is connecting to a Video room.
      */
-    public static final List<String> NOTIFY_TAGS = new ArrayList<String>() {{
-        add("video");
-    }};
+    public static final List<String> NOTIFY_TAGS =
+            new ArrayList<String>() {
+                {
+                    add("video");
+                }
+            };
 
     /*
      * Intent keys used to provide information about a video notification
@@ -163,7 +160,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private int previousAudioMode;
     private VideoSink localVideoView;
     private boolean disconnectedFromOnDestroy;
-    private final static String TAG = "VideoInviteActivity";
+    private static final String TAG = "VideoInviteActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,9 +224,8 @@ public class VideoInviteActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == CAMERA_MIC_PERMISSION_REQUEST_CODE) {
             boolean cameraAndMicPermissionGranted = true;
 
@@ -241,9 +237,7 @@ public class VideoInviteActivity extends AppCompatActivity {
                 register();
             } else {
                 Log.e(TAG, getString(R.string.permissions_needed));
-                Toast.makeText(this,
-                        R.string.permissions_needed,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.permissions_needed, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -302,8 +296,8 @@ public class VideoInviteActivity extends AppCompatActivity {
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(ACTION_VIDEO_NOTIFICATION);
             intentFilter.addAction(ACTION_REGISTRATION);
-            LocalBroadcastManager.getInstance(this).registerReceiver(
-                    localBroadcastReceiver, intentFilter);
+            LocalBroadcastManager.getInstance(this)
+                    .registerReceiver(localBroadcastReceiver, intentFilter);
             isReceiverRegistered = true;
         }
     }
@@ -336,28 +330,29 @@ public class VideoInviteActivity extends AppCompatActivity {
         int currentColor = roomEditText.getCurrentTextColor();
         roomEditText.setEnabled(false);
         roomEditText.setTextColor(currentColor);
-        alertDialog = createConnectDialog(title,
-                roomEditText,
-                videoNotificationConnectClickListener(roomEditText),
-                cancelConnectDialogClickListener(),
-                this);
+        alertDialog =
+                createConnectDialog(
+                        title,
+                        roomEditText,
+                        videoNotificationConnectClickListener(roomEditText),
+                        cancelConnectDialogClickListener(),
+                        this);
         alertDialog.show();
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    protected  void onResume() {
+    protected void onResume() {
         super.onResume();
         registerReceiver();
         /*
          * If the local video track was released when the app was put in the background, recreate.
          */
-        if (localVideoTrack == null &&
-                checkPermissionForCameraAndMicrophone() &&
-                cameraCapturer != null) {
+        if (localVideoTrack == null
+                && checkPermissionForCameraAndMicrophone()
+                && cameraCapturer != null) {
             localVideoTrack = LocalVideoTrack.create(this, true, cameraCapturer);
             localVideoTrack.addSink(localVideoView);
-
 
             /*
              * If connected to a Room then share the local video track.
@@ -371,9 +366,8 @@ public class VideoInviteActivity extends AppCompatActivity {
          * Update reconnecting UI
          */
         if (room != null) {
-            reconnectingProgressBar.setVisibility((room.getState() != Room.State.RECONNECTING) ?
-                    View.GONE :
-                    View.VISIBLE);
+            reconnectingProgressBar.setVisibility(
+                    (room.getState() != Room.State.RECONNECTING) ? View.GONE : View.VISIBLE);
             statusTextView.setText("Connected to " + room.getName());
         }
     }
@@ -455,24 +449,22 @@ public class VideoInviteActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean checkPermissionForCameraAndMicrophone(){
+    private boolean checkPermissionForCameraAndMicrophone() {
         int resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         int resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-        return resultCamera == PackageManager.PERMISSION_GRANTED &&
-               resultMic == PackageManager.PERMISSION_GRANTED;
+        return resultCamera == PackageManager.PERMISSION_GRANTED
+                && resultMic == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestPermissionForCameraAndMicrophone(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.RECORD_AUDIO)) {
-            Toast.makeText(this,
-                    R.string.permissions_needed,
-                    Toast.LENGTH_LONG).show();
+    private void requestPermissionForCameraAndMicrophone() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)
+                || ActivityCompat.shouldShowRequestPermissionRationale(
+                        this, Manifest.permission.RECORD_AUDIO)) {
+            Toast.makeText(this, R.string.permissions_needed, Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(
                     this,
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
+                    new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
                     CAMERA_MIC_PERMISSION_REQUEST_CODE);
         }
     }
@@ -517,15 +509,14 @@ public class VideoInviteActivity extends AppCompatActivity {
         enableAudioFocus(true);
         enableVolumeControl(true);
 
-        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(token)
-                .roomName(roomName);
+        ConnectOptions.Builder connectOptionsBuilder =
+                new ConnectOptions.Builder(token).roomName(roomName);
 
         /*
          * Add local audio track to connect options to share with participants.
          */
         if (localAudioTrack != null) {
-            connectOptionsBuilder
-                    .audioTracks(Collections.singletonList(localAudioTrack));
+            connectOptionsBuilder.audioTracks(Collections.singletonList(localAudioTrack));
         }
 
         /*
@@ -546,36 +537,43 @@ public class VideoInviteActivity extends AppCompatActivity {
         /*
          * Use Twilio Notify to let others know you are connecting to a Room
          */
-        Notification notification = new Notification(
-                "Join " + identity + " in room " + roomName,
-                identity + " has invited you to join video room " + roomName,
-                invite.getMap(),
-                NOTIFY_TAGS);
-        TwilioSDKStarterAPI.notify(notification).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (!response.isSuccess()) {
-                    String message = "Sending notification failed: " + response.code() + " " + response.message();
-                    Log.e(TAG, message);
-                    statusTextView.setText(message);
-                }
-            }
+        Notification notification =
+                new Notification(
+                        "Join " + identity + " in room " + roomName,
+                        identity + " has invited you to join video room " + roomName,
+                        invite.getMap(),
+                        NOTIFY_TAGS);
+        TwilioSDKStarterAPI.notify(notification)
+                .enqueue(
+                        new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (!response.isSuccess()) {
+                                    String message =
+                                            "Sending notification failed: "
+                                                    + response.code()
+                                                    + " "
+                                                    + response.message();
+                                    Log.e(TAG, message);
+                                    statusTextView.setText(message);
+                                }
+                            }
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                String message = "Sending notification failed: " + t.getMessage();
-                Log.e(TAG, message);
-                statusTextView.setText(message);
-            }
-        });
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                String message = "Sending notification failed: " + t.getMessage();
+                                Log.e(TAG, message);
+                                statusTextView.setText(message);
+                            }
+                        });
     }
 
     /*
      * The initial state when there is no active conversation.
      */
     private void intializeUI() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_video_call_white_24dp));
+        connectActionFab.setImageDrawable(
+                ContextCompat.getDrawable(this, R.drawable.ic_video_call_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(connectActionClickListener());
         switchCameraActionFab.show();
@@ -590,8 +588,8 @@ public class VideoInviteActivity extends AppCompatActivity {
      * The behavior applied to disconnect
      */
     private void setDisconnectBehavior() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_end_white_24dp));
+        connectActionFab.setImageDrawable(
+                ContextCompat.getDrawable(this, R.drawable.ic_call_end_white_24dp));
         connectActionFab.show();
         connectActionFab.setOnClickListener(disconnectClickListener());
     }
@@ -603,11 +601,13 @@ public class VideoInviteActivity extends AppCompatActivity {
         EditText roomEditText = new EditText(this);
         String title = "Connect to a video room";
         roomEditText.setHint("room name");
-        alertDialog = createConnectDialog(title,
-                roomEditText,
-                connectClickListener(roomEditText),
-                cancelConnectDialogClickListener(),
-                this);
+        alertDialog =
+                createConnectDialog(
+                        title,
+                        roomEditText,
+                        connectClickListener(roomEditText),
+                        cancelConnectDialogClickListener(),
+                        this);
         alertDialog.show();
     }
 
@@ -620,9 +620,10 @@ public class VideoInviteActivity extends AppCompatActivity {
          * This app only displays video for one additional participant per Room
          */
         if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
-            Snackbar.make(connectActionFab,
-                    "Rendering multiple participants not supported in this app",
-                    Snackbar.LENGTH_LONG)
+            Snackbar.make(
+                            connectActionFab,
+                            "Rendering multiple participants not supported in this app",
+                            Snackbar.LENGTH_LONG)
                     .show();
             return;
         }
@@ -676,7 +677,7 @@ public class VideoInviteActivity extends AppCompatActivity {
      */
     @SuppressLint("SetTextI18n")
     private void removeParticipant(RemoteParticipant remoteParticipant) {
-        statusTextView.setText("Participant "+remoteParticipant.getIdentity()+ " left.");
+        statusTextView.setText("Participant " + remoteParticipant.getIdentity() + " left.");
         if (!remoteParticipant.getIdentity().equals(remoteParticipantIdentity)) {
             return;
         }
@@ -724,7 +725,7 @@ public class VideoInviteActivity extends AppCompatActivity {
                 statusTextView.setText("Connected to " + room.getName());
                 setTitle(room.getName());
 
-                for (RemoteParticipant remoteParticipant :  room.getRemoteParticipants()) {
+                for (RemoteParticipant remoteParticipant : room.getRemoteParticipants()) {
                     addRemoteParticipant(remoteParticipant);
                     break;
                 }
@@ -753,7 +754,6 @@ public class VideoInviteActivity extends AppCompatActivity {
             @Override
             public void onParticipantConnected(Room room, RemoteParticipant remoteParticipant) {
                 addRemoteParticipant(remoteParticipant);
-
             }
 
             @Override
@@ -795,134 +795,147 @@ public class VideoInviteActivity extends AppCompatActivity {
     private RemoteParticipant.Listener mediaListener() {
         return new RemoteParticipant.Listener() {
             @Override
-            public void onAudioTrackPublished(RemoteParticipant remoteParticipant,
-                                              RemoteAudioTrackPublication remoteAudioTrackPublication) {
+            public void onAudioTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {
                 statusTextView.setText("onAudioTrackPublished");
             }
 
             @Override
-            public void onAudioTrackUnpublished(RemoteParticipant remoteParticipant,
-                                                RemoteAudioTrackPublication remoteAudioTrackPublication) {
+            public void onAudioTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {
                 statusTextView.setText("onAudioTrackPublished");
             }
 
             @Override
-            public void onVideoTrackPublished(RemoteParticipant remoteParticipant,
-                                              RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {
                 statusTextView.setText("onVideoTrackPublished");
             }
 
             @Override
-            public void onVideoTrackUnpublished(RemoteParticipant remoteParticipant,
-                                                RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {
                 statusTextView.setText("onVideoTrackUnpublished");
             }
 
             @Override
-            public void onDataTrackPublished(RemoteParticipant remoteParticipant,
-                                             RemoteDataTrackPublication remoteDataTrackPublication) {
+            public void onDataTrackPublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication) {
                 statusTextView.setText("onDataTrackPublished");
             }
 
             @Override
-            public void onDataTrackUnpublished(RemoteParticipant remoteParticipant,
-                                               RemoteDataTrackPublication remoteDataTrackPublication) {
+            public void onDataTrackUnpublished(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication) {
                 statusTextView.setText("onDataTrackUnpublished");
             }
 
             @Override
-            public void onAudioTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                               RemoteAudioTrack remoteAudioTrack) {
+            public void onAudioTrackSubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    RemoteAudioTrack remoteAudioTrack) {
                 statusTextView.setText("onAudioTrackSubscribed");
             }
 
             @Override
-            public void onAudioTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                                 RemoteAudioTrack remoteAudioTrack) {
+            public void onAudioTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    RemoteAudioTrack remoteAudioTrack) {
                 statusTextView.setText("onAudioTrackUnsubscribed");
             }
 
             @Override
-            public void onAudioTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                       RemoteAudioTrackPublication remoteAudioTrackPublication,
-                                                       TwilioException twilioException) {
+            public void onAudioTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication,
+                    TwilioException twilioException) {
                 statusTextView.setText("onAudioTrackSubscriptionFailed");
             }
 
             @Override
-            public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant,
-                                               RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                               RemoteVideoTrack remoteVideoTrack) {
+            public void onVideoTrackSubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    RemoteVideoTrack remoteVideoTrack) {
                 statusTextView.setText("onVideoTrackSubscribed");
                 addRemoteParticipantVideo(remoteVideoTrack);
             }
 
             @Override
-            public void onVideoTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                 RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                                 RemoteVideoTrack remoteVideoTrack) {
+            public void onVideoTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    RemoteVideoTrack remoteVideoTrack) {
                 statusTextView.setText("onVideoTrackUnsubscribed");
                 removeParticipantVideo(remoteVideoTrack);
             }
 
             @Override
-            public void onVideoTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                       RemoteVideoTrackPublication remoteVideoTrackPublication,
-                                                       TwilioException twilioException) {
+            public void onVideoTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication,
+                    TwilioException twilioException) {
                 statusTextView.setText("onVideoTrackSubscriptionFailed");
-                Snackbar.make(connectActionFab,
-                        String.format("Failed to subscribe to %s video track",
-                                remoteParticipant.getIdentity()),
-                        Snackbar.LENGTH_LONG)
+                Snackbar.make(
+                                connectActionFab,
+                                String.format(
+                                        "Failed to subscribe to %s video track",
+                                        remoteParticipant.getIdentity()),
+                                Snackbar.LENGTH_LONG)
                         .show();
             }
 
             @Override
-            public void onDataTrackSubscribed(RemoteParticipant remoteParticipant,
-                                              RemoteDataTrackPublication remoteDataTrackPublication,
-                                              RemoteDataTrack remoteDataTrack) {
+            public void onDataTrackSubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    RemoteDataTrack remoteDataTrack) {
                 statusTextView.setText("onDataTrackSubscribed");
             }
 
             @Override
-            public void onDataTrackUnsubscribed(RemoteParticipant remoteParticipant,
-                                                RemoteDataTrackPublication remoteDataTrackPublication,
-                                                RemoteDataTrack remoteDataTrack) {
+            public void onDataTrackUnsubscribed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    RemoteDataTrack remoteDataTrack) {
                 statusTextView.setText("onDataTrackUnsubscribed");
             }
 
             @Override
-            public void onDataTrackSubscriptionFailed(RemoteParticipant remoteParticipant,
-                                                      RemoteDataTrackPublication remoteDataTrackPublication,
-                                                      TwilioException twilioException) {
+            public void onDataTrackSubscriptionFailed(
+                    RemoteParticipant remoteParticipant,
+                    RemoteDataTrackPublication remoteDataTrackPublication,
+                    TwilioException twilioException) {
                 statusTextView.setText("onDataTrackSubscriptionFailed");
             }
 
             @Override
-            public void onAudioTrackEnabled(RemoteParticipant remoteParticipant,
-                                            RemoteAudioTrackPublication remoteAudioTrackPublication) {
-
-            }
-
-            @Override
-            public void onAudioTrackDisabled(RemoteParticipant remoteParticipant,
-                                             RemoteAudioTrackPublication remoteAudioTrackPublication) {
-
-            }
+            public void onAudioTrackEnabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {}
 
             @Override
-            public void onVideoTrackEnabled(RemoteParticipant remoteParticipant,
-                                            RemoteVideoTrackPublication remoteVideoTrackPublication) {
-
-            }
+            public void onAudioTrackDisabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteAudioTrackPublication remoteAudioTrackPublication) {}
 
             @Override
-            public void onVideoTrackDisabled(RemoteParticipant remoteParticipant,
-                                             RemoteVideoTrackPublication remoteVideoTrackPublication) {
+            public void onVideoTrackEnabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {}
 
-            }
+            @Override
+            public void onVideoTrackDisabled(
+                    RemoteParticipant remoteParticipant,
+                    RemoteVideoTrackPublication remoteVideoTrackPublication) {}
         };
     }
 
@@ -940,7 +953,8 @@ public class VideoInviteActivity extends AppCompatActivity {
         };
     }
 
-    private DialogInterface.OnClickListener videoNotificationConnectClickListener(final EditText roomEditText) {
+    private DialogInterface.OnClickListener videoNotificationConnectClickListener(
+            final EditText roomEditText) {
         return (dialog, which) -> {
             /*
              * Connect to room
@@ -975,8 +989,10 @@ public class VideoInviteActivity extends AppCompatActivity {
     private View.OnClickListener switchCameraClickListener() {
         return v -> {
             if (cameraCapturer != null) {
-                String cameraId = cameraCapturer.getCameraId().equals(getFrontCameraId()) ?
-                        getBackCameraId() : getFrontCameraId();
+                String cameraId =
+                        cameraCapturer.getCameraId().equals(getFrontCameraId())
+                                ? getBackCameraId()
+                                : getFrontCameraId();
                 cameraCapturer.switchCamera(cameraId);
                 if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
                     thumbnailVideoView.setMirror(cameraId.equals(getBackCameraId()));
@@ -1019,10 +1035,9 @@ public class VideoInviteActivity extends AppCompatActivity {
             if (localAudioTrack != null) {
                 boolean enable = !localAudioTrack.isEnabled();
                 localAudioTrack.enable(enable);
-                int icon = enable ?
-                        R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
-                muteActionFab.setImageDrawable(ContextCompat.getDrawable(
-                        VideoInviteActivity.this, icon));
+                int icon = enable ? R.drawable.ic_mic_white_24dp : R.drawable.ic_mic_off_black_24dp;
+                muteActionFab.setImageDrawable(
+                        ContextCompat.getDrawable(VideoInviteActivity.this, icon));
             }
         };
     }
@@ -1047,21 +1062,21 @@ public class VideoInviteActivity extends AppCompatActivity {
 
     private void requestAudioFocus() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AudioAttributes playbackAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .build();
+            AudioAttributes playbackAttributes =
+                    new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                            .build();
             AudioFocusRequest focusRequest =
                     new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                             .setAudioAttributes(playbackAttributes)
                             .setAcceptsDelayedFocusGain(true)
-                            .setOnAudioFocusChangeListener(
-                                    i -> { })
+                            .setOnAudioFocusChangeListener(i -> {})
                             .build();
             audioManager.requestAudioFocus(focusRequest);
         } else {
-            audioManager.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
-                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+            audioManager.requestAudioFocus(
+                    null, AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         }
     }
 
@@ -1076,11 +1091,12 @@ public class VideoInviteActivity extends AppCompatActivity {
         }
     }
 
-    public static AlertDialog createConnectDialog(String title,
-                                                  EditText roomEditText,
-                                                  DialogInterface.OnClickListener callParticipantsClickListener,
-                                                  DialogInterface.OnClickListener cancelClickListener,
-                                                  Context context) {
+    public static AlertDialog createConnectDialog(
+            String title,
+            EditText roomEditText,
+            DialogInterface.OnClickListener callParticipantsClickListener,
+            DialogInterface.OnClickListener cancelClickListener,
+            Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setIcon(R.drawable.ic_video_call_black_24dp);
         alertDialogBuilder.setTitle(title);
@@ -1090,5 +1106,4 @@ public class VideoInviteActivity extends AppCompatActivity {
         alertDialogBuilder.setView(roomEditText);
         return alertDialogBuilder.create();
     }
-
 }

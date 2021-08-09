@@ -9,13 +9,11 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.R;
+import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
-
 import java.util.Map;
 
 public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
@@ -50,11 +48,12 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
          * The Notify service adds the message body to the remote message data so that we can
          * show a simple notification.
          */
-        Map<String,String> messageData = message.getData();
+        Map<String, String> messageData = message.getData();
         String title = messageData.get(NOTIFY_TITLE_KEY);
         String body = messageData.get(NOTIFY_BODY_KEY);
         Invite invite =
-                new Invite(messageData.get(NOTIFY_INVITE_FROM_IDENTITY_KEY),
+                new Invite(
+                        messageData.get(NOTIFY_INVITE_FROM_IDENTITY_KEY),
                         messageData.get(NOTIFY_INVITE_ROOM_NAME_KEY));
 
         Log.d(TAG, "From: " + invite.fromIdentity);
@@ -66,9 +65,7 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
         broadcastVideoNotification(title, invite.roomName);
     }
 
-    /**
-     * Create and show a simple notification containing the FCM message.
-     */
+    /** Create and show a simple notification containing the FCM message. */
     private void showNotification(String title, String body, String roomName) {
         Intent intent = new Intent(this, VideoInviteActivity.class);
         intent.setAction(VideoInviteActivity.ACTION_VIDEO_NOTIFICATION);
@@ -76,17 +73,18 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, roomName);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_video_call_white_24dp)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_video_call_white_24dp)
+                        .setContentTitle(title)
+                        .setContentText(body)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

@@ -2,7 +2,6 @@ package com.twilio.exampleaudiosink;
 
 import android.content.Context;
 import android.media.AudioFormat;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,10 +27,10 @@ public class WavFileHelper {
      * Writes the proper 44-byte RIFF/WAVE header to/for the given stream Two size fields are left
      * empty/null since we do not yet know the final stream size
      *
-     * @param out         The stream to write the header to
+     * @param out The stream to write the header to
      * @param channelMask An AudioFormat.CHANNEL_* mask
-     * @param sampleRate  The sample rate in hertz
-     * @param encoding    An AudioFormat.ENCODING_PCM_* value
+     * @param sampleRate The sample rate in hertz
+     * @param encoding An AudioFormat.ENCODING_PCM_* value
      * @throws IOException
      */
     private static void writeWavHeader(
@@ -70,10 +69,10 @@ public class WavFileHelper {
      * Writes the proper 44-byte RIFF/WAVE header to/for the given stream Two size fields are left
      * empty/null since we do not yet know the final stream size
      *
-     * @param out        The stream to write the header to
-     * @param channels   The number of channels
+     * @param out The stream to write the header to
+     * @param channels The number of channels
      * @param sampleRate The sample rate in hertz
-     * @param bitDepth   The bit depth
+     * @param bitDepth The bit depth
      * @throws IOException
      */
     private static void writeWavHeader(
@@ -92,54 +91,54 @@ public class WavFileHelper {
 
         // Not necessarily the best, but it's very easy to visualize this way
         out.write(
-                new byte[]{
-                        // RIFF header
-                        'R',
-                        'I',
-                        'F',
-                        'F', // ChunkID
-                        0,
-                        0,
-                        0,
-                        0, // ChunkSize (must be updated later)
-                        'W',
-                        'A',
-                        'V',
-                        'E', // Format
-                        // fmt subchunk
-                        'f',
-                        'm',
-                        't',
-                        ' ', // Subchunk1ID
-                        16,
-                        0,
-                        0,
-                        0, // Subchunk1Size
-                        1,
-                        0, // AudioFormat
-                        littleBytes[0],
-                        littleBytes[1], // NumChannels
-                        littleBytes[2],
-                        littleBytes[3],
-                        littleBytes[4],
-                        littleBytes[5], // SampleRate
-                        littleBytes[6],
-                        littleBytes[7],
-                        littleBytes[8],
-                        littleBytes[9], // ByteRate
-                        littleBytes[10],
-                        littleBytes[11], // BlockAlign
-                        littleBytes[12],
-                        littleBytes[13], // BitsPerSample
-                        // data subchunk
-                        'd',
-                        'a',
-                        't',
-                        'a', // Subchunk2ID
-                        0,
-                        0,
-                        0,
-                        0, // Subchunk2Size (must be updated later)
+                new byte[] {
+                    // RIFF header
+                    'R',
+                    'I',
+                    'F',
+                    'F', // ChunkID
+                    0,
+                    0,
+                    0,
+                    0, // ChunkSize (must be updated later)
+                    'W',
+                    'A',
+                    'V',
+                    'E', // Format
+                    // fmt subchunk
+                    'f',
+                    'm',
+                    't',
+                    ' ', // Subchunk1ID
+                    16,
+                    0,
+                    0,
+                    0, // Subchunk1Size
+                    1,
+                    0, // AudioFormat
+                    littleBytes[0],
+                    littleBytes[1], // NumChannels
+                    littleBytes[2],
+                    littleBytes[3],
+                    littleBytes[4],
+                    littleBytes[5], // SampleRate
+                    littleBytes[6],
+                    littleBytes[7],
+                    littleBytes[8],
+                    littleBytes[9], // ByteRate
+                    littleBytes[10],
+                    littleBytes[11], // BlockAlign
+                    littleBytes[12],
+                    littleBytes[13], // BitsPerSample
+                    // data subchunk
+                    'd',
+                    'a',
+                    't',
+                    'a', // Subchunk2ID
+                    0,
+                    0,
+                    0,
+                    0, // Subchunk2Size (must be updated later)
                 });
     }
 
@@ -203,7 +202,6 @@ public class WavFileHelper {
         return didWriteWavHeader && !didCompleteWavHeader;
     }
 
-
     /*
      * The following wav header helper functions are from this gist: https://gist.github.com/kmark/d8b1b01fb0d2febf5770
      */
@@ -219,7 +217,8 @@ public class WavFileHelper {
         didCompleteWavHeader = false;
     }
 
-    void writeBytesToFile(ByteBuffer byteBuffer, int encoding, int sampleRate, int channels) throws IOException {
+    void writeBytesToFile(ByteBuffer byteBuffer, int encoding, int sampleRate, int channels)
+            throws IOException {
         if (!didWriteWavHeader) {
             writeWavHeader(fileOutputStream, getChannelMask(channels), sampleRate, encoding);
             didWriteWavHeader = true;
@@ -243,5 +242,4 @@ public class WavFileHelper {
         }
         return AudioFormat.CHANNEL_IN_STEREO;
     }
-
 }

@@ -34,7 +34,7 @@ To get started with the Quickstart application follow these steps:
 2. Type in an identity and click on "Generate Access Token" from the [Testing Tools page](https://www.twilio.com/console/video/runtime/testing-tools).
   <img width="700px" src="images/quickstart/generate_access_token.png"/>
 
-3. Add the access token string copied from the console to a variable named `TWILIO_ACCESS_TOKEN` 
+3. Add the access token string copied from the console to a variable named `TWILIO_ACCESS_TOKEN`
 in your **local.properties** file.
 
 ```
@@ -46,12 +46,12 @@ TWILIO_ACCESS_TOKEN=abcdef0123456789
 5. Press the video call button at the bottom right portion of the screen and type a room name to connect to a Room.
   <img height="500px" src="images/quickstart/connect_dialog.png"/>
 
-6. On another device, use an additional access token with a different identity to connect to the same room. 
+6. On another device, use an additional access token with a different identity to connect to the same room.
 
 ## Examples
 In addition to the quickstart we've also added a few examples of use cases that show you how to create and customize your media as follows:
 
-- [Custom Video Capturer](exampleCustomVideoCapturer) - Demonstrates how a custom `VideoCapturer` can be implemented to capture the contents of a `View`. 
+- [Custom Video Capturer](exampleCustomVideoCapturer) - Demonstrates how a custom `VideoCapturer` can be implemented to capture the contents of a `View`.
 - [Custom Video Sink](exampleCustomVideoSink) - Demonstrates how to implement a custom `tvi.webrtc.VideoSink` that captures a `Bitmap` of the last rendered frame.
 - [Screen Capturer](exampleScreenCapturer) - Demonstrates how to use the screen capturer.
 - [Advanced Camera Capturer](exampleAdvancedCameraCapturer) - Demonstrates advanced use cases of `CameraCapturer` like injecting custom camera parameters and taking a picture.
@@ -90,11 +90,11 @@ Our library is built using native libriares. As a result, if you use the default
 The following snippet shows an example `build.gradle` with APK splits enabled.
 
     apply plugin: 'com.android.application'
-    
+
     android {
         compileSdkVersion 24
         buildToolsVersion "24.0.2"
-    
+
         defaultConfig {
             applicationId "com.twilio.video.quickstart"
             minSdkVersion 16
@@ -102,25 +102,25 @@ The following snippet shows an example `build.gradle` with APK splits enabled.
             versionCode 1
             versionName "1.0"
         }
-    
+
         // Specify that we want to split up the APK based on ABI
         splits {
             abi {
                 // Enable ABI split
                 enable true
-    
+
                 // Clear list of ABIs
                 reset()
-    
+
                 // Specify each architecture currently supported by the Video SDK
                 include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-    
+
                 // Specify that we do not want an additional universal SDK
                 universalApk false
             }
         }
     }
-    
+
     dependencies {
         compile "com.twilio:video-android:6.0.0-preview1"
     }
@@ -134,35 +134,35 @@ The following sections provide guidance on how to ensure optimal audio quality i
 The Java and Kotlin quickstarts use [AudioSwitch](https://github.com/twilio/audioswitch) to control [audio focus](https://developer.android.com/guide/topics/media-apps/audio-focus) and manage audio devices within the application. If you have an issue or question related to audio management, please open an issue in the [AudioSwitch](https://github.com/twilio/audioswitch) project.
 
 ### Configuring Hardware Audio Effects
-Our library performs acoustic echo cancellation (AEC), noise suppression (NS), and auto gain 
-control (AGC) using device hardware by default. Using device hardware is more efficient, but some 
-devices do not implement these audio effects well. If you are experiencing echo, background noise, 
-or unexpected volume levels on certain devices reference the following snippet for enabling 
+Our library performs acoustic echo cancellation (AEC), noise suppression (NS), and auto gain
+control (AGC) using device hardware by default. Using device hardware is more efficient, but some
+devices do not implement these audio effects well. If you are experiencing echo, background noise,
+or unexpected volume levels on certain devices reference the following snippet for enabling
 software implementations of AEC, NS, and AGC.
 
     /*
-     * Execute any time before creating a LocalAudioTrack and connecting 
+     * Execute any time before creating a LocalAudioTrack and connecting
      * to a Room.
      */
-    
+
     // Use software AEC
     WebRtcAudioUtils.setWebRtcBasedAcousticEchoCanceler(true);
-    
+
     // Use sofware NS
     WebRtcAudioUtils.setWebRtcBasedNoiseSuppressor(true);
-    
+
     // Use software AGC
     WebRtcAudioUtils.setWebRtcBasedAutomaticGainControl(true);
-    
+
 ### Configuring OpenSL ES
 Starting with [Video Android SDK 5.6.0](https://www.twilio.com/docs/video/changelog-twilio-video-android#560-april-30th-2020), our library does not use OpenSL ES for audio playback by default. Prior versions starting with [Video Android SDK 5.5.1](https://www.twilio.com/docs/video/changelog-twilio-video-android#551-april-24th-2020) did use OpenSL ES by default. Using OpenSL ES is more efficient, but can cause
 problems with other audio effects. For example, we found on the Nexus 6P that OpenSL ES affected
-the device's hardware echo canceller so we blacklisted the Nexus 6P from using OpenSL ES. If you 
-are experiencing audio problems with a device that cannot be resolved using software audio 
+the device's hardware echo canceller so we blacklisted the Nexus 6P from using OpenSL ES. If you
+are experiencing audio problems with a device that cannot be resolved using software audio
 effects, reference the following snippet for enabling OpenSL ES:
 
     /*
-     * Execute any time before creating a LocalAudioTrack and connecting 
+     * Execute any time before creating a LocalAudioTrack and connecting
      * to a Room.
      */
 
@@ -178,11 +178,11 @@ The Video Android SDK does not maintain a list of devices for which hardware eff
 ### Known Issues
 - Using the following WebRTC based acoustic echo canceler on the Pixel 3 XL will disable the microphone system wide. <br>
 Usage: `WebRtcAudioUtils.setWebRtcBasedAcousticEchoCanceler(true);`<br> A bug has been filed with WebRTC and can be found [here](https://bugs.chromium.org/p/webrtc/issues/detail?id=10386#c1).
-    
-## Rendering Video 
+
+## Rendering Video
 A `VideoTrack` can be rendered in your application using `addRenderer` which takes an
 implementation of `VideoRenderer`. A `VideoRenderer` is most commonly used to render video to a UI,
-but could be used for other scenarios such as rendering to a file. The following section provides 
+but could be used for other scenarios such as rendering to a file. The following section provides
 guidance on how to render video in your application.
 
 ### Working with VideoView
@@ -194,7 +194,7 @@ seen in the screenshot below.
 
 <img height="500px" src="images/quickstart/video_view_example.png"/>
 
-#### VideoView in a Layout File 
+#### VideoView in a Layout File
 
     <?xml version="1.0" encoding="utf-8"?>
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -217,7 +217,7 @@ seen in the screenshot below.
             android:id="@+id/primary_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-            
+
     </FrameLayout>
 
 
@@ -234,7 +234,7 @@ seen in the screenshot below.
     VideoView thumbnailVideoView = new VideoView(context);
 
     /*
-     * Mirror the video. Set to true when rendering video from a local video track using the 
+     * Mirror the video. Set to true when rendering video from a local video track using the
      * front facing camera. Set to false otherwise.
      */
     thumbnailVideoView.setMirror(true);
@@ -258,20 +258,20 @@ seen in the screenshot below.
 
 ### Custom Renderers and I420Frame
 For advanced use cases you can provide a custom `VideoRenderer` where your custom renderer will be
-provided with an `I420Frame` to render. An `I420Frame` can be represented with a ByteBuffer array 
-of Y, U, and V pixel data with an array of strides for each plane or as a texture. When a frame is 
-represented as a texture, `I420Frame#textureId` will be set to a positive non zero value with 
-`I420Frame#yuvPlanes` and `I420Frame#yuvStrides` set to `null`. The YUV data can be extracted from 
-the texture using an instance of `org.webrtc.YuvConverter` and the `I420Frame#samplingMatrix`. When 
-a frame is represented as an array of `ByteBuffer`, `I420Frame#textureId` will be 0, 
-`I420Frame#yuvPlanes` contains the YUV pixel data, and `I420Frame#yuvStrides` contains each plane's 
+provided with an `I420Frame` to render. An `I420Frame` can be represented with a ByteBuffer array
+of Y, U, and V pixel data with an array of strides for each plane or as a texture. When a frame is
+represented as a texture, `I420Frame#textureId` will be set to a positive non zero value with
+`I420Frame#yuvPlanes` and `I420Frame#yuvStrides` set to `null`. The YUV data can be extracted from
+the texture using an instance of `org.webrtc.YuvConverter` and the `I420Frame#samplingMatrix`. When
+a frame is represented as an array of `ByteBuffer`, `I420Frame#textureId` will be 0,
+`I420Frame#yuvPlanes` contains the YUV pixel data, and `I420Frame#yuvStrides` contains each plane's
 stride. For an example of implementing a custom `VideoRenderer` we recommend referencing the
 [Custom Video Renderer](exampleCustomVideoRenderer) module.
 
 
 ## Setup an Access Token Server
 
-Using Twilio's Video client within your applications requires an access token. 
+Using Twilio's Video client within your applications requires an access token.
 
 You can run your own server that provides access tokens, based on your Twilio credentials. This server can either run locally on your development machine, or it can be installed on a server. If you run the server on your local machine, you should use the [ngrok](https://ngrok.com/download) utility to give the server an externally accessible web address. That way, you can run the quickstart app on an Android device.
 
@@ -280,7 +280,7 @@ You can run your own server that provides access tokens, based on your Twilio cr
 If you want to be a little closer to a real environment, you can download one of the video quickstart applications - for instance, [Video Quickstart: Node](https://github.com/TwilioDevEd/video-quickstart-node) and either run it locally, or install it on a server.
 
 You'll need to gather a couple of configuration options from your Twilio developer console before running it, so read the directions on the quickstart. You'll copy the .env.example file to a .env file, and then add in these credentials:
- 
+
 Credential | Description
 ---------- | -----------
 Twilio Account SID | Your main Twilio account identifier - [find it on your dashboard](https://www.twilio.com/console).
@@ -296,7 +296,7 @@ be shown once - make sure to save this in a secure location.
 
 If you run your video chat application on an Android device, you'll need to provide an externally accessible URL for the app. The [ngrok](https://ngrok.com/) tool creates a publicly accessible URL that you can use to send HTTP/HTTPS traffic to a server running on your localhost. Use HTTPS to make web connections that retrieve a Twilio access token.
 
-When you get a URL from ngrok, go ahead and update **local.properties**. Reference the following 
+When you get a URL from ngrok, go ahead and update **local.properties**. Reference the following
 snippet.
 
 ```

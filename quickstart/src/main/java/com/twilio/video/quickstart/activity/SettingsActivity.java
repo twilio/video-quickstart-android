@@ -10,7 +10,6 @@ import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.MenuItem;
-
 import com.twilio.video.AudioCodec;
 import com.twilio.video.G722Codec;
 import com.twilio.video.H264Codec;
@@ -23,7 +22,6 @@ import com.twilio.video.Vp8Codec;
 import com.twilio.video.Vp9Codec;
 import com.twilio.video.examples.common.CodecUtils;
 import com.twilio.video.quickstart.R;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,13 +40,13 @@ public class SettingsActivity extends AppCompatActivity {
     public static final boolean PREF_ENABLE_AUTOMATIC_SUBSCRIPTION_DEFAULT = true;
     public static final boolean PREF_VP8_SIMULCAST_DEFAULT = false;
 
-    private static final String[] VIDEO_CODEC_NAMES = new String[] {
-            Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME
-    };
+    private static final String[] VIDEO_CODEC_NAMES =
+            new String[] {Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME};
 
-    private static final String[] AUDIO_CODEC_NAMES = new String[] {
-            IsacCodec.NAME, OpusCodec.NAME, PcmaCodec.NAME, PcmuCodec.NAME, G722Codec.NAME
-    };
+    private static final String[] AUDIO_CODEC_NAMES =
+            new String[] {
+                IsacCodec.NAME, OpusCodec.NAME, PcmaCodec.NAME, PcmuCodec.NAME, G722Codec.NAME
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,23 +93,25 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.settings);
             setHasOptionsMenu(true);
-            setupCodecListPreference(AudioCodec.class,
+            setupCodecListPreference(
+                    AudioCodec.class,
                     PREF_AUDIO_CODEC,
                     PREF_AUDIO_CODEC_DEFAULT,
                     (ListPreference) findPreference(PREF_AUDIO_CODEC));
-            setupCodecListPreference(VideoCodec.class,
+            setupCodecListPreference(
+                    VideoCodec.class,
                     PREF_VIDEO_CODEC,
                     PREF_VIDEO_CODEC_DEFAULT,
                     (ListPreference) findPreference(PREF_VIDEO_CODEC));
-            setupSenderBandwidthPreferences(PREF_SENDER_MAX_AUDIO_BITRATE,
+            setupSenderBandwidthPreferences(
+                    PREF_SENDER_MAX_AUDIO_BITRATE,
                     PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT,
                     (EditTextPreference) findPreference(PREF_SENDER_MAX_AUDIO_BITRATE));
-            setupSenderBandwidthPreferences(PREF_SENDER_MAX_VIDEO_BITRATE,
+            setupSenderBandwidthPreferences(
+                    PREF_SENDER_MAX_VIDEO_BITRATE,
                     PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT,
                     (EditTextPreference) findPreference(PREF_SENDER_MAX_VIDEO_BITRATE));
         }
-
-
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
@@ -123,14 +123,12 @@ public class SettingsActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
 
-        private void setupCodecListPreference(Class codecClass,
-                                              String key,
-                                              String defaultValue,
-                                              ListPreference preference) {
+        private void setupCodecListPreference(
+                Class codecClass, String key, String defaultValue, ListPreference preference) {
             List<String> codecEntries = new ArrayList<>();
-            if(codecClass == AudioCodec.class){
+            if (codecClass == AudioCodec.class) {
                 Collections.addAll(codecEntries, AUDIO_CODEC_NAMES);
-            }else{
+            } else {
                 Collections.addAll(codecEntries, VIDEO_CODEC_NAMES);
             }
 
@@ -148,24 +146,25 @@ public class SettingsActivity extends AppCompatActivity {
             preference.setEntryValues(codecStrings);
             preference.setValue(value);
             preference.setSummary(value);
-            preference.setOnPreferenceChangeListener((preference1, newValue) -> {
-                preference1.setSummary(newValue.toString());
-                return true;
-            });
+            preference.setOnPreferenceChangeListener(
+                    (preference1, newValue) -> {
+                        preference1.setSummary(newValue.toString());
+                        return true;
+                    });
         }
 
-        private void setupSenderBandwidthPreferences(String key,
-                                                     String defaultValue,
-                                                     EditTextPreference editTextPreference) {
+        private void setupSenderBandwidthPreferences(
+                String key, String defaultValue, EditTextPreference editTextPreference) {
             String value = sharedPreferences.getString(key, defaultValue);
 
             // Set layout with input type number for edit text
             editTextPreference.setDialogLayoutResource(R.layout.preference_dialog_number_edittext);
             editTextPreference.setSummary(value);
-            editTextPreference.setOnPreferenceChangeListener((preference, newValue) -> {
-                preference.setSummary(newValue.toString());
-                return true;
-            });
+            editTextPreference.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        preference.setSummary(newValue.toString());
+                        return true;
+                    });
         }
     }
 }

@@ -14,25 +14,24 @@ public class ScreenCapturerManager {
     private State currentState = State.UNBIND_SERVICE;
 
     /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection connection = new ServiceConnection() {
+    private ServiceConnection connection =
+            new ServiceConnection() {
 
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to ScreenCapturerService, cast the IBinder and get ScreenCapturerService instance
-            ScreenCapturerService.LocalBinder binder = (ScreenCapturerService.LocalBinder) service;
-            mService = binder.getService();
-            currentState = State.BIND_SERVICE;
-        }
+                @Override
+                public void onServiceConnected(ComponentName className, IBinder service) {
+                    // We've bound to ScreenCapturerService, cast the IBinder and get
+                    // ScreenCapturerService instance
+                    ScreenCapturerService.LocalBinder binder =
+                            (ScreenCapturerService.LocalBinder) service;
+                    mService = binder.getService();
+                    currentState = State.BIND_SERVICE;
+                }
 
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
+                @Override
+                public void onServiceDisconnected(ComponentName arg0) {}
+            };
 
-    /**
-     * An enum describing the possible states of a ScreenCapturerManager.
-     */
+    /** An enum describing the possible states of a ScreenCapturerManager. */
     public enum State {
         BIND_SERVICE,
         START_FOREGROUND,

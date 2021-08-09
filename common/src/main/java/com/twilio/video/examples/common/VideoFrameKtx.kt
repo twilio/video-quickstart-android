@@ -8,18 +8,17 @@ import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.os.Build
-import tvi.webrtc.VideoFrame
-import tvi.webrtc.YuvConverter
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
-
+import tvi.webrtc.VideoFrame
+import tvi.webrtc.YuvConverter
 
 /**
  * Converts a [tvi.webrtc.VideoFrame] to a Bitmap. This method must be called from a thread with a
  * valid EGL context when the frame buffer is a [VideoFrame.TextureBuffer].
  */
-fun VideoFrame.toBitmap() : Bitmap? {
+fun VideoFrame.toBitmap(): Bitmap? {
     val i420Buffer = if (buffer is VideoFrame.TextureBuffer) {
         val yuvConverter = YuvConverter()
         val buffer = yuvConverter.convert(buffer as VideoFrame.TextureBuffer)
@@ -106,7 +105,10 @@ private fun i420ToYuvImage(i420Buffer: VideoFrame.I420Buffer, width: Int, height
 }
 
 private fun fastI420ToYuvImage(
-    yuvPlanes: Array<ByteBuffer>, yuvStrides: IntArray, width: Int, height: Int
+    yuvPlanes: Array<ByteBuffer>,
+    yuvStrides: IntArray,
+    width: Int,
+    height: Int
 ): YuvImage {
     val bytes = ByteArray(width * height * 3 / 2)
     var i = 0

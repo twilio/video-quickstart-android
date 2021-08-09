@@ -1,22 +1,24 @@
 package com.twilio.video.examples.videoinvite.notify.api.model;
 
 import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 import java.util.Map;
 
 /**
  * The Notification model defined to send notifications with Twilio Notify
  *
- * https://www.twilio.com/docs/api/notify/rest/notifications
+ * <p>https://www.twilio.com/docs/api/notify/rest/notifications
  */
 public class Notification {
     @SerializedName("Title")
     public final String title;
+
     @SerializedName("Body")
     public final String body;
+
     @SerializedName("Data")
     public final Map<String, String> data;
+
     @SerializedName("Tag")
     public final List<String> tag;
 
@@ -26,5 +28,4 @@ public class Notification {
         this.data = data;
         this.tag = tag;
     }
-
 }

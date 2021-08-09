@@ -23,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.koushikdutta.ion.Ion;
 import com.twilio.exampleaudiosink.dialog.Dialog;
 import com.twilio.video.AudioSink;
@@ -33,7 +32,6 @@ import com.twilio.video.RemoteParticipant;
 import com.twilio.video.Room;
 import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -43,7 +41,8 @@ public class AudioSinkActivity extends AppCompatActivity {
     private static final int MAX_PARTICIPANTS = 2;
     private static final int MIC_PERMISSION_REQUEST_CODE = 5;
     private static final String TAG = "AudioSinkActivity";
-    private static final String UNSUPPORTED_PARTICIPANT_COUNT_MSG = "This example only supports %d participants";
+    private static final String UNSUPPORTED_PARTICIPANT_COUNT_MSG =
+            "This example only supports %d participants";
 
     /*
      * Audio and video tracks can be created with names. This feature is useful for categorizing
@@ -85,16 +84,25 @@ public class AudioSinkActivity extends AppCompatActivity {
 
     private WavFileHelper wavFileHelper;
     private MediaPlayerHelper mediaPlayerHelper;
-    private AudioSink audioSink = new AudioSink() {
-        @Override
-        public void renderSample(@NonNull ByteBuffer audioSample, int encoding, int sampleRate, int channels) {
-            try {
-                wavFileHelper.writeBytesToFile(audioSample, encoding, sampleRate, channels);
-            } catch (IOException e) {
-                Log.e(TAG, String.format("A fatal error has occurred. Stacktrace %s", e.getLocalizedMessage()));
-            }
-        }
-    };
+    private AudioSink audioSink =
+            new AudioSink() {
+                @Override
+                public void renderSample(
+                        @NonNull ByteBuffer audioSample,
+                        int encoding,
+                        int sampleRate,
+                        int channels) {
+                    try {
+                        wavFileHelper.writeBytesToFile(audioSample, encoding, sampleRate, channels);
+                    } catch (IOException e) {
+                        Log.e(
+                                TAG,
+                                String.format(
+                                        "A fatal error has occurred. Stacktrace %s",
+                                        e.getLocalizedMessage()));
+                    }
+                }
+            };
 
     private int previousAudioMode;
     private boolean previousMicrophoneMute;
@@ -126,7 +134,6 @@ public class AudioSinkActivity extends AppCompatActivity {
             createAudioTrack();
             setAccessToken();
         }
-
 
         /*
          * Initialize audio helper classes
@@ -185,11 +192,9 @@ public class AudioSinkActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MIC_PERMISSION_REQUEST_CODE) {
             boolean micPermissionGranted = true;
 
@@ -201,9 +206,7 @@ public class AudioSinkActivity extends AppCompatActivity {
                 createAudioTrack();
                 setAccessToken();
             } else {
-                Toast.makeText(this,
-                        R.string.permissions_needed,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.permissions_needed, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -235,15 +238,14 @@ public class AudioSinkActivity extends AppCompatActivity {
 
     private void connectToRoom(String roomName) {
         configureAudio(true);
-        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(accessToken)
-                .roomName(roomName);
+        ConnectOptions.Builder connectOptionsBuilder =
+                new ConnectOptions.Builder(accessToken).roomName(roomName);
 
         /*
          * Add local audio track to connect options to share with participants.
          */
         if (localAudioTrack != null) {
-            connectOptionsBuilder
-                    .audioTracks(Collections.singletonList(localAudioTrack));
+            connectOptionsBuilder.audioTracks(Collections.singletonList(localAudioTrack));
         }
 
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener());
@@ -252,18 +254,23 @@ public class AudioSinkActivity extends AppCompatActivity {
 
     private void retrieveAccessTokenfromServer() {
         Ion.with(this)
-                .load(String.format("%s?identity=%s", ACCESS_TOKEN_SERVER,
-                        UUID.randomUUID().toString()))
+                .load(
+                        String.format(
+                                "%s?identity=%s",
+                                ACCESS_TOKEN_SERVER, UUID.randomUUID().toString()))
                 .asString()
-                .setCallback((e, token) -> {
-                    if (e == null) {
-                        AudioSinkActivity.this.accessToken = token;
-                    } else {
-                        Toast.makeText(AudioSinkActivity.this,
-                                R.string.error_retrieving_access_token, Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
+                .setCallback(
+                        (e, token) -> {
+                            if (e == null) {
+                                AudioSinkActivity.this.accessToken = token;
+                            } else {
+                                Toast.makeText(
+                                                AudioSinkActivity.this,
+                                                R.string.error_retrieving_access_token,
+                                                Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
     }
 
     private boolean checkPermissionForMicrophone() {
@@ -272,16 +279,14 @@ public class AudioSinkActivity extends AppCompatActivity {
     }
 
     private void requestPermissionForMicrophone() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.RECORD_AUDIO)) {
-            Toast.makeText(this,
-                    R.string.permissions_needed,
-                    Toast.LENGTH_LONG).show();
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this, Manifest.permission.RECORD_AUDIO)) {
+            Toast.makeText(this, R.string.permissions_needed, Toast.LENGTH_LONG).show();
 
         } else {
             ActivityCompat.requestPermissions(
                     this,
-                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    new String[] {Manifest.permission.RECORD_AUDIO},
                     MIC_PERMISSION_REQUEST_CODE);
         }
     }
@@ -317,22 +322,21 @@ public class AudioSinkActivity extends AppCompatActivity {
 
     private void requestAudioFocus() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AudioAttributes playbackAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .build();
+            AudioAttributes playbackAttributes =
+                    new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                            .build();
             AudioFocusRequest focusRequest =
                     new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                             .setAudioAttributes(playbackAttributes)
                             .setAcceptsDelayedFocusGain(true)
-                            .setOnAudioFocusChangeListener(
-                                    i -> {
-                                    })
+                            .setOnAudioFocusChangeListener(i -> {})
                             .build();
             audioManager.requestAudioFocus(focusRequest);
         } else {
-            audioManager.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
-                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+            audioManager.requestAudioFocus(
+                    null, AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         }
     }
 
@@ -355,7 +359,8 @@ public class AudioSinkActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onReconnecting(@NonNull Room room, @NonNull TwilioException twilioException) {
+            public void onReconnecting(
+                    @NonNull Room room, @NonNull TwilioException twilioException) {
                 audioSinkStatusText.setText(String.format("Reconnecting to %s", room.getName()));
             }
 
@@ -378,7 +383,9 @@ public class AudioSinkActivity extends AppCompatActivity {
                 enableAudioSinkButton(false);
                 if (wavFileHelper.isFileWriteInProgress()) {
                     finish();
-                    enablePlayFileButton(wavFileHelper.doesFileExist() && !wavFileHelper.isFileWriteInProgress());
+                    enablePlayFileButton(
+                            wavFileHelper.doesFileExist()
+                                    && !wavFileHelper.isFileWriteInProgress());
                 }
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
                 if (!disconnectedFromOnDestroy) {
@@ -388,7 +395,8 @@ public class AudioSinkActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onParticipantConnected(@NonNull Room room, @NonNull RemoteParticipant remoteParticipant) {
+            public void onParticipantConnected(
+                    @NonNull Room room, @NonNull RemoteParticipant remoteParticipant) {
                 if (hasNecessaryParticipants(room)) {
                     audioSinkStatusText.setText(getString(R.string.status_capture_ready));
                     enableAudioSinkButton(true);
@@ -396,14 +404,17 @@ public class AudioSinkActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onParticipantDisconnected(@NonNull Room room, @NonNull RemoteParticipant remoteParticipant) {
+            public void onParticipantDisconnected(
+                    @NonNull Room room, @NonNull RemoteParticipant remoteParticipant) {
                 if (!hasNecessaryParticipants(room)) {
                     audioSinkStatusText.setText(getString(R.string.status_two_particpants_needed));
                     enableAudioSinkButton(false);
                     if (wavFileHelper.isFileWriteInProgress()) {
                         try {
                             wavFileHelper.finish();
-                            enablePlayFileButton(wavFileHelper.doesFileExist() && !wavFileHelper.isFileWriteInProgress());
+                            enablePlayFileButton(
+                                    wavFileHelper.doesFileExist()
+                                            && !wavFileHelper.isFileWriteInProgress());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -433,17 +444,28 @@ public class AudioSinkActivity extends AppCompatActivity {
 
     public boolean hasNecessaryParticipants(@NonNull Room room) {
         if (room.getRemoteParticipants().size() > 1)
-            throw new RuntimeException(String.format(UNSUPPORTED_PARTICIPANT_COUNT_MSG, MAX_PARTICIPANTS));
+            throw new RuntimeException(
+                    String.format(UNSUPPORTED_PARTICIPANT_COUNT_MSG, MAX_PARTICIPANTS));
         return room.getRemoteParticipants().size() > 0;
     }
 
     private void attachSink() {
-        room.getRemoteParticipants().get(0).getRemoteAudioTracks().get(0).getRemoteAudioTrack().addSink(audioSink);
+        room.getRemoteParticipants()
+                .get(0)
+                .getRemoteAudioTracks()
+                .get(0)
+                .getRemoteAudioTrack()
+                .addSink(audioSink);
         toggleAudioSinkButton.setColorFilter(Color.GRAY);
     }
 
     private void detachSink() {
-        room.getRemoteParticipants().get(0).getRemoteAudioTracks().get(0).getRemoteAudioTrack().removeSink(audioSink);
+        room.getRemoteParticipants()
+                .get(0)
+                .getRemoteAudioTracks()
+                .get(0)
+                .getRemoteAudioTrack()
+                .removeSink(audioSink);
         toggleAudioSinkButton.setColorFilter(Color.WHITE);
     }
 
@@ -460,8 +482,8 @@ public class AudioSinkActivity extends AppCompatActivity {
         togglePlayAudioButton.setOnClickListener(playAudioClickListener());
 
         connectActionFab = findViewById(R.id.connect_action_fab);
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                android.R.drawable.sym_call_outgoing));
+        connectActionFab.setImageDrawable(
+                ContextCompat.getDrawable(this, android.R.drawable.sym_call_outgoing));
 
         connectActionFab.show();
         connectActionFab.setOnClickListener(connectActionClickListener());
@@ -472,10 +494,12 @@ public class AudioSinkActivity extends AppCompatActivity {
      */
     private void showConnectDialog() {
         EditText roomEditText = new EditText(this);
-        connectDialog = Dialog.createConnectDialog(roomEditText,
-                connectClickListener(roomEditText),
-                cancelConnectDialogClickListener(),
-                this);
+        connectDialog =
+                Dialog.createConnectDialog(
+                        roomEditText,
+                        connectClickListener(roomEditText),
+                        cancelConnectDialogClickListener(),
+                        this);
         connectDialog.show();
     }
 
@@ -483,8 +507,8 @@ public class AudioSinkActivity extends AppCompatActivity {
      * The actions performed during disconnect.
      */
     private void setDisconnectAction() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this,
-                R.drawable.ic_call_end_white_24px));
+        connectActionFab.setImageDrawable(
+                ContextCompat.getDrawable(this, R.drawable.ic_call_end_white_24px));
         connectActionFab.show();
         connectActionFab.setOnClickListener(disconnectClickListener());
     }
@@ -503,7 +527,9 @@ public class AudioSinkActivity extends AppCompatActivity {
                 if (wavFileHelper.isFileWriteInProgress()) {
                     wavFileHelper.finish();
                     detachSink();
-                    enablePlayFileButton(wavFileHelper.doesFileExist() && !wavFileHelper.isFileWriteInProgress());
+                    enablePlayFileButton(
+                            wavFileHelper.doesFileExist()
+                                    && !wavFileHelper.isFileWriteInProgress());
                     audioSinkStatusText.setText(getString(R.string.status_finished_capturing));
                 } else {
                     wavFileHelper.createFile();
@@ -520,20 +546,31 @@ public class AudioSinkActivity extends AppCompatActivity {
         return v -> {
             if (mediaPlayerHelper.isPlaying()) {
                 mediaPlayerHelper.stopPlaying();
-                togglePlayAudioButton.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+                togglePlayAudioButton.setImageDrawable(
+                        getResources().getDrawable(android.R.drawable.ic_media_play));
             } else {
                 if (!wavFileHelper.doesFileExist()) {
-                    Snackbar.make(connectActionFab, "Couldn't find AudioSink Recording", Snackbar.LENGTH_SHORT).show();
-                    togglePlayAudioButton.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+                    Snackbar.make(
+                                    connectActionFab,
+                                    "Couldn't find AudioSink Recording",
+                                    Snackbar.LENGTH_SHORT)
+                            .show();
+                    togglePlayAudioButton.setImageDrawable(
+                            getResources().getDrawable(android.R.drawable.ic_media_play));
                     return;
                 }
                 try {
-                    mediaPlayerHelper.playFile(wavFileHelper.getFullFilePath(), mp -> {
-                        if (!mediaPlayerHelper.isPlaying()) {
-                            togglePlayAudioButton.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
-                        }
-                    });
-                    togglePlayAudioButton.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                    mediaPlayerHelper.playFile(
+                            wavFileHelper.getFullFilePath(),
+                            mp -> {
+                                if (!mediaPlayerHelper.isPlaying()) {
+                                    togglePlayAudioButton.setImageDrawable(
+                                            getResources()
+                                                    .getDrawable(android.R.drawable.ic_media_play));
+                                }
+                            });
+                    togglePlayAudioButton.setImageDrawable(
+                            getResources().getDrawable(android.R.drawable.ic_media_pause));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
