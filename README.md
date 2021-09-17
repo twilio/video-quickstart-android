@@ -1,14 +1,15 @@
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/6.0.0-preview1/)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://twilio.github.io/twilio-video-android/docs/latest/)
 
-**NEW:** Please check out the newly open-sourced [video collaboration app](https://github.com/twilio/twilio-video-app-android)
+**Tip:** Please check out the open-sourced [video collaboration app](https://github.com/twilio/twilio-video-app-android)
 built with the Android Video SDK.
 
-> NOTE: These sample applications use the Twilio Video 6.x APIs. For examples using previous releases please see the following branches:
+> NOTE: These sample applications use the Twilio Video 7.x APIs. For examples using previous releases please see the following branches:
 >  - [1.x](https://github.com/twilio/video-quickstart-android/tree/1.x)
 >  - [2.x](https://github.com/twilio/video-quickstart-android/tree/2.x)
 >  - [3.x](https://github.com/twilio/video-quickstart-android/tree/3.x)
 >  - [4.x](https://github.com/twilio/video-quickstart-android/tree/4.x)
->  - [5.x](https://github.com/twilio/video-quickstart-android/tree/master)
+>  - [5.x](https://github.com/twilio/video-quickstart-android/tree/5.x)
+>  - [6.x](https://github.com/twilio/video-quickstart-android/tree/6.x)
 
 # Twilio Video Quickstart for Android
 
@@ -64,8 +65,7 @@ In addition to the quickstart we've also added a few examples of use cases that 
 
 ## Using an Emulator
 
-Using an Emulator
-This guide will walk you through setting up and emulator that is compatible with the Video SDK.
+This guide will walk you through setting up an emulator that is compatible with the Video SDK.
 
 ### Requirements
 1. Android Studio 2.0+
@@ -85,7 +85,7 @@ This guide will walk you through setting up and emulator that is compatible with
 
 ## Reducing APK Size
 
-Our library is built using native libriares. As a result, if you use the default gradle build you will generate an APK with all four architectures(armeabi-v7a, arm64-v8a, x86, x86_64 in your APK.
+Our library is built using native libriares. As a result, if you use the default gradle build you will generate an APK with all four architectures(armeabi-v7a, arm64-v8a, x86, x86_64) in your APK.
 
 [APK splits](https://developer.android.com/studio/build/configure-apk-splits.html) allow developers to build multiple APKs for different screen sizes and ABIs. Enabling APK splits ensures that the minimum amount of files required to support a particular device are packaged into an APK.
 
@@ -94,13 +94,13 @@ The following snippet shows an example `build.gradle` with APK splits enabled.
     apply plugin: 'com.android.application'
 
     android {
-        compileSdkVersion 24
-        buildToolsVersion "24.0.2"
+        compileSdkVersion 30
+        buildToolsVersion "30.0.2"
 
         defaultConfig {
             applicationId "com.twilio.video.quickstart"
-            minSdkVersion 16
-            targetSdkVersion 24
+            minSdkVersion 21
+            targetSdkVersion 30
             versionCode 1
             versionName "1.0"
         }
@@ -124,7 +124,7 @@ The following snippet shows an example `build.gradle` with APK splits enabled.
     }
 
     dependencies {
-        compile "com.twilio:video-android:6.0.0-preview1"
+        compile "com.twilio:video-android:7.0.0"
     }
 
 The adoption of APK splits requires developers to submit multiple APKs to the Play Store. Refer to [Google’s documentation](https://developer.android.com/google/play/publishing/multiple-apks.html) for how to support this in your application.
@@ -157,7 +157,7 @@ software implementations of AEC, NS, and AGC.
     WebRtcAudioUtils.setWebRtcBasedAutomaticGainControl(true);
 
 ### Configuring OpenSL ES
-Starting with [Video Android SDK 5.6.0](https://www.twilio.com/docs/video/changelog-twilio-video-android#560-april-30th-2020), our library does not use OpenSL ES for audio playback by default. Prior versions starting with [Video Android SDK 5.5.1](https://www.twilio.com/docs/video/changelog-twilio-video-android#551-april-24th-2020) did use OpenSL ES by default. Using OpenSL ES is more efficient, but can cause
+Our library does not use OpenSL ES for audio playback by default. Some prior versions starting with [Video Android SDK 5.5.1](https://www.twilio.com/docs/video/changelog-twilio-video-android#551-april-24th-2020) did use OpenSL ES by default. Using OpenSL ES is more efficient, but can cause
 problems with other audio effects. For example, we found on the Nexus 6P that OpenSL ES affected
 the device's hardware echo canceller so we blacklisted the Nexus 6P from using OpenSL ES. If you
 are experiencing audio problems with a device that cannot be resolved using software audio
