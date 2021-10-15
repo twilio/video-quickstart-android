@@ -124,7 +124,7 @@ The following snippet shows an example `build.gradle` with APK splits enabled.
     }
 
     dependencies {
-        compile "com.twilio:video-android:7.0.0"
+        compile "com.twilio:video-android:7.0.1"
     }
 
 The adoption of APK splits requires developers to submit multiple APKs to the Play Store. Refer to [Google’s documentation](https://developer.android.com/google/play/publishing/multiple-apks.html) for how to support this in your application.
