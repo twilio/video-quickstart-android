@@ -234,7 +234,8 @@ public class VideoActivity extends AppCompatActivity {
              */
             boolean cameraAndMicPermissionGranted =
                     (PackageManager.PERMISSION_GRANTED == grantResults[CAMERA_PERMISSION_INDEX])
-                            & (PackageManager.PERMISSION_GRANTED == grantResults[MIC_PERMISSION_INDEX]);
+                            & (PackageManager.PERMISSION_GRANTED
+                                    == grantResults[MIC_PERMISSION_INDEX]);
 
             /*
              * Due to bluetooth permissions being requested at the same time as camera and mic
@@ -375,16 +376,17 @@ public class VideoActivity extends AppCompatActivity {
 
     private boolean checkPermissions(String[] permissions) {
         boolean shouldCheck = true;
-        for (String permission: permissions) {
-            shouldCheck &= (PackageManager.PERMISSION_GRANTED ==
-                    ContextCompat.checkSelfPermission(this, permission));
+        for (String permission : permissions) {
+            shouldCheck &=
+                    (PackageManager.PERMISSION_GRANTED
+                            == ContextCompat.checkSelfPermission(this, permission));
         }
         return shouldCheck;
     }
 
     private void requestPermissions(String[] permissions) {
         boolean displayRational = false;
-        for (String permission: permissions) {
+        for (String permission : permissions) {
             displayRational |=
                     ActivityCompat.shouldShowRequestPermissionRationale(this, permission);
         }
@@ -398,20 +400,21 @@ public class VideoActivity extends AppCompatActivity {
 
     private boolean checkPermissionForCameraAndMicrophone() {
         return checkPermissions(
-                new String[] { Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO });
+                new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO});
     }
 
     private void requestPermissionForCameraMicrophoneAndBluetooth() {
         String[] permissionsList;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            permissionsList = new String[] {
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.BLUETOOTH_CONNECT };
+            permissionsList =
+                    new String[] {
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    };
         } else {
-            permissionsList = new String[] {
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.RECORD_AUDIO };
+            permissionsList =
+                    new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
         }
         requestPermissions(permissionsList);
     }

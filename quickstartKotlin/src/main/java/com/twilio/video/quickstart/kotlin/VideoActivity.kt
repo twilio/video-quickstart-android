@@ -674,7 +674,7 @@ class VideoActivity : AppCompatActivity() {
 
         // AudioSwitch has already started and thus notified of the initial selected device
         // so we need to updates the UI
-        updateAudioDeviceIcon(audioSwitch.selectedAudioDevice);
+        updateAudioDeviceIcon(audioSwitch.selectedAudioDevice)
         return true
     }
 
