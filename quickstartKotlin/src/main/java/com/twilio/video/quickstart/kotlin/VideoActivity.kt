@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
@@ -70,6 +71,8 @@ import tvi.webrtc.VideoSink
 class VideoActivity : AppCompatActivity() {
     private val CAMERA_MIC_PERMISSION_REQUEST_CODE = 1
     private val TAG = "VideoActivity"
+    private val CAMERA_PERMISSION_INDEX = 0
+    private val MIC_PERMISSION_INDEX = 1
 
     /*
      * You must provide a Twilio Access Token to connect to the Video service
@@ -511,7 +514,7 @@ class VideoActivity : AppCompatActivity() {
         )
     }
     private var savedVolumeControlStream by Delegates.notNull<Int>()
-    private lateinit var audioDeviceMenuItem: MenuItem
+    private var audioDeviceMenuItem: MenuItem? = null
 
     private var participantIdentity: String? = null
     private lateinit var localVideoView: VideoSink
@@ -539,10 +542,14 @@ class VideoActivity : AppCompatActivity() {
         setAccessToken()
 
         /*
-         * Request permissions.
+         * Check camera and microphone permissions. Also, request for bluetooth
+         * permissions for enablement of bluetooth audio routing.
          */
-        requestPermissionForCameraAndMicrophone()
-
+        if (!checkPermissionForCameraAndMicrophone()) {
+            requestPermissionForCameraMicrophoneAndBluetooth()
+        } else {
+            audioSwitch.start { audioDevices, audioDevice -> updateAudioDeviceIcon(audioDevice) }
+        }
         /*
          * Set the initial state of the UI
          */
@@ -555,12 +562,20 @@ class VideoActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         if (requestCode == CAMERA_MIC_PERMISSION_REQUEST_CODE) {
-            var cameraAndMicPermissionGranted = true
+            /*
+             * The first two permissions are Camera & Microphone, bluetooth isn't required but
+             * enabling it enables bluetooth audio routing functionality.
+             */
+            val cameraAndMicPermissionGranted =
+                ((PackageManager.PERMISSION_GRANTED == grantResults[CAMERA_PERMISSION_INDEX])
+                        and (PackageManager.PERMISSION_GRANTED == grantResults[MIC_PERMISSION_INDEX]))
 
-            for (grantResult in grantResults) {
-                cameraAndMicPermissionGranted = cameraAndMicPermissionGranted and
-                        (grantResult == PackageManager.PERMISSION_GRANTED)
-            }
+            /*
+             * Due to bluetooth permissions being requested at the same time as camera and mic
+             * permissions, AudioSwitch should be started after providing the user the option
+             * to grant the necessary permissions for bluetooth.
+             */
+            audioSwitch.start { audioDevices, audioDevice -> updateAudioDeviceIcon(audioDevice) }
 
             if (cameraAndMicPermissionGranted) {
                 createAudioAndVideoTracks()
@@ -657,14 +672,9 @@ class VideoActivity : AppCompatActivity() {
         inflater.inflate(R.menu.menu, menu)
         audioDeviceMenuItem = menu.findItem(R.id.menu_audio_device)
 
-        /*
-         * Start the audio device selector after the menu is created and update the icon when the
-         * selected audio device changes.
-         */
-        audioSwitch.start { audioDevices, audioDevice ->
-            updateAudioDeviceIcon(audioDevice)
-        }
-
+        // AudioSwitch has already started and thus notified of the initial selected device
+        // so we need to updates the UI
+        updateAudioDeviceIcon(audioSwitch.selectedAudioDevice);
         return true
     }
 
@@ -676,33 +686,51 @@ class VideoActivity : AppCompatActivity() {
         return true
     }
 
-    private fun requestPermissionForCameraAndMicrophone() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                Manifest.permission.RECORD_AUDIO
-            )
-        ) {
-            Toast.makeText(
-                this,
-                R.string.permissions_needed,
-                Toast.LENGTH_LONG
-            ).show()
+    private fun checkPermissions(permissions: Array<String>): Boolean {
+        var shouldCheck = true
+        for (permission in permissions) {
+            shouldCheck = shouldCheck and (PackageManager.PERMISSION_GRANTED ==
+                    ContextCompat.checkSelfPermission(this, permission))
+        }
+        return shouldCheck
+    }
+
+    private fun requestPermissions(permissions: Array<String>) {
+        var displayRational = false
+        for (permission in permissions) {
+            displayRational =
+                displayRational or ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    permission
+                )
+        }
+        if (displayRational) {
+            Toast.makeText(this, R.string.permissions_needed, Toast.LENGTH_LONG).show()
         } else {
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
-                CAMERA_MIC_PERMISSION_REQUEST_CODE
-            )
+                this, permissions, CAMERA_MIC_PERMISSION_REQUEST_CODE)
         }
     }
 
     private fun checkPermissionForCameraAndMicrophone(): Boolean {
-        val resultCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-        val resultMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+        return checkPermissions(
+            arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO))
+    }
 
-        return resultCamera == PackageManager.PERMISSION_GRANTED &&
-                resultMic == PackageManager.PERMISSION_GRANTED
+    private fun requestPermissionForCameraMicrophoneAndBluetooth() {
+        val permissionsList: Array<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.BLUETOOTH_CONNECT
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO
+            )
+        }
+        requestPermissions(permissionsList)
     }
 
     private fun createAudioAndVideoTracks() {
@@ -833,7 +861,7 @@ class VideoActivity : AppCompatActivity() {
             else -> R.drawable.ic_phonelink_ring_white_24dp
         }
 
-        audioDeviceMenuItem.setIcon(audioDeviceMenuIcon)
+        audioDeviceMenuItem?.setIcon(audioDeviceMenuIcon)
     }
 
     /*
