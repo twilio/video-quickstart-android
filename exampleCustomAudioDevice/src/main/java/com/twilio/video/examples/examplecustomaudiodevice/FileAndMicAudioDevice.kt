@@ -1,5 +1,6 @@
 package com.twilio.video.examples.examplecustomaudiodevice
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioManager
 import android.media.AudioRecord
@@ -161,6 +162,7 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
     /*
      * Init the capturer using the AudioFormat return by getCapturerFormat().
      */
+    @SuppressLint("MissingPermission")
     override fun onInitCapturer(): Boolean {
         val bytesPerFrame = 2 * (BITS_PER_SAMPLE / 8)
         val framesPerBuffer = capturerFormat!!.sampleRate / BUFFERS_PER_SECOND
