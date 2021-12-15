@@ -21,7 +21,7 @@ aliases:
   - &build-defaults
     working_directory: *workspace
     docker:
-      - image: circleci/android:api-30-node
+      - image: cimg/android:2021.10.2-node
     environment:
       - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -Xmx3g"
 
