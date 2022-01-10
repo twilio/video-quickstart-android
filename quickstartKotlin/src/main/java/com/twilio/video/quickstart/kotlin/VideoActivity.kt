@@ -174,7 +174,7 @@ class VideoActivity : AppCompatActivity() {
             title = room.name
 
             // Only one participant is supported
-            room.remoteParticipants?.firstOrNull()?.let { addRemoteParticipant(it) }
+            room.remoteParticipants.firstOrNull()?.let { addRemoteParticipant(it) }
         }
 
         override fun onReconnected(room: Room) {

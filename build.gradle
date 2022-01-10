@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.5.0'
     ext.versions = [
             'java'               : JavaVersion.VERSION_1_8,
             'androidGradlePlugin': '4.0.1',
