@@ -6,12 +6,10 @@ import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaRecorder
-import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Process
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.twilio.video.AudioDevice
 import com.twilio.video.AudioDeviceContext
 import com.twilio.video.AudioFormat
