@@ -251,7 +251,7 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
             val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                     .setAudioAttributes(playbackAttributes)
                     .setAcceptsDelayedFocusGain(true)
-                    .setOnAudioFocusChangeListener { i: Int -> }
+                    .setOnAudioFocusChangeListener { _: Int -> }
                     .build()
             audioManager?.requestAudioFocus(focusRequest)
         } else {
@@ -374,7 +374,7 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     }
 
     private fun connectClickListener(roomEditText: EditText): DialogInterface.OnClickListener {
-        return DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
+        return DialogInterface.OnClickListener { _: DialogInterface?, _: Int ->
             /*
              * Connect to room
              */
@@ -383,7 +383,7 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     }
 
     private fun disconnectClickListener(): View.OnClickListener {
-        return View.OnClickListener { v: View? ->
+        return View.OnClickListener { _: View? ->
             /*
              * Disconnect from room
              */
@@ -393,11 +393,11 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     }
 
     private fun connectActionClickListener(): View.OnClickListener {
-        return View.OnClickListener { v: View? -> showConnectDialog() }
+        return View.OnClickListener { _: View? -> showConnectDialog() }
     }
 
     private fun cancelConnectDialogClickListener(): DialogInterface.OnClickListener {
-        return DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
+        return DialogInterface.OnClickListener { _: DialogInterface?, _: Int ->
             initializeUI()
             connectDialog?.dismiss()
         }
@@ -410,7 +410,7 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     }
 
     private fun inputSwitchActionFabClickListener(): View.OnClickListener {
-        return View.OnClickListener { v: View? ->
+        return View.OnClickListener { _: View? ->
             val enable = fileAndMicAudioDevice!!.isMusicPlaying
             applyFabState(inputSwitchFab, !enable)
             fileAndMicAudioDevice!!.switchInput(!enable)
