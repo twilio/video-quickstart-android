@@ -314,7 +314,6 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
     }
 
     // Renderer helper methods
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private fun write(audioTrack: AudioTrack?, byteBuffer: ByteBuffer?, sizeInBytes: Int): Int {
         return audioTrack!!.write(byteBuffer!!, sizeInBytes, AudioTrack.WRITE_BLOCKING)
     }
