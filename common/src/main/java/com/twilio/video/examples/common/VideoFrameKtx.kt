@@ -19,22 +19,20 @@ import tvi.webrtc.YuvConverter
  * valid EGL context when the frame buffer is a [VideoFrame.TextureBuffer].
  */
 fun VideoFrame.toBitmap(): Bitmap? {
-    val i420Buffer = if (buffer is VideoFrame.TextureBuffer) {
+    // Construct yuv image from image data
+    val yuvImage = if (buffer is VideoFrame.TextureBuffer) {
         val yuvConverter = YuvConverter()
-        val buffer = yuvConverter.convert(buffer as VideoFrame.TextureBuffer)
+        val i420Buffer = yuvConverter.convert(buffer as VideoFrame.TextureBuffer)
         yuvConverter.release()
-        buffer
+        i420ToYuvImage(i420Buffer, i420Buffer.width, i420Buffer.height)
     } else {
-        buffer.toI420()
+        val i420Buffer = buffer.toI420()
+        val returnImage = i420ToYuvImage(i420Buffer, i420Buffer.width, i420Buffer.height)
+        i420Buffer.release()
+        returnImage
     }
-    val yuvImage = i420ToYuvImage(
-        i420Buffer,
-        buffer.width,
-        buffer.height
-    )
     val stream = ByteArrayOutputStream()
-    val rect =
-        Rect(0, 0, yuvImage.width, yuvImage.height)
+    val rect = Rect(0, 0, yuvImage.width, yuvImage.height)
 
     // Compress YuvImage to jpeg
     yuvImage.compressToJpeg(rect, 100, stream)
