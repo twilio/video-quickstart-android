@@ -24,10 +24,10 @@ fun VideoFrame.toBitmap(): Bitmap? {
         val yuvConverter = YuvConverter()
         val i420Buffer = yuvConverter.convert(buffer as VideoFrame.TextureBuffer)
         yuvConverter.release()
-        i420ToYuvImage(i420Buffer, i420Buffer.width, i420Buffer.height)
+        i420ToYuvImage(i420Buffer!!, i420Buffer.width, i420Buffer.height)
     } else {
         val i420Buffer = buffer.toI420()
-        val returnImage = i420ToYuvImage(i420Buffer, i420Buffer.width, i420Buffer.height)
+        val returnImage = i420ToYuvImage(i420Buffer!!, i420Buffer.width, i420Buffer.height)
         i420Buffer.release()
         returnImage
     }
