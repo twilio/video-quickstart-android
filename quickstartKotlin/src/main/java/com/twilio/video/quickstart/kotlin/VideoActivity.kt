@@ -548,8 +548,8 @@ class VideoActivity : AppCompatActivity() {
         if (!checkPermissionForCameraAndMicrophone()) {
             requestPermissionForCameraMicrophoneAndBluetooth()
         } else {
-            createAudioAndVideoTracks()
             audioSwitch.start { audioDevices, audioDevice -> updateAudioDeviceIcon(audioDevice) }
+            createAudioAndVideoTracks()
         }
         /*
          * Set the initial state of the UI
