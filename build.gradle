@@ -14,8 +14,13 @@ buildscript {
             'retrofit'           : '2.0.0-beta4',
             'okhttp'             : '3.6.0',
             'ion'                : '2.1.8',
+<<<<<<< Updated upstream
             'videoAndroid'       : '7.5.1',
             'audioSwitch'        : '1.1.5'
+=======
+            'videoAndroid'       : '7.6.3',
+            'audioSwitch'        : '1.1.7'
+>>>>>>> Stashed changes
     ]
 
     ext.getSecretProperty = { key, defaultValue ->
