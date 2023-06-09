@@ -549,6 +549,7 @@ class VideoActivity : AppCompatActivity() {
             requestPermissionForCameraMicrophoneAndBluetooth()
         } else {
             audioSwitch.start { audioDevices, audioDevice -> updateAudioDeviceIcon(audioDevice) }
+            createAudioAndVideoTracks()
         }
         /*
          * Set the initial state of the UI
@@ -622,7 +623,7 @@ class VideoActivity : AppCompatActivity() {
             reconnectingProgressBar.visibility = if (it.state != Room.State.RECONNECTING)
                 View.GONE else
                 View.VISIBLE
-            videoStatusTextView.text = "Connected to ${it.name}"
+            if (it.state != Room.State.DISCONNECTED) videoStatusTextView.text = "Connected to ${it.name}"
         }
     }
 
