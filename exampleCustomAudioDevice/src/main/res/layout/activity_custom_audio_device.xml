@@ -15,7 +15,7 @@
         android:text="@string/status_join_room"
         android:textSize="24sp" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/input_switch_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         app:fabSize="normal"
         android:visibility="invisible" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/connect_action_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -3,10 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion versions.compileSdk
 
-    lintOptions {
-        warningsAsErrors true
-        disable "GradleDependency"
-    }
 
     defaultConfig {
         applicationId "com.twilio.video.examples.screencapturer"
@@ -27,6 +23,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    namespace 'com.twilio.video.examples.screencapturer'
+    lint {
+        disable 'GradleDependency'
+        warningsAsErrors true
     }
 }
 

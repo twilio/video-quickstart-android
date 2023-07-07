@@ -10,17 +10,17 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import com.koushikdutta.ion.Ion
 import com.twilio.audioswitch.AudioDevice
 import com.twilio.audioswitch.AudioDevice.BluetoothHeadset
@@ -55,9 +55,6 @@ import com.twilio.video.Vp9Codec
 import com.twilio.video.ktx.Video.connect
 import com.twilio.video.ktx.createLocalAudioTrack
 import com.twilio.video.ktx.createLocalVideoTrack
-import java.util.UUID
-import kotlin.collections.ArrayList
-import kotlin.properties.Delegates
 import kotlinx.android.synthetic.main.activity_video.connectActionFab
 import kotlinx.android.synthetic.main.activity_video.localVideoActionFab
 import kotlinx.android.synthetic.main.activity_video.muteActionFab
@@ -66,6 +63,9 @@ import kotlinx.android.synthetic.main.content_video.primaryVideoView
 import kotlinx.android.synthetic.main.content_video.reconnectingProgressBar
 import kotlinx.android.synthetic.main.content_video.thumbnailVideoView
 import kotlinx.android.synthetic.main.content_video.videoStatusTextView
+import java.util.UUID
+import kotlin.collections.ArrayList
+import kotlin.properties.Delegates
 import tvi.webrtc.VideoSink
 
 class VideoActivity : AppCompatActivity() {
@@ -168,6 +168,7 @@ class VideoActivity : AppCompatActivity() {
      * Room events listener
      */
     private val roomListener = object : Room.Listener {
+        @SuppressLint("SetTextI18n")
         override fun onConnected(room: Room) {
             localParticipant = room.localParticipant
             videoStatusTextView.text = "Connected to ${room.name}"
@@ -177,22 +178,26 @@ class VideoActivity : AppCompatActivity() {
             room.remoteParticipants.firstOrNull()?.let { addRemoteParticipant(it) }
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onReconnected(room: Room) {
             videoStatusTextView.text = "Connected to ${room.name}"
             reconnectingProgressBar.visibility = View.GONE
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onReconnecting(room: Room, twilioException: TwilioException) {
             videoStatusTextView.text = "Reconnecting to ${room.name}"
             reconnectingProgressBar.visibility = View.VISIBLE
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onConnectFailure(room: Room, e: TwilioException) {
             videoStatusTextView.text = "Failed to connect"
             audioSwitch.deactivate()
             initializeUI()
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onDisconnected(room: Room, e: TwilioException?) {
             localParticipant = null
             videoStatusTextView.text = "Disconnected from ${room.name}"
@@ -235,6 +240,7 @@ class VideoActivity : AppCompatActivity() {
      * RemoteParticipant events listener
      */
     private val participantListener = object : RemoteParticipant.Listener {
+        @SuppressLint("SetTextI18n")
         override fun onAudioTrackPublished(
             remoteParticipant: RemoteParticipant,
             remoteAudioTrackPublication: RemoteAudioTrackPublication
@@ -250,6 +256,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onAudioTrackAdded"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onAudioTrackUnpublished(
             remoteParticipant: RemoteParticipant,
             remoteAudioTrackPublication: RemoteAudioTrackPublication
@@ -265,6 +272,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onAudioTrackRemoved"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onDataTrackPublished(
             remoteParticipant: RemoteParticipant,
             remoteDataTrackPublication: RemoteDataTrackPublication
@@ -280,6 +288,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onDataTrackPublished"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onDataTrackUnpublished(
             remoteParticipant: RemoteParticipant,
             remoteDataTrackPublication: RemoteDataTrackPublication
@@ -295,6 +304,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onDataTrackUnpublished"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onVideoTrackPublished(
             remoteParticipant: RemoteParticipant,
             remoteVideoTrackPublication: RemoteVideoTrackPublication
@@ -310,6 +320,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onVideoTrackPublished"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onVideoTrackUnpublished(
             remoteParticipant: RemoteParticipant,
             remoteVideoTrackPublication: RemoteVideoTrackPublication
@@ -325,6 +336,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onVideoTrackUnpublished"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onAudioTrackSubscribed(
             remoteParticipant: RemoteParticipant,
             remoteAudioTrackPublication: RemoteAudioTrackPublication,
@@ -340,6 +352,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onAudioTrackSubscribed"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onAudioTrackUnsubscribed(
             remoteParticipant: RemoteParticipant,
             remoteAudioTrackPublication: RemoteAudioTrackPublication,
@@ -355,6 +368,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onAudioTrackUnsubscribed"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onAudioTrackSubscriptionFailed(
             remoteParticipant: RemoteParticipant,
             remoteAudioTrackPublication: RemoteAudioTrackPublication,
@@ -371,6 +385,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onAudioTrackSubscriptionFailed"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onDataTrackSubscribed(
             remoteParticipant: RemoteParticipant,
             remoteDataTrackPublication: RemoteDataTrackPublication,
@@ -385,6 +400,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onDataTrackSubscribed"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onDataTrackUnsubscribed(
             remoteParticipant: RemoteParticipant,
             remoteDataTrackPublication: RemoteDataTrackPublication,
@@ -399,6 +415,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onDataTrackUnsubscribed"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onDataTrackSubscriptionFailed(
             remoteParticipant: RemoteParticipant,
             remoteDataTrackPublication: RemoteDataTrackPublication,
@@ -415,6 +432,7 @@ class VideoActivity : AppCompatActivity() {
             videoStatusTextView.text = "onDataTrackSubscriptionFailed"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onVideoTrackSubscribed(
             remoteParticipant: RemoteParticipant,
             remoteVideoTrackPublication: RemoteVideoTrackPublication,
@@ -430,6 +448,7 @@ class VideoActivity : AppCompatActivity() {
             addRemoteParticipantVideo(remoteVideoTrack)
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onVideoTrackUnsubscribed(
             remoteParticipant: RemoteParticipant,
             remoteVideoTrackPublication: RemoteVideoTrackPublication,
@@ -445,6 +464,7 @@ class VideoActivity : AppCompatActivity() {
             removeParticipantVideo(remoteVideoTrack)
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onVideoTrackSubscriptionFailed(
             remoteParticipant: RemoteParticipant,
             remoteVideoTrackPublication: RemoteVideoTrackPublication,
@@ -494,7 +514,7 @@ class VideoActivity : AppCompatActivity() {
 
     private var localAudioTrack: LocalAudioTrack? = null
     private var localVideoTrack: LocalVideoTrack? = null
-    private var alertDialog: android.support.v7.app.AlertDialog? = null
+    private var alertDialog: AlertDialog? = null
     private val cameraCapturerCompat by lazy {
         CameraCapturerCompat(this, CameraCapturerCompat.Source.FRONT_CAMERA)
     }
@@ -590,6 +610,7 @@ class VideoActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onResume() {
         super.onResume()
         /*
@@ -894,6 +915,7 @@ class VideoActivity : AppCompatActivity() {
     /*
      * Called when participant joins the room
      */
+    @SuppressLint("SetTextI18n")
     private fun addRemoteParticipant(remoteParticipant: RemoteParticipant) {
         /*
          * This app only displays video for one additional participant per Room
@@ -950,6 +972,7 @@ class VideoActivity : AppCompatActivity() {
     /*
      * Called when participant leaves the room
      */
+    @SuppressLint("SetTextI18n")
     private fun removeRemoteParticipant(remoteParticipant: RemoteParticipant) {
         videoStatusTextView.text = "Participant $remoteParticipant.identity left."
         if (remoteParticipant.identity != participantIdentity) {

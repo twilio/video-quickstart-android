@@ -1,14 +1,17 @@
 package com.twilio.video.examples.videoinvite.notify.fcm;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.twilio.video.examples.videoinvite.R;
@@ -16,6 +19,7 @@ import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
 import java.util.Map;
 
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "NotifyFCMService";
@@ -74,7 +78,7 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent =
-                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =

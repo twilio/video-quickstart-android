@@ -3,10 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion versions.compileSdk
 
-    lintOptions {
-        warningsAsErrors true
-        disable "GradleDependency"
-    }
 
     defaultConfig {
         applicationId "com.twilio.video.quickstart"
@@ -53,6 +49,11 @@ android {
             // Specify that we do not want an additional universal SDK
             universalApk false
         }
+    }
+    namespace 'com.twilio.video.quickstart'
+    lint {
+        disable 'GradleDependency'
+        warningsAsErrors true
     }
 }
 

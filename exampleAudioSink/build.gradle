@@ -3,10 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion versions.compileSdk
 
-    lintOptions {
-        warningsAsErrors true
-        disable "GradleDependency"
-    }
 
     defaultConfig {
         applicationId "com.twilio.exampleaudiosink"
@@ -38,6 +34,11 @@ android {
     compileOptions {
         sourceCompatibility = versions.java
         targetCompatibility = versions.java
+    }
+    namespace 'com.twilio.exampleaudiosink'
+    lint {
+        disable 'GradleDependency'
+        warningsAsErrors true
     }
 }
 

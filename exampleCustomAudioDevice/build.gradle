@@ -4,16 +4,11 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
 
     kotlinOptions {
         jvmTarget = '1.8'
     }
 
-    lintOptions {
-        warningsAsErrors true
-        disable "GradleDependency", "UnusedResources"
-    }
 
     defaultConfig {
         applicationId "com.twilio.video.examples.customaudiodevice"
@@ -60,6 +55,11 @@ android {
             // Specify that we do not want an additional universal SDK
             universalApk false
         }
+    }
+    namespace 'com.twilio.video.examples.examplecustomaudiodevice'
+    lint {
+        disable 'GradleDependency', 'UnusedResources'
+        warningsAsErrors true
     }
 }
 

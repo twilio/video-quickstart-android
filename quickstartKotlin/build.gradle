@@ -5,10 +5,6 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion versions.compileSdk
 
-    lintOptions {
-        warningsAsErrors true
-        disable "GradleDependency"
-    }
 
     defaultConfig {
         applicationId "com.twilio.video.quickstart.kotlin"
@@ -55,6 +51,11 @@ android {
             // Specify that we do not want an additional universal SDK
             universalApk false
         }
+    }
+    namespace 'com.twilio.video.quickstart.kotlin'
+    lint {
+        disable 'GradleDependency'
+        warningsAsErrors true
     }
 }
 

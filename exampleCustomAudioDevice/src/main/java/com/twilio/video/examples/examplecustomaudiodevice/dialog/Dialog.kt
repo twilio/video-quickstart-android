@@ -2,8 +2,8 @@ package com.twilio.video.examples.examplecustomaudiodevice.dialog
 
 import android.content.Context
 import android.content.DialogInterface
-import android.support.v7.app.AlertDialog
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 
 object Dialog {
     fun createConnectDialog(
