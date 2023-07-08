@@ -106,7 +106,6 @@ public class CameraCapturerCompat implements VideoCapturer {
         return camera1Capturer != null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setCamera2Maps(Context context) {
         Camera2Enumerator camera2Enumerator = new Camera2Enumerator(context);
         for (String cameraId : camera2Enumerator.getDeviceNames()) {
@@ -138,10 +137,9 @@ public class CameraCapturerCompat implements VideoCapturer {
     }
 
     private boolean isLollipopApiSupported() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+        return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private boolean isCameraIdSupported(String cameraId) {
         boolean isMonoChromeSupported = false;
         boolean isPrivateImageFormatSupported = false;

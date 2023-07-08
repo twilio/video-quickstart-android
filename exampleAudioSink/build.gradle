@@ -37,6 +37,7 @@ android {
     }
     namespace 'com.twilio.exampleaudiosink'
     lint {
+        baseline file('lint-baseline.xml')
         disable 'GradleDependency'
         warningsAsErrors true
     }

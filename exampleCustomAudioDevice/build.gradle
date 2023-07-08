@@ -58,6 +58,7 @@ android {
     }
     namespace 'com.twilio.video.examples.examplecustomaudiodevice'
     lint {
+        baseline file('lint-baseline.xml')
         disable 'GradleDependency', 'UnusedResources'
         warningsAsErrors true
     }

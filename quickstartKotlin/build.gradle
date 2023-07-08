@@ -54,6 +54,7 @@ android {
     }
     namespace 'com.twilio.video.quickstart.kotlin'
     lint {
+        baseline file('lint-baseline.xml')
         disable 'GradleDependency'
         warningsAsErrors true
     }

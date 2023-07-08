@@ -87,7 +87,6 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
         return camera1Capturer != null
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setCamera2Maps(context: Context) {
         val camera2Enumerator = Camera2Enumerator(context)
         for (cameraId in camera2Enumerator.deviceNames) {
@@ -119,9 +118,8 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
     }
 
     private val isLollipopApiSupported: Boolean
-        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+        get() = true
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun isCameraIdSupported(context: Context, cameraId: String): Boolean {
         var isMonoChromeSupported = false
         var isPrivateImageFormatSupported = false

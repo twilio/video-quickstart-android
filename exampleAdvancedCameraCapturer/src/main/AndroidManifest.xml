@@ -5,6 +5,9 @@
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -14,7 +17,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application
-        android:allowBackup="false"
         android:supportsRtl="true"
         tools:ignore="GoogleAppIndexingWarning">
 
