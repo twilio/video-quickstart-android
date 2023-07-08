@@ -1,6 +1,5 @@
 package com.twilio.video.quickstart.kotlin
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.ImageFormat
 import android.hardware.camera2.CameraCharacteristics
@@ -10,12 +9,12 @@ import android.os.Build
 import com.twilio.video.Camera2Capturer
 import com.twilio.video.CameraCapturer
 import com.twilio.video.VideoCapturer
-import java.util.EnumMap
-import kotlin.collections.HashMap
 import tvi.webrtc.Camera1Enumerator
 import tvi.webrtc.Camera2Enumerator
 import tvi.webrtc.CapturerObserver
 import tvi.webrtc.SurfaceTextureHelper
+import java.util.EnumMap
+import kotlin.collections.HashMap
 
 /*
  * Simple wrapper class that uses Camera2Capturer with supported devices.
@@ -49,7 +48,7 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
     override fun initialize(
         surfaceTextureHelper: SurfaceTextureHelper,
         context: Context,
-        capturerObserver: CapturerObserver
+        capturerObserver: CapturerObserver,
     ) {
         activeCapturer.initialize(surfaceTextureHelper, context, capturerObserver)
     }
@@ -148,13 +147,15 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
          * Visit this link for details on supported values - https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics#SENSOR_INFO_COLOR_FILTER_ARRANGEMENT
          */
         val colorFilterArrangement = cameraCharacteristics.get(
-            CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT
+            CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT,
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && colorFilterArrangement != null) {
-            isMonoChromeSupported = (colorFilterArrangement
+            isMonoChromeSupported = (
+                colorFilterArrangement
                     == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_MONO ||
                     colorFilterArrangement
-                    == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR)
+                    == CameraMetadata.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR
+                )
         }
         return isPrivateImageFormatSupported && !isMonoChromeSupported
     }

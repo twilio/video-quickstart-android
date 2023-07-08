@@ -10,10 +10,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.twilio.video.examples.videoinvite.R;
 import com.twilio.video.examples.videoinvite.VideoInviteActivity;

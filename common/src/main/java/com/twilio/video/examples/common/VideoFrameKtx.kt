@@ -8,11 +8,11 @@ import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.os.Build
+import tvi.webrtc.VideoFrame
+import tvi.webrtc.YuvConverter
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
-import tvi.webrtc.VideoFrame
-import tvi.webrtc.YuvConverter
 
 /**
  * Converts a [tvi.webrtc.VideoFrame] to a Bitmap. This method must be called from a thread with a
@@ -57,17 +57,27 @@ fun VideoFrame.toBitmap(): Bitmap? {
     // Apply any needed rotation
     matrix.postRotate(rotation.toFloat())
     bitmap = Bitmap.createBitmap(
-        bitmap!!, 0, 0, bitmap.width, bitmap.height, matrix, true
+        bitmap!!,
+        0,
+        0,
+        bitmap.width,
+        bitmap.height,
+        matrix,
+        true,
     )
     return bitmap
 }
 
 private fun i420ToYuvImage(i420Buffer: VideoFrame.I420Buffer, width: Int, height: Int): YuvImage {
     val yuvPlanes = arrayOf(
-        i420Buffer.dataY, i420Buffer.dataU, i420Buffer.dataV
+        i420Buffer.dataY,
+        i420Buffer.dataU,
+        i420Buffer.dataV,
     )
     val yuvStrides = intArrayOf(
-        i420Buffer.strideY, i420Buffer.strideU, i420Buffer.strideV
+        i420Buffer.strideY,
+        i420Buffer.strideU,
+        i420Buffer.strideV,
     )
     if (yuvStrides[0] != width) {
         return fastI420ToYuvImage(yuvPlanes, yuvStrides, width, height)
@@ -79,7 +89,7 @@ private fun i420ToYuvImage(i420Buffer: VideoFrame.I420Buffer, width: Int, height
         return fastI420ToYuvImage(yuvPlanes, yuvStrides, width, height)
     }
     val bytes = ByteArray(
-        yuvStrides[0] * height + yuvStrides[1] * height / 2 + yuvStrides[2] * height / 2
+        yuvStrides[0] * height + yuvStrides[1] * height / 2 + yuvStrides[2] * height / 2,
     )
     var tmp = ByteBuffer.wrap(bytes, 0, width * height)
     copyPlane(yuvPlanes[0], tmp)
@@ -106,7 +116,7 @@ private fun fastI420ToYuvImage(
     yuvPlanes: Array<ByteBuffer>,
     yuvStrides: IntArray,
     width: Int,
-    height: Int
+    height: Int,
 ): YuvImage {
     val bytes = ByteArray(width * height * 3 / 2)
     var i = 0

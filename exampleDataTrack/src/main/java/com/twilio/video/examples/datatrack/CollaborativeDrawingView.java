@@ -12,9 +12,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
-
 import androidx.annotation.Nullable;
-
 import com.twilio.video.RemoteParticipant;
 import java.util.HashMap;
 import java.util.Map;

@@ -65,7 +65,7 @@ class AdvancedCameraCapturerActivity : Activity() {
                 Toast.makeText(
                     this@AdvancedCameraCapturerActivity,
                     R.string.flash_not_supported,
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_LONG,
                 ).show()
             }
         }
@@ -85,13 +85,13 @@ class AdvancedCameraCapturerActivity : Activity() {
         pictureImageView = layoutInflater.inflate(
             R.layout.picture_image_view,
             findViewById(android.R.id.content),
-            false
+            false,
         ) as ImageView
         pictureDialog = AlertDialog.Builder(this)
             .setView(pictureImageView)
             .setTitle(null)
             .setPositiveButton(
-                R.string.close
+                R.string.close,
             ) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.create()
 
         if (!checkPermissionForCamera()) {
@@ -104,7 +104,7 @@ class AdvancedCameraCapturerActivity : Activity() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             var cameraPermissionGranted = true
@@ -118,7 +118,7 @@ class AdvancedCameraCapturerActivity : Activity() {
                 Toast.makeText(
                     this,
                     R.string.permissions_needed,
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_LONG,
                 ).show()
                 finish()
             }
@@ -139,8 +139,9 @@ class AdvancedCameraCapturerActivity : Activity() {
 
     private fun requestPermissionForCamera() {
         ActivityCompat.requestPermissions(
-            this, arrayOf(Manifest.permission.CAMERA),
-            CAMERA_PERMISSION_REQUEST_CODE
+            this,
+            arrayOf(Manifest.permission.CAMERA),
+            CAMERA_PERMISSION_REQUEST_CODE,
         )
     }
 

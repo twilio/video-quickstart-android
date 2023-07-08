@@ -27,6 +27,7 @@ public class NotifyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         // Instance ID token to your app server.
         sendRegistrationToServer(refreshedToken);
     }
+
     // [END refresh_token]
 
     /**

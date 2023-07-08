@@ -11,12 +11,12 @@ import com.twilio.video.Rgba8888Buffer
 import com.twilio.video.VideoCapturer
 import com.twilio.video.VideoDimensions
 import com.twilio.video.VideoFormat
-import java.nio.ByteBuffer
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 import tvi.webrtc.CapturerObserver
 import tvi.webrtc.SurfaceTextureHelper
 import tvi.webrtc.VideoFrame
+import java.nio.ByteBuffer
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * ViewCapturer demonstrates how to implement a custom [VideoCapturer]. This class
@@ -37,17 +37,18 @@ class ViewCapturer(private val view: View) : VideoCapturer {
             // Draw view into bitmap backed canvas
             val measuredWidth = View.MeasureSpec.makeMeasureSpec(
                 view.width,
-                View.MeasureSpec.EXACTLY
+                View.MeasureSpec.EXACTLY,
             )
             val measuredHeight = View.MeasureSpec.makeMeasureSpec(
                 view.height,
-                View.MeasureSpec.EXACTLY
+                View.MeasureSpec.EXACTLY,
             )
             view.measure(measuredWidth, measuredHeight)
             view.layout(0, 0, view.measuredWidth, view.measuredHeight)
             val viewBitmap = Bitmap.createBitmap(
-                view.width, view.height,
-                Bitmap.Config.ARGB_8888
+                view.width,
+                view.height,
+                Bitmap.Config.ARGB_8888,
             )
             val viewCanvas = Canvas(viewBitmap)
             view.draw(viewCanvas)
@@ -92,7 +93,7 @@ class ViewCapturer(private val view: View) : VideoCapturer {
     override fun initialize(
         surfaceTextureHelper: SurfaceTextureHelper,
         context: Context,
-        capturerObserver: CapturerObserver
+        capturerObserver: CapturerObserver,
     ) {
         this.capturerObserver = capturerObserver
     }

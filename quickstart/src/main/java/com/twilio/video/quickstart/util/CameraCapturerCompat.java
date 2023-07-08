@@ -7,7 +7,6 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
 import com.twilio.video.Camera2Capturer;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.VideoCapturer;

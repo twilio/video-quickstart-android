@@ -13,12 +13,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.koushikdutta.ion.Ion;
 import com.twilio.video.ConnectOptions;
