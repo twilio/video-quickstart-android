@@ -73,7 +73,7 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
         /*
          * Check microphone permissions. Needed in Android M.
          */
-            if (!checkPermissionForMicrophone()) {
+        if (!checkPermissionForMicrophone()) {
             requestPermissionForMicrophone()
         } else {
             /*
