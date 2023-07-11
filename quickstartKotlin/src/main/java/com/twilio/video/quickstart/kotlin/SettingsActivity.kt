@@ -3,12 +3,12 @@ package com.twilio.video.quickstart.kotlin
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.preference.EditTextPreference
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import com.twilio.video.AudioCodec
 import com.twilio.video.G722Codec
 import com.twilio.video.H264Codec
@@ -38,8 +38,13 @@ class SettingsActivity : AppCompatActivity() {
 
         val VIDEO_CODEC_NAMES = arrayOf(Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME)
 
-        val AUDIO_CODEC_NAMES = arrayOf(IsacCodec.NAME, OpusCodec.NAME, PcmaCodec.NAME,
-                PcmuCodec.NAME, G722Codec.NAME)
+        val AUDIO_CODEC_NAMES = arrayOf(
+            IsacCodec.NAME,
+            OpusCodec.NAME,
+            PcmaCodec.NAME,
+            PcmuCodec.NAME,
+            G722Codec.NAME,
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,9 +52,9 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val settingsFragment = SettingsFragment.newInstance()
         supportFragmentManager
-                .beginTransaction()
-                .replace(android.R.id.content, settingsFragment)
-                .commit()
+            .beginTransaction()
+            .replace(android.R.id.content, settingsFragment)
+            .commit()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -70,20 +75,28 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.settings)
             setHasOptionsMenu(true)
-            setupCodecListPreference(AudioCodec::class.java,
-                    PREF_AUDIO_CODEC,
-                    PREF_AUDIO_CODEC_DEFAULT,
-                    findPreference(PREF_AUDIO_CODEC) as ListPreference)
-            setupCodecListPreference(VideoCodec::class.java,
-                    PREF_VIDEO_CODEC,
-                    PREF_VIDEO_CODEC_DEFAULT,
-                    findPreference(PREF_VIDEO_CODEC) as ListPreference)
-            setupSenderBandwidthPreferences(PREF_SENDER_MAX_AUDIO_BITRATE,
-                    PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT,
-                    findPreference(PREF_SENDER_MAX_AUDIO_BITRATE) as EditTextPreference)
-            setupSenderBandwidthPreferences(PREF_SENDER_MAX_VIDEO_BITRATE,
-                    PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT,
-                    findPreference(PREF_SENDER_MAX_VIDEO_BITRATE) as EditTextPreference)
+            setupCodecListPreference(
+                AudioCodec::class.java,
+                PREF_AUDIO_CODEC,
+                PREF_AUDIO_CODEC_DEFAULT,
+                findPreference(PREF_AUDIO_CODEC) as ListPreference,
+            )
+            setupCodecListPreference(
+                VideoCodec::class.java,
+                PREF_VIDEO_CODEC,
+                PREF_VIDEO_CODEC_DEFAULT,
+                findPreference(PREF_VIDEO_CODEC) as ListPreference,
+            )
+            setupSenderBandwidthPreferences(
+                PREF_SENDER_MAX_AUDIO_BITRATE,
+                PREF_SENDER_MAX_AUDIO_BITRATE_DEFAULT,
+                findPreference(PREF_SENDER_MAX_AUDIO_BITRATE) as EditTextPreference,
+            )
+            setupSenderBandwidthPreferences(
+                PREF_SENDER_MAX_VIDEO_BITRATE,
+                PREF_SENDER_MAX_VIDEO_BITRATE_DEFAULT,
+                findPreference(PREF_SENDER_MAX_VIDEO_BITRATE) as EditTextPreference,
+            )
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -100,12 +113,12 @@ class SettingsActivity : AppCompatActivity() {
             codecClass: Class<*>,
             key: String,
             defaultValue: String,
-            listPreference: ListPreference
+            listPreference: ListPreference,
         ) {
             // Set codec entries
-            val codecEntries = if (codecClass == AudioCodec::class.java)
+            val codecEntries = if (codecClass == AudioCodec::class.java) {
                 AUDIO_CODEC_NAMES.toMutableList()
-            else
+            } else
                 VIDEO_CODEC_NAMES.toMutableList()
 
             // Remove H264 if not supported
@@ -123,17 +136,17 @@ class SettingsActivity : AppCompatActivity() {
                 value = prefValue
                 summary = prefValue
                 onPreferenceChangeListener =
-                        Preference.OnPreferenceChangeListener { preference, newValue ->
-                            preference.summary = newValue.toString()
-                            true
-                        }
+                    Preference.OnPreferenceChangeListener { preference, newValue ->
+                        preference.summary = newValue.toString()
+                        true
+                    }
             }
         }
 
         private fun setupSenderBandwidthPreferences(
             key: String,
             defaultValue: String,
-            editTextPreference: EditTextPreference
+            editTextPreference: EditTextPreference,
         ) {
             val value = sharedPreferences.getString(key, defaultValue)
 
@@ -142,10 +155,10 @@ class SettingsActivity : AppCompatActivity() {
                 dialogLayoutResource = R.layout.preference_dialog_number_edittext
                 summary = value
                 onPreferenceChangeListener =
-                        Preference.OnPreferenceChangeListener { preference, newValue ->
-                            preference.summary = newValue.toString()
-                            true
-                        }
+                    Preference.OnPreferenceChangeListener { preference, newValue ->
+                        preference.summary = newValue.toString()
+                        true
+                    }
             }
         }
 

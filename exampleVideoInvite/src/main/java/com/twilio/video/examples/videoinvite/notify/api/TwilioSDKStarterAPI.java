@@ -27,14 +27,17 @@ public class TwilioSDKStarterAPI {
         // Fetch an access token
         @GET("/token")
         Call<Token> fetchToken();
+
         // Fetch an access token with a specific identity
         @Headers("Content-Type: application/json")
         @POST("/token")
         Call<Token> fetchToken(@Body Identity identity);
+
         // Register this binding with Twilio Notify
         @Headers("Content-Type: application/json")
         @POST("/register")
         Call<Void> register(@Body Binding binding);
+
         // Send notifications to Twilio Notify registrants
         @Headers("Content-Type: application/json")
         @POST("/send-notification")

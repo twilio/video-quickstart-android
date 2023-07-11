@@ -3,11 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion versions.compileSdk
 
-    lintOptions {
-        warningsAsErrors true
-        disable "GradleDependency", "NotificationIconCompatibility"
-        baseline file("lint-baseline.xml")
-    }
 
     defaultConfig {
         applicationId "com.twilio.video.examples.videoinvite"
@@ -38,6 +33,12 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt'
         exclude 'META-INF/LICENSE'
+    }
+    namespace 'com.twilio.video.examples.videoinvite'
+    lint {
+        baseline file('lint-baseline.xml')
+        disable 'GradleDependency', 'NotificationIconCompatibility'
+        warningsAsErrors true
     }
 }
 

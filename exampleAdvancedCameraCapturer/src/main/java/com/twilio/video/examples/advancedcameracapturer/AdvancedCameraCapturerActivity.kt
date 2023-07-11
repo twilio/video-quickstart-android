@@ -8,12 +8,12 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.hardware.Camera
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.twilio.video.CameraCapturer
 import com.twilio.video.CameraParameterUpdater
 import com.twilio.video.LocalVideoTrack
@@ -65,7 +65,7 @@ class AdvancedCameraCapturerActivity : Activity() {
                 Toast.makeText(
                     this@AdvancedCameraCapturerActivity,
                     R.string.flash_not_supported,
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_LONG,
                 ).show()
             }
         }
@@ -85,13 +85,13 @@ class AdvancedCameraCapturerActivity : Activity() {
         pictureImageView = layoutInflater.inflate(
             R.layout.picture_image_view,
             findViewById(android.R.id.content),
-            false
+            false,
         ) as ImageView
         pictureDialog = AlertDialog.Builder(this)
             .setView(pictureImageView)
             .setTitle(null)
             .setPositiveButton(
-                R.string.close
+                R.string.close,
             ) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.create()
 
         if (!checkPermissionForCamera()) {
@@ -104,7 +104,7 @@ class AdvancedCameraCapturerActivity : Activity() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             var cameraPermissionGranted = true
@@ -118,7 +118,7 @@ class AdvancedCameraCapturerActivity : Activity() {
                 Toast.makeText(
                     this,
                     R.string.permissions_needed,
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_LONG,
                 ).show()
                 finish()
             }
@@ -139,8 +139,9 @@ class AdvancedCameraCapturerActivity : Activity() {
 
     private fun requestPermissionForCamera() {
         ActivityCompat.requestPermissions(
-            this, arrayOf(Manifest.permission.CAMERA),
-            CAMERA_PERMISSION_REQUEST_CODE
+            this,
+            arrayOf(Manifest.permission.CAMERA),
+            CAMERA_PERMISSION_REQUEST_CODE,
         )
     }
 

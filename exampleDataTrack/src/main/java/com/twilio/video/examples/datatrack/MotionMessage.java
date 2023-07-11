@@ -1,8 +1,8 @@
 package com.twilio.video.examples.datatrack;
 
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
+import androidx.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 

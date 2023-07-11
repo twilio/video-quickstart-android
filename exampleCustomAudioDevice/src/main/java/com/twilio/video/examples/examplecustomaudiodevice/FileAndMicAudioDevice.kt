@@ -13,11 +13,11 @@ import android.util.Log
 import com.twilio.video.AudioDevice
 import com.twilio.video.AudioDeviceContext
 import com.twilio.video.AudioFormat
+import tvi.webrtc.ThreadUtils
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
-import tvi.webrtc.ThreadUtils
 
 class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
     private var keepAliveRendererRunnable = true
@@ -58,13 +58,15 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
             try {
                 if (dataInputStream.read(fileWriteByteBuffer.array(), 0, writeBufferSize).also { bytesRead = it } > -1) {
                     if (bytesRead == fileWriteByteBuffer.capacity()) {
-                        AudioDevice.audioDeviceWriteCaptureData(capturingAudioDeviceContext,
-                            fileWriteByteBuffer
+                        AudioDevice.audioDeviceWriteCaptureData(
+                            capturingAudioDeviceContext,
+                            fileWriteByteBuffer,
                         )
                     } else {
                         processRemaining(fileWriteByteBuffer, fileWriteByteBuffer.capacity())
-                        AudioDevice.audioDeviceWriteCaptureData(capturingAudioDeviceContext,
-                            fileWriteByteBuffer
+                        AudioDevice.audioDeviceWriteCaptureData(
+                            capturingAudioDeviceContext,
+                            fileWriteByteBuffer,
                         )
                     }
                 }
@@ -87,8 +89,9 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
             while (true) {
                 val bytesRead = audioRecord.read(micWriteBuffer, micWriteBuffer.capacity())
                 if (bytesRead == micWriteBuffer.capacity()) {
-                    AudioDevice.audioDeviceWriteCaptureData(capturingAudioDeviceContext,
-                        micWriteBuffer
+                    AudioDevice.audioDeviceWriteCaptureData(
+                        capturingAudioDeviceContext,
+                        micWriteBuffer,
                     )
                 } else {
                     val errorMessage = "AudioRecord.read failed: $bytesRead"
@@ -154,8 +157,10 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
      * STEREO channel configuration both for microphone and the music file.
      */
     override fun getCapturerFormat(): AudioFormat? {
-        return AudioFormat(AudioFormat.AUDIO_SAMPLE_RATE_44100,
-                AudioFormat.AUDIO_SAMPLE_STEREO)
+        return AudioFormat(
+            AudioFormat.AUDIO_SAMPLE_RATE_44100,
+            AudioFormat.AUDIO_SAMPLE_STEREO,
+        )
     }
 
     /*
@@ -168,13 +173,21 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
         // Calculate the minimum buffer size required for the successful creation of
         // an AudioRecord object, in byte units.
         val channelConfig = channelCountToConfiguration(capturerFormat!!.channelCount)
-        val minBufferSize = AudioRecord.getMinBufferSize(capturerFormat!!.sampleRate,
-                channelConfig, android.media.AudioFormat.ENCODING_PCM_16BIT)
+        val minBufferSize = AudioRecord.getMinBufferSize(
+            capturerFormat!!.sampleRate,
+            channelConfig,
+            android.media.AudioFormat.ENCODING_PCM_16BIT,
+        )
         micWriteBuffer = ByteBuffer.allocateDirect(bytesPerFrame * framesPerBuffer)
         val tempMicWriteBuffer = micWriteBuffer
         val bufferSizeInBytes = Math.max(BUFFER_SIZE_FACTOR * minBufferSize, tempMicWriteBuffer.capacity())
-        audioRecord = AudioRecord(MediaRecorder.AudioSource.MIC, capturerFormat!!.sampleRate,
-                android.media.AudioFormat.CHANNEL_OUT_STEREO, android.media.AudioFormat.ENCODING_PCM_16BIT, bufferSizeInBytes)
+        audioRecord = AudioRecord(
+            MediaRecorder.AudioSource.MIC,
+            capturerFormat!!.sampleRate,
+            android.media.AudioFormat.CHANNEL_OUT_STEREO,
+            android.media.AudioFormat.ENCODING_PCM_16BIT,
+            bufferSizeInBytes,
+        )
         fileWriteByteBuffer = ByteBuffer.allocateDirect(bytesPerFrame * framesPerBuffer)
         val testFileWriteByteBuffer = fileWriteByteBuffer
         writeBufferSize = testFileWriteByteBuffer.capacity()
@@ -221,8 +234,10 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
      * STEREO channel configuration for audio track.
      */
     override fun getRendererFormat(): AudioFormat? {
-        return AudioFormat(AudioFormat.AUDIO_SAMPLE_RATE_44100,
-                AudioFormat.AUDIO_SAMPLE_STEREO)
+        return AudioFormat(
+            AudioFormat.AUDIO_SAMPLE_RATE_44100,
+            AudioFormat.AUDIO_SAMPLE_STEREO,
+        )
     }
 
     override fun onInitRenderer(): Boolean {
@@ -230,8 +245,14 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
         readByteBuffer = ByteBuffer.allocateDirect(bytesPerFrame * (rendererFormat!!.sampleRate / BUFFERS_PER_SECOND))
         val channelConfig = channelCountToConfiguration(rendererFormat!!.channelCount)
         val minBufferSize = AudioRecord.getMinBufferSize(rendererFormat!!.sampleRate, channelConfig, android.media.AudioFormat.ENCODING_PCM_16BIT)
-        audioTrack = AudioTrack(AudioManager.STREAM_VOICE_CALL, rendererFormat!!.sampleRate, channelConfig,
-                android.media.AudioFormat.ENCODING_PCM_16BIT, minBufferSize, AudioTrack.MODE_STREAM)
+        audioTrack = AudioTrack(
+            AudioManager.STREAM_VOICE_CALL,
+            rendererFormat!!.sampleRate,
+            channelConfig,
+            android.media.AudioFormat.ENCODING_PCM_16BIT,
+            minBufferSize,
+            AudioTrack.MODE_STREAM,
+        )
         keepAliveRendererRunnable = true
         return true
     }
@@ -265,8 +286,13 @@ class FileAndMicAudioDevice(private val context: Context) : AudioDevice {
 
     // Capturer helper methods
     private fun initializeStreams() {
-        inputStream = context.resources.openRawResource(context.resources.getIdentifier("music",
-                "raw", context.packageName))
+        inputStream = context.resources.openRawResource(
+            context.resources.getIdentifier(
+                "music",
+                "raw",
+                context.packageName,
+            ),
+        )
         dataInputStream = DataInputStream(inputStream)
         try {
             val bytes = dataInputStream.skipBytes(WAV_FILE_HEADER_SIZE)

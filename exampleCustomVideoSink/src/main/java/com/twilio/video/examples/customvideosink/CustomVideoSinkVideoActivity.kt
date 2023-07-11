@@ -4,12 +4,12 @@ import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.twilio.video.CameraCapturer
 import com.twilio.video.LocalVideoTrack
 import com.twilio.video.VideoView
@@ -34,10 +34,13 @@ class CustomVideoSinkVideoActivity : Activity() {
     }
     private val localVideoTrack by lazy {
         LocalVideoTrack.create(
-            this, true, CameraCapturer(
+            this,
+            true,
+            CameraCapturer(
                 this,
-                frontCameraId, null
-            )
+                frontCameraId,
+                null,
+            ),
         )
     }
 
@@ -64,7 +67,7 @@ class CustomVideoSinkVideoActivity : Activity() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             var cameraPermissionGranted = true
@@ -78,7 +81,7 @@ class CustomVideoSinkVideoActivity : Activity() {
                 Toast.makeText(
                     this,
                     R.string.permissions_needed,
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_LONG,
                 ).show()
             }
         }
@@ -108,8 +111,9 @@ class CustomVideoSinkVideoActivity : Activity() {
 
     private fun requestPermissionForCamera() {
         ActivityCompat.requestPermissions(
-            this, arrayOf(Manifest.permission.CAMERA),
-            CAMERA_PERMISSION_REQUEST_CODE
+            this,
+            arrayOf(Manifest.permission.CAMERA),
+            CAMERA_PERMISSION_REQUEST_CODE,
         )
     }
 

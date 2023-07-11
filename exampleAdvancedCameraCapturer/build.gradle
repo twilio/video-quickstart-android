@@ -8,11 +8,6 @@ android {
         jvmTarget = '1.8'
     }
 
-    lintOptions {
-        warningsAsErrors true
-        disable "MissingApplicationIcon", "ButtonStyle", "GradleDependency"
-        baseline file("lint-baseline.xml")
-    }
 
     defaultConfig {
         applicationId "com.twilio.video.examples.advancedcameracapturer"
@@ -32,6 +27,12 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    namespace 'com.twilio.video.examples.advancedcameracapturer'
+    lint {
+        baseline file('lint-baseline.xml')
+        disable 'MissingApplicationIcon', 'ButtonStyle', 'GradleDependency'
+        warningsAsErrors true
     }
 }
 

@@ -4,9 +4,9 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.ImageView
 import com.twilio.video.examples.common.toBitmap
-import java.util.concurrent.atomic.AtomicBoolean
 import tvi.webrtc.VideoFrame
 import tvi.webrtc.VideoSink
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * SnapshotVideoSink demonstrates how to implement a custom [tvi.webrtc.VideoSink]. Caches the

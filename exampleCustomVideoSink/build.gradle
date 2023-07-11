@@ -4,10 +4,6 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion versions.compileSdk
 
-    lintOptions {
-        warningsAsErrors true
-        disable "MissingApplicationIcon", "GradleDependency"
-    }
 
     defaultConfig {
         applicationId "com.twilio.video.examples.customrenderer"
@@ -27,6 +23,11 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    namespace 'com.twilio.video.examples.customvideosink'
+    lint {
+        disable 'MissingApplicationIcon', 'GradleDependency'
+        warningsAsErrors true
     }
 }
 

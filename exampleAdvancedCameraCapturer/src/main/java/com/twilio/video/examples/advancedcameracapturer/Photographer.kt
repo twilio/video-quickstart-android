@@ -3,10 +3,10 @@ package com.twilio.video.examples.advancedcameracapturer
 import android.graphics.Bitmap
 import com.twilio.video.VideoView
 import com.twilio.video.examples.common.toBitmap
-import java.util.concurrent.atomic.AtomicReference
 import tvi.webrtc.VideoFrame
 import tvi.webrtc.VideoProcessor
 import tvi.webrtc.VideoSink
+import java.util.concurrent.atomic.AtomicReference
 
 typealias PictureListener = (Bitmap?) -> Unit
 
@@ -30,7 +30,7 @@ class Photographer(private val videoView: VideoView) : VideoProcessor {
      */
     override fun onFrameCaptured(
         videoFrame: VideoFrame?,
-        parameters: VideoProcessor.FrameAdaptationParameters?
+        parameters: VideoProcessor.FrameAdaptationParameters?,
     ) {
         requireNotNull(videoFrame)
         videoFrame.retain()
