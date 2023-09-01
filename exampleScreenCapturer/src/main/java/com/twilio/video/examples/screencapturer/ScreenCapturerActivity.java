@@ -75,13 +75,13 @@ public class ScreenCapturerActivity extends AppCompatActivity {
             case R.id.share_screen_menu_item:
                 String shareScreen = getString(R.string.share_screen);
                 if (item.getTitle().equals(shareScreen)) {
-                    if (Build.VERSION.SDK_INT >= 29) {
-                        screenCapturerManager.startForeground();
-                    }
-                    if (screenCapturer == null) {
-                        requestScreenCapturePermission();
-                    } else {
+                    if (null != screenCapturer) {
+                        if (Build.VERSION.SDK_INT >= 29) {
+                            screenCapturerManager.startForeground();
+                        }
                         startScreenCapture();
+                    } else {
+                        requestScreenCapturePermission();
                     }
                 } else {
                     if (Build.VERSION.SDK_INT >= 29) {
@@ -118,6 +118,9 @@ public class ScreenCapturerActivity extends AppCompatActivity {
                 return;
             }
             screenCapturer = new ScreenCapturer(this, resultCode, data, screenCapturerListener);
+            if (Build.VERSION.SDK_INT >= 29) {
+                screenCapturerManager.startForeground();
+            }
             startScreenCapture();
         }
     }
