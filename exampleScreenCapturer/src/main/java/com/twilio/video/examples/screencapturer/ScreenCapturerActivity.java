@@ -78,8 +78,7 @@ public class ScreenCapturerActivity extends AppCompatActivity {
                 if (item.getTitle().equals(shareScreen)) {
                     if (Build.VERSION.SDK_INT >= 34) {
                         requestScreenCapturePermission();
-                    }
-                    else if (null != screenCapturer) {
+                    } else if (null != screenCapturer) {
                         if (Build.VERSION.SDK_INT >= 29) {
                             screenCapturerManager.startForeground();
                         }
