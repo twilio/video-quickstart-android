@@ -2,6 +2,7 @@ package com.twilio.video.examples.screencapturer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -75,7 +76,10 @@ public class ScreenCapturerActivity extends AppCompatActivity {
             case R.id.share_screen_menu_item:
                 String shareScreen = getString(R.string.share_screen);
                 if (item.getTitle().equals(shareScreen)) {
-                    if (null != screenCapturer) {
+                    if (Build.VERSION.SDK_INT >= 34) {
+                        requestScreenCapturePermission();
+                    }
+                    else if (null != screenCapturer) {
                         if (Build.VERSION.SDK_INT >= 29) {
                             screenCapturerManager.startForeground();
                         }
@@ -93,6 +97,15 @@ public class ScreenCapturerActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (Build.VERSION.SDK_INT >= 34 && screenVideoTrack != null) {
+            screenVideoTrack.release();
+            requestScreenCapturePermission();
         }
     }
 
