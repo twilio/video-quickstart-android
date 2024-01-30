@@ -121,7 +121,7 @@ public class ScreenCapturerActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_MEDIA_PROJECTION) {
-            if (resultCode != AppCompatActivity.RESULT_OK) {
+            if (resultCode != AppCompatActivity.RESULT_OK || data == null) {
                 Toast.makeText(
                                 this,
                                 R.string.screen_capture_permission_not_granted,
