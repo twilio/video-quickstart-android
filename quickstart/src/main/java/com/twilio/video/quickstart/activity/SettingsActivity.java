@@ -13,7 +13,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.twilio.video.AudioCodec;
 import com.twilio.video.G722Codec;
 import com.twilio.video.H264Codec;
-import com.twilio.video.IsacCodec;
 import com.twilio.video.OpusCodec;
 import com.twilio.video.PcmaCodec;
 import com.twilio.video.PcmuCodec;
@@ -44,9 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
             new String[] {Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME};
 
     private static final String[] AUDIO_CODEC_NAMES =
-            new String[] {
-                IsacCodec.NAME, OpusCodec.NAME, PcmaCodec.NAME, PcmuCodec.NAME, G722Codec.NAME
-            };
+            new String[] {OpusCodec.NAME, PcmaCodec.NAME, PcmuCodec.NAME, G722Codec.NAME};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -32,7 +32,6 @@ import com.twilio.video.AudioCodec
 import com.twilio.video.EncodingParameters
 import com.twilio.video.G722Codec
 import com.twilio.video.H264Codec
-import com.twilio.video.IsacCodec
 import com.twilio.video.LocalAudioTrack
 import com.twilio.video.LocalParticipant
 import com.twilio.video.LocalVideoTrack
@@ -104,7 +103,6 @@ class VideoActivity : AppCompatActivity() {
             )
 
             return when (audioCodecName) {
-                IsacCodec.NAME -> IsacCodec()
                 OpusCodec.NAME -> OpusCodec()
                 PcmaCodec.NAME -> PcmaCodec()
                 PcmuCodec.NAME -> PcmuCodec()
