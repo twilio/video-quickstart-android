@@ -43,9 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
             new String[] {Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME};
 
     private static final String[] AUDIO_CODEC_NAMES =
-            new String[] {
-                OpusCodec.NAME, PcmaCodec.NAME, PcmuCodec.NAME, G722Codec.NAME
-            };
+            new String[] {OpusCodec.NAME, PcmaCodec.NAME, PcmuCodec.NAME, G722Codec.NAME};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
