@@ -12,7 +12,6 @@ import androidx.preference.PreferenceFragmentCompat
 import com.twilio.video.AudioCodec
 import com.twilio.video.G722Codec
 import com.twilio.video.H264Codec
-import com.twilio.video.IsacCodec
 import com.twilio.video.OpusCodec
 import com.twilio.video.PcmaCodec
 import com.twilio.video.PcmuCodec
@@ -39,7 +38,6 @@ class SettingsActivity : AppCompatActivity() {
         val VIDEO_CODEC_NAMES = arrayOf(Vp8Codec.NAME, H264Codec.NAME, Vp9Codec.NAME)
 
         val AUDIO_CODEC_NAMES = arrayOf(
-            IsacCodec.NAME,
             OpusCodec.NAME,
             PcmaCodec.NAME,
             PcmuCodec.NAME,
