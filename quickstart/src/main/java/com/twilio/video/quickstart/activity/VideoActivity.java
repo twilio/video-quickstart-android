@@ -36,7 +36,6 @@ import com.twilio.video.ConnectOptions;
 import com.twilio.video.EncodingParameters;
 import com.twilio.video.G722Codec;
 import com.twilio.video.H264Codec;
-import com.twilio.video.IsacCodec;
 import com.twilio.video.LocalAudioTrack;
 import com.twilio.video.LocalParticipant;
 import com.twilio.video.LocalVideoTrack;
@@ -571,8 +570,6 @@ public class VideoActivity extends AppCompatActivity {
         final String audioCodecName = preferences.getString(key, defaultValue);
 
         switch (audioCodecName) {
-            case IsacCodec.NAME:
-                return new IsacCodec();
             case OpusCodec.NAME:
                 return new OpusCodec();
             case PcmaCodec.NAME:
