@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.0.2" type="baseline" client="gradle" dependencies="false" name="AGP (8.0.2)" variant="all" version="8.0.2">
+<issues format="6" by="lint 8.3.1" type="baseline" client="gradle" dependencies="false" name="AGP (8.3.1)" variant="all" version="8.3.1">
+
+    <issue
+        id="WrongCommentType"
+        message="This block comment looks like it was intended to be a KDoc comment"
+        errorLine1="     * @param playMusic"
+        errorLine2="       ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/twilio/video/examples/examplecustomaudiodevice/FileAndMicAudioDevice.kt"
+            line="140"
+            column="8"/>
+    </issue>
 
     <issue
         id="DiscouragedApi"
         message="Use of this function is discouraged because resource reflection makes it harder to perform build optimizations and compile-time verification of code. It is much more efficient to retrieve resources by identifier (e.g. `R.foo.bar`) than by name (e.g. `getIdentifier(&quot;bar&quot;, &quot;foo&quot;, null)`)."
-        errorLine1="        inputStream = context.resources.openRawResource(context.resources.getIdentifier(&quot;music&quot;,"
-        errorLine2="                                                                          ~~~~~~~~~~~~~">
+        errorLine1="            context.resources.getIdentifier("
+        errorLine2="                              ~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/twilio/video/examples/examplecustomaudiodevice/FileAndMicAudioDevice.kt"
-            line="268"
-            column="75"/>
+            line="290"
+            column="31"/>
     </issue>
 
     <issue
         id="TrustAllX509TrustManager"
         message="`checkClientTrusted` is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers">
         <location
-            file="$GRADLE_USER_HOME/caches/transforms-3/40c64b10326a90237aa4a5b2b5c87776/transformed/jetified-androidasync-2.1.8/jars/classes.jar"/>
+            file="$GRADLE_USER_HOME/caches/transforms-3/9189d8e8dfc83fa5c2cc4402b3efc409/transformed/jetified-androidasync-2.1.8/jars/classes.jar"/>
     </issue>
 
     <issue
