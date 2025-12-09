@@ -7,7 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.view.View
-import com.twilio.video.Rgba8888Buffer
+import com.twilio.video.Argb8888Buffer
 import com.twilio.video.VideoCapturer
 import com.twilio.video.VideoDimensions
 import com.twilio.video.VideoFormat
@@ -62,7 +62,7 @@ class ViewCapturer(private val view: View) : VideoCapturer {
             val captureTimeNs =
                 TimeUnit.MILLISECONDS.toNanos(SystemClock.elapsedRealtime())
             val videoBuffer: VideoFrame.Buffer =
-                Rgba8888Buffer(buffer, view.width, view.height)
+                Argb8888Buffer(buffer, view.width, view.height)
             val videoFrame = VideoFrame(videoBuffer, 0, captureTimeNs)
 
             // Notify the observer
