@@ -1,10 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 
 android {
     compileSdkVersion versions.compileSdk
-
 
     defaultConfig {
         applicationId "com.twilio.video.quickstart.kotlin"
@@ -29,11 +28,19 @@ android {
         targetCompatibility versions.java
     }
 
+    kotlinOptions {
+        jvmTarget = versions.java.toString()
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     // Specify that we want to split up the APK based on ABI

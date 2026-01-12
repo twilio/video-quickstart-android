@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.6.21'
+    ext.kotlin_version = '1.8.22'
     ext.versions = [
             'java'               : JavaVersion.VERSION_11,
             'androidGradlePlugin': '8.3.1',
@@ -15,7 +15,7 @@ buildscript {
             'okhttp'             : '3.6.0',
             'ion'                : '2.1.8',
             'videoAndroid'       : '7.10.+',
-            'audioSwitch'        : '1.2.4'
+            'audioSwitch'        : '1.2.5'
     ]
 
     ext.getSecretProperty = { key, defaultValue ->
