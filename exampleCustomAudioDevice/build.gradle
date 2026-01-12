@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 
 android {
     compileSdkVersion versions.compileSdk
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = versions.java.toString()
     }
-
 
     defaultConfig {
         applicationId "com.twilio.video.examples.customaudiodevice"
@@ -38,6 +37,10 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     // Specify that we want to split up the APK based on ABI

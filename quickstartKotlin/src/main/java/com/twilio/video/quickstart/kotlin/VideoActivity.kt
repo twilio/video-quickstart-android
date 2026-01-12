@@ -54,14 +54,8 @@ import com.twilio.video.Vp9Codec
 import com.twilio.video.ktx.Video.connect
 import com.twilio.video.ktx.createLocalAudioTrack
 import com.twilio.video.ktx.createLocalVideoTrack
-import kotlinx.android.synthetic.main.activity_video.connectActionFab
-import kotlinx.android.synthetic.main.activity_video.localVideoActionFab
-import kotlinx.android.synthetic.main.activity_video.muteActionFab
-import kotlinx.android.synthetic.main.activity_video.switchCameraActionFab
-import kotlinx.android.synthetic.main.content_video.primaryVideoView
-import kotlinx.android.synthetic.main.content_video.reconnectingProgressBar
-import kotlinx.android.synthetic.main.content_video.thumbnailVideoView
-import kotlinx.android.synthetic.main.content_video.videoStatusTextView
+import com.twilio.video.quickstart.kotlin.databinding.ActivityVideoBinding
+import com.twilio.video.quickstart.kotlin.databinding.ContentVideoBinding
 import tvi.webrtc.VideoSink
 import java.util.UUID
 import kotlin.collections.ArrayList
@@ -90,6 +84,12 @@ class VideoActivity : AppCompatActivity() {
      */
     private var room: Room? = null
     private var localParticipant: LocalParticipant? = null
+
+    /*
+     * Binding for views
+     */
+    private lateinit var uiBinding: ActivityVideoBinding
+    private lateinit var contentBinding: ContentVideoBinding
 
     /*
      * AudioCodec and VideoCodec represent the preferred codec for encoding and decoding audio and
@@ -169,7 +169,7 @@ class VideoActivity : AppCompatActivity() {
         @SuppressLint("SetTextI18n")
         override fun onConnected(room: Room) {
             localParticipant = room.localParticipant
-            videoStatusTextView.text = "Connected to ${room.name}"
+            contentBinding.videoStatusTextView.text = "Connected to ${room.name}"
             title = room.name
 
             // Only one participant is supported
@@ -178,19 +178,19 @@ class VideoActivity : AppCompatActivity() {
 
         @SuppressLint("SetTextI18n")
         override fun onReconnected(room: Room) {
-            videoStatusTextView.text = "Connected to ${room.name}"
-            reconnectingProgressBar.visibility = View.GONE
+            contentBinding.videoStatusTextView.text = "Connected to ${room.name}"
+            contentBinding.reconnectingProgressBar.visibility = View.GONE
         }
 
         @SuppressLint("SetTextI18n")
         override fun onReconnecting(room: Room, twilioException: TwilioException) {
-            videoStatusTextView.text = "Reconnecting to ${room.name}"
-            reconnectingProgressBar.visibility = View.VISIBLE
+            contentBinding.videoStatusTextView.text = "Reconnecting to ${room.name}"
+            contentBinding.reconnectingProgressBar.visibility = View.VISIBLE
         }
 
         @SuppressLint("SetTextI18n")
         override fun onConnectFailure(room: Room, e: TwilioException) {
-            videoStatusTextView.text = "Failed to connect"
+            contentBinding.videoStatusTextView.text = "Failed to connect"
             audioSwitch.deactivate()
             initializeUI()
         }
@@ -198,8 +198,8 @@ class VideoActivity : AppCompatActivity() {
         @SuppressLint("SetTextI18n")
         override fun onDisconnected(room: Room, e: TwilioException?) {
             localParticipant = null
-            videoStatusTextView.text = "Disconnected from ${room.name}"
-            reconnectingProgressBar.visibility = View.GONE
+            contentBinding.videoStatusTextView.text = "Disconnected from ${room.name}"
+            contentBinding.reconnectingProgressBar.visibility = View.GONE
             this@VideoActivity.room = null
             // Only reinitialize the UI if disconnect was not called from onDestroy()
             if (!disconnectedFromOnDestroy) {
@@ -252,7 +252,7 @@ class VideoActivity : AppCompatActivity() {
                     "subscribed=${remoteAudioTrackPublication.isTrackSubscribed}, " +
                     "name=${remoteAudioTrackPublication.trackName}]",
             )
-            videoStatusTextView.text = "onAudioTrackAdded"
+            contentBinding.videoStatusTextView.text = "onAudioTrackAdded"
         }
 
         @SuppressLint("SetTextI18n")
@@ -269,7 +269,7 @@ class VideoActivity : AppCompatActivity() {
                     "subscribed=${remoteAudioTrackPublication.isTrackSubscribed}, " +
                     "name=${remoteAudioTrackPublication.trackName}]",
             )
-            videoStatusTextView.text = "onAudioTrackRemoved"
+            contentBinding.videoStatusTextView.text = "onAudioTrackRemoved"
         }
 
         @SuppressLint("SetTextI18n")
@@ -286,7 +286,7 @@ class VideoActivity : AppCompatActivity() {
                     "subscribed=${remoteDataTrackPublication.isTrackSubscribed}, " +
                     "name=${remoteDataTrackPublication.trackName}]",
             )
-            videoStatusTextView.text = "onDataTrackPublished"
+            contentBinding.videoStatusTextView.text = "onDataTrackPublished"
         }
 
         @SuppressLint("SetTextI18n")
@@ -303,7 +303,7 @@ class VideoActivity : AppCompatActivity() {
                     "subscribed=${remoteDataTrackPublication.isTrackSubscribed}, " +
                     "name=${remoteDataTrackPublication.trackName}]",
             )
-            videoStatusTextView.text = "onDataTrackUnpublished"
+            contentBinding.videoStatusTextView.text = "onDataTrackUnpublished"
         }
 
         @SuppressLint("SetTextI18n")
@@ -320,7 +320,7 @@ class VideoActivity : AppCompatActivity() {
                     "subscribed=${remoteVideoTrackPublication.isTrackSubscribed}, " +
                     "name=${remoteVideoTrackPublication.trackName}]",
             )
-            videoStatusTextView.text = "onVideoTrackPublished"
+            contentBinding.videoStatusTextView.text = "onVideoTrackPublished"
         }
 
         @SuppressLint("SetTextI18n")
@@ -337,7 +337,7 @@ class VideoActivity : AppCompatActivity() {
                     "subscribed=${remoteVideoTrackPublication.isTrackSubscribed}, " +
                     "name=${remoteVideoTrackPublication.trackName}]",
             )
-            videoStatusTextView.text = "onVideoTrackUnpublished"
+            contentBinding.videoStatusTextView.text = "onVideoTrackUnpublished"
         }
 
         @SuppressLint("SetTextI18n")
@@ -354,7 +354,7 @@ class VideoActivity : AppCompatActivity() {
                     "playbackEnabled=${remoteAudioTrack.isPlaybackEnabled}, " +
                     "name=${remoteAudioTrack.name}]",
             )
-            videoStatusTextView.text = "onAudioTrackSubscribed"
+            contentBinding.videoStatusTextView.text = "onAudioTrackSubscribed"
         }
 
         @SuppressLint("SetTextI18n")
@@ -371,7 +371,7 @@ class VideoActivity : AppCompatActivity() {
                     "playbackEnabled=${remoteAudioTrack.isPlaybackEnabled}, " +
                     "name=${remoteAudioTrack.name}]",
             )
-            videoStatusTextView.text = "onAudioTrackUnsubscribed"
+            contentBinding.videoStatusTextView.text = "onAudioTrackUnsubscribed"
         }
 
         @SuppressLint("SetTextI18n")
@@ -389,7 +389,7 @@ class VideoActivity : AppCompatActivity() {
                     "[TwilioException: code=${twilioException.code}, " +
                     "message=${twilioException.message}]",
             )
-            videoStatusTextView.text = "onAudioTrackSubscriptionFailed"
+            contentBinding.videoStatusTextView.text = "onAudioTrackSubscriptionFailed"
         }
 
         @SuppressLint("SetTextI18n")
@@ -405,7 +405,7 @@ class VideoActivity : AppCompatActivity() {
                     "[RemoteDataTrack: enabled=${remoteDataTrack.isEnabled}, " +
                     "name=${remoteDataTrack.name}]",
             )
-            videoStatusTextView.text = "onDataTrackSubscribed"
+            contentBinding.videoStatusTextView.text = "onDataTrackSubscribed"
         }
 
         @SuppressLint("SetTextI18n")
@@ -421,7 +421,7 @@ class VideoActivity : AppCompatActivity() {
                     "[RemoteDataTrack: enabled=${remoteDataTrack.isEnabled}, " +
                     "name=${remoteDataTrack.name}]",
             )
-            videoStatusTextView.text = "onDataTrackUnsubscribed"
+            contentBinding.videoStatusTextView.text = "onDataTrackUnsubscribed"
         }
 
         @SuppressLint("SetTextI18n")
@@ -439,7 +439,7 @@ class VideoActivity : AppCompatActivity() {
                     "[TwilioException: code=${twilioException.code}, " +
                     "message=${twilioException.message}]",
             )
-            videoStatusTextView.text = "onDataTrackSubscriptionFailed"
+            contentBinding.videoStatusTextView.text = "onDataTrackSubscriptionFailed"
         }
 
         @SuppressLint("SetTextI18n")
@@ -455,7 +455,7 @@ class VideoActivity : AppCompatActivity() {
                     "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
                     "name=${remoteVideoTrack.name}]",
             )
-            videoStatusTextView.text = "onVideoTrackSubscribed"
+            contentBinding.videoStatusTextView.text = "onVideoTrackSubscribed"
             addRemoteParticipantVideo(remoteVideoTrack)
         }
 
@@ -472,7 +472,7 @@ class VideoActivity : AppCompatActivity() {
                     "[RemoteVideoTrack: enabled=${remoteVideoTrack.isEnabled}, " +
                     "name=${remoteVideoTrack.name}]",
             )
-            videoStatusTextView.text = "onVideoTrackUnsubscribed"
+            contentBinding.videoStatusTextView.text = "onVideoTrackUnsubscribed"
             removeParticipantVideo(remoteVideoTrack)
         }
 
@@ -491,9 +491,9 @@ class VideoActivity : AppCompatActivity() {
                     "[TwilioException: code=${twilioException.code}, " +
                     "message=${twilioException.message}]",
             )
-            videoStatusTextView.text = "onVideoTrackSubscriptionFailed"
+            contentBinding.videoStatusTextView.text = "onVideoTrackSubscriptionFailed"
             Snackbar.make(
-                connectActionFab,
+                uiBinding.connectActionFab,
                 "Failed to subscribe to ${remoteParticipant.identity}",
                 Snackbar.LENGTH_LONG,
             )
@@ -559,12 +559,16 @@ class VideoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_video)
+
+        // setup/bind UI
+        uiBinding = ActivityVideoBinding.inflate(layoutInflater)
+        contentBinding = ContentVideoBinding.bind(uiBinding.root)
+        setContentView(uiBinding.root)
 
         /*
          * Set local video view to primary view
          */
-        localVideoView = primaryVideoView
+        localVideoView = contentBinding.primaryVideoView
 
         /*
          * Enable changing the volume using the up/down keys during a conversation
@@ -659,11 +663,11 @@ class VideoActivity : AppCompatActivity() {
          * Update reconnecting UI
          */
         room?.let {
-            reconnectingProgressBar.visibility = if (it.state != Room.State.RECONNECTING) {
+            contentBinding.reconnectingProgressBar.visibility = if (it.state != Room.State.RECONNECTING) {
                 View.GONE
             } else
                 View.VISIBLE
-            if (it.state != Room.State.DISCONNECTED) videoStatusTextView.text = "Connected to ${it.name}"
+            if (it.state != Room.State.DISCONNECTED) contentBinding.videoStatusTextView.text = "Connected to ${it.name}"
         }
     }
 
@@ -853,20 +857,20 @@ class VideoActivity : AppCompatActivity() {
      * The initial state when there is no active room.
      */
     private fun initializeUI() {
-        connectActionFab.setImageDrawable(
+        uiBinding.connectActionFab.setImageDrawable(
             ContextCompat.getDrawable(
                 this,
                 R.drawable.ic_video_call_white_24dp,
             ),
         )
-        connectActionFab.show()
-        connectActionFab.setOnClickListener(connectActionClickListener())
-        switchCameraActionFab.show()
-        switchCameraActionFab.setOnClickListener(switchCameraClickListener())
-        localVideoActionFab.show()
-        localVideoActionFab.setOnClickListener(localVideoClickListener())
-        muteActionFab.show()
-        muteActionFab.setOnClickListener(muteClickListener())
+        uiBinding.connectActionFab.show()
+        uiBinding.connectActionFab.setOnClickListener(connectActionClickListener())
+        uiBinding.switchCameraActionFab.show()
+        uiBinding.switchCameraActionFab.setOnClickListener(switchCameraClickListener())
+        uiBinding.localVideoActionFab.show()
+        uiBinding.localVideoActionFab.setOnClickListener(localVideoClickListener())
+        uiBinding.muteActionFab.show()
+        uiBinding.muteActionFab.setOnClickListener(muteClickListener())
     }
 
     /*
@@ -915,14 +919,14 @@ class VideoActivity : AppCompatActivity() {
      * The actions performed during disconnect.
      */
     private fun setDisconnectAction() {
-        connectActionFab.setImageDrawable(
+        uiBinding.connectActionFab.setImageDrawable(
             ContextCompat.getDrawable(
                 this,
                 R.drawable.ic_call_end_white_24px,
             ),
         )
-        connectActionFab.show()
-        connectActionFab.setOnClickListener(disconnectClickListener())
+        uiBinding.connectActionFab.show()
+        uiBinding.connectActionFab.setOnClickListener(disconnectClickListener())
     }
 
     /*
@@ -947,9 +951,9 @@ class VideoActivity : AppCompatActivity() {
         /*
          * This app only displays video for one additional participant per Room
          */
-        if (thumbnailVideoView.visibility == View.VISIBLE) {
+        if (contentBinding.thumbnailVideoView.visibility == View.VISIBLE) {
             Snackbar.make(
-                connectActionFab,
+                uiBinding.connectActionFab,
                 "Multiple participants are not currently support in this UI",
                 Snackbar.LENGTH_LONG,
             )
@@ -957,7 +961,7 @@ class VideoActivity : AppCompatActivity() {
             return
         }
         participantIdentity = remoteParticipant.identity
-        videoStatusTextView.text = "Participant $participantIdentity joined"
+        contentBinding.videoStatusTextView.text = "Participant $participantIdentity joined"
 
         /*
          * Add participant renderer
@@ -979,19 +983,19 @@ class VideoActivity : AppCompatActivity() {
      */
     private fun addRemoteParticipantVideo(videoTrack: VideoTrack) {
         moveLocalVideoToThumbnailView()
-        primaryVideoView.mirror = false
-        videoTrack.addSink(primaryVideoView)
+        contentBinding.primaryVideoView.mirror = false
+        videoTrack.addSink(contentBinding.primaryVideoView)
     }
 
     private fun moveLocalVideoToThumbnailView() {
-        if (thumbnailVideoView.visibility == View.GONE) {
-            thumbnailVideoView.visibility = View.VISIBLE
+        if (contentBinding.thumbnailVideoView.visibility == View.GONE) {
+            contentBinding.thumbnailVideoView.visibility = View.VISIBLE
             with(localVideoTrack) {
-                this?.removeSink(primaryVideoView)
-                this?.addSink(thumbnailVideoView)
+                this?.removeSink(contentBinding.primaryVideoView)
+                this?.addSink(contentBinding.thumbnailVideoView)
             }
-            localVideoView = thumbnailVideoView
-            thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
+            localVideoView = contentBinding.thumbnailVideoView
+            contentBinding.thumbnailVideoView.mirror = cameraCapturerCompat.cameraSource ==
                 CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
@@ -1001,7 +1005,7 @@ class VideoActivity : AppCompatActivity() {
      */
     @SuppressLint("SetTextI18n")
     private fun removeRemoteParticipant(remoteParticipant: RemoteParticipant) {
-        videoStatusTextView.text = "Participant $remoteParticipant.identity left."
+        contentBinding.videoStatusTextView.text = "Participant $remoteParticipant.identity left."
         if (remoteParticipant.identity != participantIdentity) {
             return
         }
@@ -1018,18 +1022,18 @@ class VideoActivity : AppCompatActivity() {
     }
 
     private fun removeParticipantVideo(videoTrack: VideoTrack) {
-        videoTrack.removeSink(primaryVideoView)
+        videoTrack.removeSink(contentBinding.primaryVideoView)
     }
 
     private fun moveLocalVideoToPrimaryView() {
-        if (thumbnailVideoView.visibility == View.VISIBLE) {
-            thumbnailVideoView.visibility = View.GONE
+        if (contentBinding.thumbnailVideoView.visibility == View.VISIBLE) {
+            contentBinding.thumbnailVideoView.visibility = View.GONE
             with(localVideoTrack) {
-                this?.removeSink(thumbnailVideoView)
-                this?.addSink(primaryVideoView)
+                this?.removeSink(contentBinding.thumbnailVideoView)
+                this?.addSink(contentBinding.primaryVideoView)
             }
-            localVideoView = primaryVideoView
-            primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
+            localVideoView = contentBinding.primaryVideoView
+            contentBinding.primaryVideoView.mirror = cameraCapturerCompat.cameraSource ==
                 CameraCapturerCompat.Source.FRONT_CAMERA
         }
     }
@@ -1068,10 +1072,10 @@ class VideoActivity : AppCompatActivity() {
         return View.OnClickListener {
             val cameraSource = cameraCapturerCompat.cameraSource
             cameraCapturerCompat.switchCamera()
-            if (thumbnailVideoView.visibility == View.VISIBLE) {
-                thumbnailVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
+            if (contentBinding.thumbnailVideoView.visibility == View.VISIBLE) {
+                contentBinding.thumbnailVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
             } else {
-                primaryVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
+                contentBinding.primaryVideoView.mirror = cameraSource == CameraCapturerCompat.Source.BACK_CAMERA
             }
         }
     }
@@ -1087,12 +1091,12 @@ class VideoActivity : AppCompatActivity() {
                 val icon: Int
                 if (enable) {
                     icon = R.drawable.ic_videocam_white_24dp
-                    switchCameraActionFab.show()
+                    uiBinding.switchCameraActionFab.show()
                 } else {
                     icon = R.drawable.ic_videocam_off_black_24dp
-                    switchCameraActionFab.hide()
+                    uiBinding.switchCameraActionFab.hide()
                 }
-                localVideoActionFab.setImageDrawable(
+                uiBinding.localVideoActionFab.setImageDrawable(
                     ContextCompat.getDrawable(this@VideoActivity, icon),
                 )
             }
@@ -1113,7 +1117,7 @@ class VideoActivity : AppCompatActivity() {
                     R.drawable.ic_mic_white_24dp
                 } else
                     R.drawable.ic_mic_off_black_24dp
-                muteActionFab.setImageDrawable(
+                uiBinding.muteActionFab.setImageDrawable(
                     ContextCompat.getDrawable(
                         this@VideoActivity,
                         icon,
