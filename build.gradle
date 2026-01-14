@@ -6,7 +6,7 @@ buildscript {
             'googleServices'     : '4.3.14',
             'compileSdk'         : 34,
             'buildTools'         : '30.0.2',
-            'minSdk'             : 21,
+            'minSdk'             : 28,
             'targetSdk'          : 34,
             'supportLibrary'     : '26.1.0',
             'constraintLayout'   : '1.1.3',

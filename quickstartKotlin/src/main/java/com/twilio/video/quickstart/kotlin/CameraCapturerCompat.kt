@@ -137,7 +137,7 @@ class CameraCapturerCompat(context: Context, cameraSource: Source) : VideoCaptur
          */
         val streamMap =
             cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-        if (streamMap != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (streamMap != null) {
             isPrivateImageFormatSupported = streamMap.isOutputSupportedFor(ImageFormat.PRIVATE)
         }
 
