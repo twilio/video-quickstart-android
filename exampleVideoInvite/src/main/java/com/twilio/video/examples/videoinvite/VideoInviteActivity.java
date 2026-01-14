@@ -1062,23 +1062,18 @@ public class VideoInviteActivity extends AppCompatActivity {
     }
 
     private void requestAudioFocus() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AudioAttributes playbackAttributes =
-                    new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                            .build();
-            AudioFocusRequest focusRequest =
-                    new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-                            .setAudioAttributes(playbackAttributes)
-                            .setAcceptsDelayedFocusGain(true)
-                            .setOnAudioFocusChangeListener(i -> {})
-                            .build();
-            audioManager.requestAudioFocus(focusRequest);
-        } else {
-            audioManager.requestAudioFocus(
-                    null, AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-        }
+        AudioAttributes playbackAttributes =
+                new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build();
+        AudioFocusRequest focusRequest =
+                new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                        .setAudioAttributes(playbackAttributes)
+                        .setAcceptsDelayedFocusGain(true)
+                        .setOnAudioFocusChangeListener(i -> {})
+                        .build();
+        audioManager.requestAudioFocus(focusRequest);
     }
 
     private void enableVolumeControl(boolean volumeControl) {

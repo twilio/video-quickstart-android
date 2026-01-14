@@ -261,24 +261,16 @@ class CustomAudioDeviceActivity : AppCompatActivity() {
     }
 
     private fun requestAudioFocus() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val playbackAttributes = AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                .build()
-            val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-                .setAudioAttributes(playbackAttributes)
-                .setAcceptsDelayedFocusGain(true)
-                .setOnAudioFocusChangeListener { _: Int -> }
-                .build()
-            audioManager?.requestAudioFocus(focusRequest)
-        } else {
-            audioManager?.requestAudioFocus(
-                null,
-                AudioManager.STREAM_VOICE_CALL,
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
-            )
-        }
+        val playbackAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+            .build()
+        val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+            .setAudioAttributes(playbackAttributes)
+            .setAcceptsDelayedFocusGain(true)
+            .setOnAudioFocusChangeListener { _: Int -> }
+            .build()
+        audioManager?.requestAudioFocus(focusRequest)
     }
 
     /*
