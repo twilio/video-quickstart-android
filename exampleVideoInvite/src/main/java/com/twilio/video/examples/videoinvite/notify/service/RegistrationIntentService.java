@@ -23,6 +23,7 @@ import com.twilio.video.examples.videoinvite.notify.api.model.Token;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import java.io.IOException;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -58,31 +59,24 @@ public class RegistrationIntentService extends IntentService {
             sendRegistrationFailure(message);
         } else {
             String identity = sharedPreferences.getString(IDENTITY, null);
-            TwilioSDKStarterAPI.fetchToken(identity)
-                    .enqueue(
-                            new Callback<Token>() {
-                                @Override
-                                public void onResponse(Call<Token> call, Response<Token> response) {
-                                    if (response.isSuccessful()) {
-                                        bind(response.body().identity, response.body().token);
-                                    } else {
-                                        String message =
-                                                "Fetching token failed: "
-                                                        + response.code()
-                                                        + " "
-                                                        + response.message();
-                                        Log.e(TAG, message);
-                                        sendRegistrationFailure(message);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<Token> call, Throwable t) {
-                                    String message = "Fetching token failed: " + t.getMessage();
-                                    Log.e(TAG, message);
-                                    sendRegistrationFailure(message);
-                                }
-                            });
+            try {
+                Response<Token> response = TwilioSDKStarterAPI.fetchToken(identity).execute();
+                if (response.isSuccessful()) {
+                    bind(response.body().identity, response.body().token);
+                } else {
+                    String message =
+                            "Fetching token failed: "
+                                    + response.code()
+                                    + " "
+                                    + response.message();
+                    Log.e(TAG, message);
+                    sendRegistrationFailure(message);
+                }
+            } catch (Exception e) {
+                String message = "Fetching token failed: " + e.getMessage();
+                Log.e(TAG, message);
+                sendRegistrationFailure(message);
+            }
         }
     }
 
