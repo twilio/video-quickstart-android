@@ -18,12 +18,13 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.twilio.video.examples.videoinvite.R;
 import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import com.twilio.video.examples.videoinvite.notify.api.model.Binding;
 import com.twilio.video.examples.videoinvite.notify.api.model.Token;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import java.io.IOException;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -61,9 +62,9 @@ public class RegistrationIntentService extends IntentService {
             String identity = sharedPreferences.getString(IDENTITY, null);
             try {
                 Response<Token> response = TwilioSDKStarterAPI.fetchToken(identity).execute();
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     bind(response.body().identity, response.body().token);
-                } else {
+                } else if (!response.isSuccessful()) {
                     String message =
                             "Fetching token failed: "
                                     + response.code()
@@ -71,10 +72,14 @@ public class RegistrationIntentService extends IntentService {
                                     + response.message();
                     Log.e(TAG, message);
                     sendRegistrationFailure(message);
+                } else {
+                    String message = "Fetching token failed: server returned empty body";
+                    Log.e(TAG, message);
+                    sendRegistrationFailure(message);
                 }
             } catch (Exception e) {
                 String message = "Fetching token failed: " + e.getMessage();
-                Log.e(TAG, message);
+                Log.e(TAG, message, e);
                 sendRegistrationFailure(message);
             }
         }
@@ -89,12 +94,26 @@ public class RegistrationIntentService extends IntentService {
         final String newAddress;
         try {
             String installationId =
-                    Tasks.await(FirebaseInstallations.getInstance().getId());
+                    Tasks.await(FirebaseInstallations.getInstance().getId(), 30, TimeUnit.SECONDS);
             newEndpoint = identity + "@" + installationId;
-            newAddress = Tasks.await(FirebaseMessaging.getInstance().getToken());
+            newAddress = Tasks.await(FirebaseMessaging.getInstance().getToken(), 30, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            Log.w(TAG, "Firebase token request timed out, will retry on next attempt.");
+            sendRegistrationFailure("Firebase token request timed out.");
+            return;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            Log.w(TAG, "Firebase token request interrupted.");
+            sendRegistrationFailure("Firebase token request interrupted.");
+            return;
         } catch (Exception e) {
             Log.e(TAG, "Failed to get Firebase token: " + e.getMessage());
             sendRegistrationFailure("Failed to get Firebase token: " + e.getMessage());
+            return;
+        }
+
+        if (newAddress == null) {
+            Log.w(TAG, "The Firebase token is not available yet.");
             return;
         }
 

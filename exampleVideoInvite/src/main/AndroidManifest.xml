@@ -30,13 +30,6 @@
             </intent-filter>
         </service>
         <!-- [END fcm_listener] -->
-        <service
-            android:name=".notify.fcm.NotifyFirebaseInstanceIDService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
 
         <service
             android:name=".notify.service.RegistrationIntentService"
