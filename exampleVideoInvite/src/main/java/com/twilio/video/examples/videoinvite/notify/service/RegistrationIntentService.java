@@ -12,10 +12,14 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.twilio.video.examples.videoinvite.R;
 import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.notify.api.TwilioSDKStarterAPI;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import com.twilio.video.examples.videoinvite.notify.api.model.Binding;
 import com.twilio.video.examples.videoinvite.notify.api.model.Token;
 import retrofit2.Call;
@@ -56,31 +60,28 @@ public class RegistrationIntentService extends IntentService {
             sendRegistrationFailure(message);
         } else {
             String identity = sharedPreferences.getString(IDENTITY, null);
-            TwilioSDKStarterAPI.fetchToken(identity)
-                    .enqueue(
-                            new Callback<Token>() {
-                                @Override
-                                public void onResponse(Call<Token> call, Response<Token> response) {
-                                    if (response.isSuccess()) {
-                                        bind(response.body().identity, response.body().token);
-                                    } else {
-                                        String message =
-                                                "Fetching token failed: "
-                                                        + response.code()
-                                                        + " "
-                                                        + response.message();
-                                        Log.e(TAG, message);
-                                        sendRegistrationFailure(message);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<Token> call, Throwable t) {
-                                    String message = "Fetching token failed: " + t.getMessage();
-                                    Log.e(TAG, message);
-                                    sendRegistrationFailure(message);
-                                }
-                            });
+            try {
+                Response<Token> response = TwilioSDKStarterAPI.fetchToken(identity).execute();
+                if (response.isSuccessful() && response.body() != null) {
+                    bind(response.body().identity, response.body().token);
+                } else if (!response.isSuccessful()) {
+                    String message =
+                            "Fetching token failed: "
+                                    + response.code()
+                                    + " "
+                                    + response.message();
+                    Log.e(TAG, message);
+                    sendRegistrationFailure(message);
+                } else {
+                    String message = "Fetching token failed: server returned empty body";
+                    Log.e(TAG, message);
+                    sendRegistrationFailure(message);
+                }
+            } catch (Exception e) {
+                String message = "Fetching token failed: " + e.getMessage();
+                Log.e(TAG, message, e);
+                sendRegistrationFailure(message);
+            }
         }
     }
 
@@ -89,28 +90,29 @@ public class RegistrationIntentService extends IntentService {
         final String endpoint = sharedPreferences.getString(ENDPOINT, null);
         final String address = sharedPreferences.getString(ADDRESS, null);
 
-        /*
-         * Generate a new endpoint based on the existing identity and the instanceID. This ensures
-         * that we maintain stability of the endpoint even if the instanceID changes without the
-         * identity changing. Android may change the instance id in some cases resulting in a call
-         * from the FirebaseInstanceIDService
-         */
-        final String newEndpoint = identity + "@" + FirebaseInstanceId.getInstance().getId();
-
-        /*
-         * Obtain the new address based off the Firebase instance token
-         */
-        final String newAddress = FirebaseInstanceId.getInstance().getToken();
+        final String newEndpoint;
+        final String newAddress;
+        try {
+            String installationId =
+                    Tasks.await(FirebaseInstallations.getInstance().getId(), 30, TimeUnit.SECONDS);
+            newEndpoint = identity + "@" + installationId;
+            newAddress = Tasks.await(FirebaseMessaging.getInstance().getToken(), 30, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            Log.w(TAG, "Firebase token request timed out, will retry on next attempt.");
+            sendRegistrationFailure("Firebase token request timed out.");
+            return;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            Log.w(TAG, "Firebase token request interrupted.");
+            sendRegistrationFailure("Firebase token request interrupted.");
+            return;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get Firebase token: " + e.getMessage());
+            sendRegistrationFailure("Failed to get Firebase token: " + e.getMessage());
+            return;
+        }
 
         if (newAddress == null) {
-            /*
-             * When the application is first installed it is possible that the token
-             * generated by Firebase may not be assigned by the time register()
-             * is called from the VideoInviteActivity.java causing this service to start.
-             *
-             * If this occurs, binding will be performed when onTokenRefresh() is called from
-             * NotifyFirebaseInstanceIDService.
-             */
             Log.w(TAG, "The Firebase token is not available yet.");
             return;
         }
@@ -145,7 +147,7 @@ public class RegistrationIntentService extends IntentService {
                             new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
-                                    if (response.isSuccess()) {
+                                    if (response.isSuccessful()) {
                                         sharedPreferences
                                                 .edit()
                                                 .putString(IDENTITY, identity)

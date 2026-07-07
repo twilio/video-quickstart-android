@@ -548,7 +548,7 @@ public class VideoInviteActivity extends AppCompatActivity {
                         new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-                                if (!response.isSuccess()) {
+                                if (!response.isSuccessful()) {
                                     String message =
                                             "Sending notification failed: "
                                                     + response.code()

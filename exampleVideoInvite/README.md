@@ -48,12 +48,31 @@ Paste in the `Server API Key` and press Save.
 
 <img width="700px" src="images/add_fcm_push_cred.png">"
 
-### <a name="bullet3"></a>3. Download the SDK Starter project
+### <a name="bullet3"></a>3. Download and patch the SDK Starter project
 
-Go to the [SDK Starter Java](https://github.com/TwilioDevEd/sdk-starter-java) project.
+Go to the [SDK Starter Java](https://github.com/TwilioDevEd/sdk-starter-java) project and clone it.
 
-Follow the steps in the `README.md` to configure Twilio Video and Twilio Notify. When you create
+Follow the steps in the `README.md` to configure Twilio Notify. When you create
 the Notify Service make sure you select the FCM credential that you created in the previous step.
+
+#### Re-enable Video token grants
+
+The SDK Starter Java project removed its Video demo, so the `/token` endpoint no longer includes a
+Video grant. You need to patch `src/main/java/com/twilio/ServerApp.java` to add it back.
+
+In the `generateToken` method, add the following lines just before `builder.grants(grants);`:
+
+```java
+// Add Video grant
+VideoGrant videoGrant = new VideoGrant();
+grants.add(videoGrant);
+```
+
+Then rebuild the project:
+
+```bash
+mvn package
+```
 
 ### <a name="bullet4"></a>4. Start the SDK Starter project
 

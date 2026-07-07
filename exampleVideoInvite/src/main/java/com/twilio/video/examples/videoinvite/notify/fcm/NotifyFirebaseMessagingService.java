@@ -1,6 +1,5 @@
 package com.twilio.video.examples.videoinvite.notify.fcm;
 
-import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,9 +14,9 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.twilio.video.examples.videoinvite.R;
 import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
+import com.twilio.video.examples.videoinvite.notify.service.RegistrationIntentService;
 import java.util.Map;
 
-@SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "NotifyFCMService";
@@ -39,11 +38,13 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String NOTIFY_INVITE_FROM_IDENTITY_KEY = "fromIdentity";
     private static final String NOTIFY_INVITE_ROOM_NAME_KEY = "roomName";
 
-    /**
-     * Called when a message is received.
-     *
-     * @param message The remote message, containing from, and message data as key/value pairs.
-     */
+    @Override
+    public void onNewToken(String token) {
+        Log.d(TAG, "Refreshed token received (len=" + token.length() + ")");
+        Intent intent = new Intent(this, RegistrationIntentService.class);
+        startService(intent);
+    }
+
     @Override
     public void onMessageReceived(RemoteMessage message) {
         /*
