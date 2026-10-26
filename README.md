@@ -23,7 +23,7 @@ Get started with Video on Android:
 - [Rendering Video](#rendering-video) - A guide to rendering video in your application
 - [Setup an Access Token Server](#setup-an-access-token-server) - Setup an access token server
 - [More Documentation](#more-documentation) - More documentation related to the Video Android SDK
-- [Issues & Support](#issues-and-support) - Filing issues and general support
+- [Community Contributions and Support](#community-contributions-and-support) - Bug reports, feature feedback, and support options
 
 ## Quickstart
 
@@ -133,7 +133,7 @@ The adoption of APK splits requires developers to submit multiple APKs to the Pl
 The following sections provide guidance on how to ensure optimal audio quality in your applications. Results may vary when using APIs within the `org.webrtc` package. While we expose these APIs we do not actively test their usage.
 
 ### Managing Audio Devices with AudioSwitch
-The Java and Kotlin quickstarts use [AudioSwitch](https://github.com/twilio/audioswitch) to control [audio focus](https://developer.android.com/guide/topics/media-apps/audio-focus) and manage audio devices within the application. If you have an issue or question related to audio management, please open an issue in the [AudioSwitch](https://github.com/twilio/audioswitch) project.
+The Java and Kotlin quickstarts use [AudioSwitch](https://github.com/twilio/audioswitch) to control [audio focus](https://developer.android.com/guide/topics/media-apps/audio-focus) and manage audio devices within the application. For reproducible audio management bugs, please open an issue in the [AudioSwitch](https://github.com/twilio/audioswitch/issues) project. For general usage questions, contact [Twilio Support](https://help.twilio.com/).
 
 ### Configuring Hardware Audio Effects
 Our library performs acoustic echo cancellation (AEC), noise suppression (NS), and auto gain
@@ -316,11 +316,20 @@ You can find more documentation on getting started as well as our latest Javadoc
 * [Getting Started](https://www.twilio.com/docs/video/getting-started)
 * [Javadoc](https://twilio.github.io/twilio-video-android/docs/latest/)
 
-## Issues and Support
+<a id="issues-and-support"></a>
 
-Please file any issues you find here on Github.
-Please ensure that you are not sharing any
-[Personally Identifiable Information(PII)](https://www.twilio.com/docs/glossary/what-is-personally-identifiable-information-pii)
-or sensitive account information (API keys, credentials, etc.) when reporting an issue.
+## Community Contributions and Support
 
-For general inquiries related to the Video SDK you can file a [support ticket](https://support.twilio.com/hc/en-us/requests/new)
+This repository is publicly available and maintained by Twilio under a limited external contribution model.
+
+Due to limited maintenance capacity, external pull requests are not currently accepted.
+
+GitHub Issues may be used to report reproducible bugs or provide feature feedback about these samples or the Twilio Video Android SDK. Issues are reviewed on a best-effort basis, with no SLA or guaranteed response.
+
+GitHub Issues are not an official Twilio support channel. For production issues, general usage questions, or account-specific assistance, please contact [Twilio Support](https://help.twilio.com/). If you have a Twilio account manager, you may also escalate through them.
+
+Do not share [Personally Identifiable Information (PII)](https://www.twilio.com/docs/glossary/what-is-personally-identifiable-information-pii) or sensitive account information, including access tokens, API keys, and credentials, in issues, logs, or screenshots.
+
+Report security vulnerabilities privately through [Twilio's Vulnerability Disclosure Program](https://www.twilio.com/en-us/security/vulnerability-disclosure-program), rather than public GitHub Issues.
+
+See [CONTRIBUTING.md](https://github.com/twilio/video-quickstart-android/blob/master/CONTRIBUTING.md) for reporting guidance.
